@@ -39,7 +39,6 @@ tar xvf $ANTS_FILE && /bin/rm -f $ANTS_FILE
 
 echo "Installing dependencies"
 yum install -y ImageMagick bc perl
-yum install -y python-pip
 EPEL_FILE=epel-release-latest-7.noarch.rpm
 curl -s http://dl.fedoraproject.org/pub/epel/{$EPEL_FILE} -o '#1'
 rpm -ivh $EPEL_FILE && /bin/rm -f $EPEL_FILE
