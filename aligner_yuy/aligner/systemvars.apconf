@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  Configuration file defines the constant variables, the templates, and tools.
+  Version 1.0.0 2012/10/15
+ 
+  abbreviation list:
+    FB: fly brain
+    TX: 20x
+    tgt: target/template
+    wfb: whole fly brain
+    rec: recentered/resized with zero padding
+    atx: aRnim's 20x fly brain template (JFRC2010)
+    asx: aRnim's 63x fly brain template
+    ytx: yoshi's 20x fly brain template
+    ysx: yoshi's 63x fly brain template (JFRC2013)
+    cb: central brain
+    OL: optical lobe
+    MFB: male fly brain
+    EXT: extended/resized with zero padding
+    JBA: Janelia Brain Aligner
+    REF: reference
+    NO: number
+    
+    - documented by Yang Yu, 7/11/2017
+-->
+
+<AlignmentPipelineConfigurations>
+
+<Templates>
+<atlasFBTX>wfb_atx_template_ori.tif</atlasFBTX>
+<tgtFBTX>wfb_atx_template_rec.tif</tgtFBTX>
+<tgtFBTXmarkers>wfb_atx_template_rec.marker</tgtFBTXmarkers>
+<tgtFBFX>wfb_afx_template_rec.raw</tgtFBFX>
+<tgtFBFXmarkers>wfb_afx_template_rec_cb.marker</tgtFBFXmarkers>
+<tgtFBSXIS>wfb_asx_template_rec.raw</tgtFBSXIS>
+<tgtFBSXISmarkers>wfb_asx_template_rec_cb.marker</tgtFBSXISmarkers>
+<tgtFBSXAS>wfb_asxh_template_rec.raw</tgtFBSXAS>
+<tgtFBSXASmarkers>wfb_asxh_template_rec_cb.marker</tgtFBSXASmarkers>
+<tgtFBRCTX>wfb_atx_template_rec_rc.v3draw</tgtFBRCTX>
+<IDENTITYMATRIX>initAffine.txt</IDENTITYMATRIX>
+<tgtFROLSX>frol_asx_rot_crop.v3draw</tgtFROLSX>
+<FROLCROPMATRIX>frol_crop_configure.txt</FROLCROPMATRIX>
+<FROLROTMATRIX>frol_rotation.txt</FROLROTMATRIX>
+<FROLINVROTMATRIX>frol_rotation_inv.txt</FROLINVROTMATRIX>
+<CMPBND>wfb_atx_template_rec2_boundaries.tif</CMPBND>
+<ORICMPBND>wfb_atx_template_ori_boundaries.tif</ORICMPBND>
+<TMPMIPNULL>templateMIPnull.tif</TMPMIPNULL>
+<LCRMASK>locbro_mask.tif</LCRMASK>
+<tgtFBTXDPX>wfb_ytx_template_dpx.v3draw</tgtFBTXDPX>
+<tgtFBSXDPX>wfb_ysx_template_dpx.v3draw</tgtFBSXDPX>
+<tgtFBTXRECDPX>wfb_ytx_template_dpx_rec.v3draw</tgtFBTXRECDPX>
+<tgtFBSXRECDPX>wfb_ysx_template_dpx_rec.v3draw</tgtFBSXRECDPX>
+<tgtFBTXDPXEXT>wfb_ytx_template_dpx_ext.v3draw</tgtFBTXDPXEXT>
+<tgtFBSXDPXEXT>wfb_ysx_template_dpx_subsampled_ext.v3draw</tgtFBSXDPXEXT>
+<tgtFBSXDPXSS>wfb_ysx_template_dpx_subsampled.v3draw</tgtFBSXDPXSS>
+<tgtFBSXRECDPXSS>wfb_ysx_template_dpx_rec_subsampled.v3draw</tgtFBSXRECDPXSS>
+<tgtFBSXRECDPXRS>wfb_ysx_template_dpx_rec_resampled.v3draw</tgtFBSXRECDPXRS>
+<tgtMFBTXDPX>wfb_btx_template_dpx.v3draw</tgtMFBTXDPX>
+<tgtMFBTXRECDPX>wfb_btx_template_dpx_rec.v3draw</tgtMFBTXRECDPX>
+<tgtMFBTXDPXEXT>wfb_btx_template_dpx_ext.v3draw</tgtMFBTXDPXEXT>
+<tgtMFBSXDPX>wfb_bsx_template_dpx.v3draw</tgtMFBSXDPX>
+<tgtMFBSXRECDPX>wfb_bsx_template_dpx_rec.v3draw</tgtMFBSXRECDPX>
+<tgtMFBSXDPXEXT>wfb_bsx_template_dpx_ext.v3draw</tgtMFBSXDPXEXT>
+<tgtVNC20xAFemale>flyVNCtemplate20xAFemale_CLAHE_16bit.nrrd</tgtVNC20xAFemale>
+<tgtVNC20xAMale>Male_VNC.nrrd</tgtVNC20xAMale> 
+<wfYTOA>mapY2Aaffine.txt</wfYTOA>
+<wfYSXmarkers>yoshi63x.csv</wfYSXmarkers>
+<wfASXmarkers>arnim63x.csv</wfASXmarkers>
+<tgtCBMCFO>cb_63x_jfrc2013_template.v3draw</tgtCBMCFO>
+<tgtCBMCFOEXT>cb_63x_jfrc2013_template_ext.v3draw</tgtCBMCFOEXT>
+<tgtMFBSXDPXCropped>cb_63x_jfrc2014_template.v3draw</tgtMFBSXDPXCropped>
+<tgtMFBSXDPXEXTCropped>cb_63x_jfrc2013_template_ext.v3draw</tgtMFBSXDPXEXTCropped>
+</Templates>
+
+<Toolkits>
+<ANTS>ANTS/ANTS</ANTS>
+<FSLFLIRT>FSL/flirt</FSLFLIRT>
+<WARP>ANTS/WarpImageMultiTransform</WARP>
+<SMPL>ANTS/ResampleImageBySpacing</SMPL>
+<ANTSMT>ANTS/antsRegistration</ANTSMT>
+<WARPMT>ANTS/antsApplyTransforms</WARPMT>
+<CNVT>ANTS/ConvertTransformFile</CNVT>
+<Vaa3D>Vaa3D/vaa3d</Vaa3D>
+<JBA>JBA/brainaligner</JBA>
+<MAGICK>/usr/bin</MAGICK>
+</Toolkits>
+
+<MISC>
+<REFNO>1</REFNO>
+<VSZX_20X_IS>0.62</VSZX_20X_IS>
+<VSZY_20X_IS>0.62</VSZY_20X_IS>
+<VSZZ_20X_IS>0.62</VSZZ_20X_IS>
+<VSZX_63X_IS>0.38</VSZX_63X_IS>
+<VSZY_63X_IS>0.38</VSZY_63X_IS>
+<VSZZ_63X_IS>0.38</VSZZ_63X_IS>
+<VSZX_63X_AS>0.19</VSZX_63X_AS>
+<VSZY_63X_AS>0.19</VSZY_63X_AS>
+<VSZZ_63X_AS>0.38</VSZZ_63X_AS>
+<VSZX_20X_IS_DPX>0.46</VSZX_20X_IS_DPX>
+<VSZY_20X_IS_DPX>0.46</VSZY_20X_IS_DPX>
+<VSZZ_20X_IS_DPX>0.46</VSZZ_20X_IS_DPX>
+<VSZX_63X_IS_DPX>0.19</VSZX_63X_IS_DPX>
+<VSZY_63X_IS_DPX>0.19</VSZY_63X_IS_DPX>
+<VSZZ_63X_IS_DPX>0.19</VSZZ_63X_IS_DPX>
+</MISC>
+
+</AlignmentPipelineConfigurations>
+

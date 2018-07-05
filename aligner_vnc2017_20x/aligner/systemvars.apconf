@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  Configuration file defines the constant variables, the templates, and tools.
+  Version 1.0.0 2012/10/15
+ 
+  abbreviation list:
+    FB: fly brain
+    TX: 20x
+    tgt: target/template
+    wfb: whole fly brain
+    rec: recentered/resized with zero padding
+    atx: aRnim's 20x fly brain template (JFRC2010)
+    asx: aRnim's 63x fly brain template
+    ytx: yoshi's 20x fly brain template
+    ysx: yoshi's 63x fly brain template (JFRC2013)
+    cb: central brain
+    OL: optical lobe
+    MFB: male fly brain
+    EXT: extended/resized with zero padding
+    JBA: Janelia Brain Aligner
+    REF: reference
+    NO: number
+    
+    - documented by Yang Yu, 7/11/2017
+-->
+
+<AlignmentPipelineConfigurations>
+
+<Templates>
+<tgtVNC20xAFemale>flyVNCtemplate20xAFemale_CLAHE_16bit.nrrd</tgtVNC20xAFemale>
+<tgtVNC20xAMale>Male_VNC.nrrd</tgtVNC20xAMale> 
+</Templates>
+
+<Toolkits>
+<Vaa3D>Vaa3D/vaa3d</Vaa3D>
+<CMTK>CMTK/bin</CMTK>
+<Fiji>Fiji/ImageJ-linux64</Fiji>
+</Toolkits>
+
+<MISC>
+</MISC>
+
+</AlignmentPipelineConfigurations>
+
