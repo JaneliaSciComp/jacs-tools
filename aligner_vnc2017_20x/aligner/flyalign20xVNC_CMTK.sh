@@ -217,10 +217,10 @@ if [ ! -e $Unaligned_Neuron_Separator_Result_V3DPBD ]
 then
   echo "Warning: $PREPROCIMG will be given a nonexistent $Unaligned_Neuron_Separator_Result_V3DPBD"
 fi
-$FIJI -macro $PREPROCIMG "$OUTPUT/,preprocResult,$LATTIF,$SUBVNC,ssr,$RESX,$RESY,$GENDER,$Unaligned_Neuron_Separator_Result_V3DPBD,$NSLOTS" >$OUTPUT/preproc.log 2>&1 &
-fpid=$!
-echo "Monitoring port=$XVFB_PORT pid=$fpid"
-. ${TOOLDIR}/jacs-scripts/monitorXvfb.sh $XVFB_PORT $fpid 3600
+$FIJI -macro $PREPROCIMG "$OUTPUT/,preprocResult,$LATTIF,$SUBVNC,ssr,$RESX,$RESY,$GENDER,$Unaligned_Neuron_Separator_Result_V3DPBD,$NSLOTS" >$OUTPUT/preproc.log 2>&1
+#fpid=$!
+#echo "Monitoring port=$XVFB_PORT pid=$fpid"
+#. ${TOOLDIR}/jacs-scripts/monitorXvfb.sh $XVFB_PORT $fpid 3600
 STOP=`date '+%F %T'`
 echo "Otsuna preprocessing start: $START"
 echo "Otsuna preprocessing stop: $STOP"
