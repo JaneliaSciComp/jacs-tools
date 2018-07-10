@@ -28,18 +28,25 @@ parseParameters()
 {
     YAML_CONFIG=$1
     WORK_DIR="${2:-`pwd`"/temp"}"
+
     parseParameter CONFIG_FILE ".config_file"
     parseParameter TEMPLATE_DIR ".template_dir"
     parseParameter TOOL_DIR ".tool_dir"
     parseParameter GENDER ".gender"
     parseParameter MOUNTING_PROTOCOL ".mounting_protocol"
+
     parseParameter INPUT1_FILE ".inputs[0].filepath"
+    parseParameter INPUT1_AREA ".inputs[0].area"
+    parseParameter INPUT1_OBJECTIVE ".inputs[0].objective"
     parseParameter INPUT1_CHANNELS ".inputs[0].num_channels"
     parseParameter INPUT1_REF ".inputs[0].ref_channel"
     parseParameter INPUT1_RES ".inputs[0].voxel_size"
     parseParameter INPUT1_DIMS ".inputs[0].image_size"
     parseParameter INPUT1_NEURONS ".inputs[0].neuron_mask"
+
     parseParameter INPUT2_FILE ".inputs[1].filepath"
+    parseParameter INPUT2_AREA ".inputs[1].area"
+    parseParameter INPUT2_OBJECTIVE ".inputs[1].objective"
     parseParameter INPUT2_CHANNELS ".inputs[1].num_channels"
     parseParameter INPUT2_REF ".inputs[1].ref_channel"
     parseParameter INPUT2_RES ".inputs[1].voxel_size"
@@ -123,8 +130,8 @@ ensureRawFileWdiffName()
             $_Vaa3D -cmd image-loader -convert "$_FILE" "$_OUTFILE"
         fi
 
-     elif [ "$_EXT" == "v3draw" ];
-     then
+    elif [ "$_EXT" == "v3draw" ];
+    then
         local _FILE_STUB=`basename $_OUTFILE`
         _OUTFILE="$_WORKING_DIR/${_FILE_STUB}"
         if ( is_file_exist "$_OUTFILE" )
@@ -134,7 +141,7 @@ ensureRawFileWdiffName()
             message "Creating symbolic link to neuron"
             ln -s "$_FILE" "$_OUTFILE"
         fi
-     fi
+    fi
 
     eval $_RESULTVAR="'$_OUTFILE'"
 }
