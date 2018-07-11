@@ -9,7 +9,7 @@ parseParameters "$@"
 
 # Available input variables:
 #  $TEMPLATE_DIR
-#  $WORK_DIR 
+#  $WORK_DIR
 #  $INPUT1_FILE
 #  $INPUT1_REF
 #  $INPUT1_NEURONS
@@ -22,18 +22,18 @@ parseParameters "$@"
 #  $NSLOTS
 
 function expandRes() {
-    local result_var="$1"
-    local res="$2"
-    if [ $res == "0.44" ]; then
+    local _res="$2"
+    local _result_var="$1"
+    if [[ $_res == "0.44" ]]; then
         result="0.4413373"
-    elif [ $res == "0.52" ]; then
+    elif [[ $_res == "0.52" ]]; then
         result="0.5189161"
-    elif [ $res == "0.62" ]; then
+    elif [[ $_res == "0.62" ]]; then
         result="0.621481"
     else
-        result=$res
+        result=$_res
     fi
-    eval $result_var="'$result'"
+    eval $_result_var="'$result'"
 }
 
 export CMTK_WRITE_UNCOMPRESSED=1
@@ -53,9 +53,9 @@ templateBr="JRC2018" #"JFRC2014", "JFRC2013", "JFRC2014", "JRC2018"
 filename="PRE_PROCESSED"
 Path=$INPUT1_FILE
 objective=$INPUT1_OBJECTIVE
-expandRes RESX $INPUT1_RESX
-expandRes RESY $INPUT1_RESY
-expandRes RESZ $INPUT1_RESZ
+expandRes $INPUT1_RESX RESX
+expandRes $INPUT1_RESY RESY
+expandRes $INPUT1_RESZ RESZ
 OUTPUT=$WORK_DIR"/Output"
 FINALOUTPUT=$WORK_DIR"/FinalOutputs"
 TempDir=$TEMPLATE_DIR/jrc2018_20x_40x_templates
@@ -64,20 +64,20 @@ testmode=0
 # Possible values: "Intact", "Both_OL_missing (40x)", "Unknown"
 BrainShape=$3
 
-if [ ! -d $OUTPUT ]; then
+if [[ ! -d $OUTPUT ]]; then
     mkdir $OUTPUT
 fi
 
-if [ ! -d $FINALOUTPUT ]; then
+if [[ ! -d $FINALOUTPUT ]]; then
     mkdir $FINALOUTPUT
 fi
 
-if [ ! -e $PREPROCIMG ]; then
+if [[ ! -e $PREPROCIMG ]]; then
     echo "Preprocess macro could not be found at $PREPROCIMG"
     exit 1
 fi
 
-if [ ! -e $FIJI ]; then
+if [[ ! -e $FIJI ]]; then
     echo "Fiji cannot be found at $FIJI"
     exit 1
 fi
@@ -85,24 +85,24 @@ fi
 Unaligned_Neuron_Separator_Result_V3DPBD=$INPUT1_NEURONS
 Global_Aligned_Separator_Result=$OUTPUT"/GLOBAL_ConsolidatedLabel.nrrd"
 
-if [ $RESX == "0.621481" ]; then
+if [[ $RESX == "0.621481" ]]; then
     TRESOLUTION="20x_gen1"
-elif [ $RESX == "0.5189161" ]; then
+elif [[ $RESX == "0.5189161" ]]; then
     TRESOLUTION="20x_HR"
-elif [ $RESX == "0.4413373" ]; then
+elif [[ $RESX == "0.4413373" ]]; then
     TRESOLUTION="40x"
 fi
 
 echo "TRESOLUTION "$TRESOLUTION
 
-if [ $GENDER == "f" ]; then
+if [[ $GENDER == "f" ]]; then
 
     genderT="FEMALE"
     JFRC20DPX=$TempDir"/JFRC2013_20x_New_dist_G16.nrrd"
     reformat_JRC2018_to_JFRC20DPX=$TempDir"/Deformation_Fields/JFRC2013_JRC2018_FEMALE_20x_gen1"
     TEMPNAME="JFRC2013"
 
-elif [ $GENDER == "m" ]; then
+elif [[ $GENDER == "m" ]]; then
 
     genderT="MALE"
     JFRC20DPX=$TempDir"/JFRC2014_20x_New_dist_G15.nrrd"
@@ -131,12 +131,10 @@ JFRC2010=$TempDir"/JFRC2010_16bit.nrrd"
 JFRC2010NOOL=$TempDir"/JFRC2010_16bit_noOL.nrrd"
 
 # "-------------------Global aligned files----------------------"
-
 gloval_nc82_nrrd=$OUTPUT"/"$filename"_01.nrrd"
 gloval_signalNrrd1=$OUTPUT"/"$filename"_02.nrrd"
 gloval_signalNrrd2=$OUTPUT"/"$filename"_03.nrrd"
 gloval_signalNrrd3=$OUTPUT"/"$filename"_04.nrrd"
-
 
 # "-------------------Deformation fields----------------------"
 registered_initial_xform=$OUTPUT"/initial.xform"
@@ -145,22 +143,13 @@ registered_warp_xform=$OUTPUT"/warp.xform"
 
 reformat_JRC2018_to_Uni=$TempDir"/Deformation_Fields/JRC2018_Unisex_JRC2018_"$genderT"_"$TRESOLUTION
 
-if [ $GENDER == "f" ]; then
+if [[ $GENDER == "f" ]]; then
     reformat_JRC2018_to_JFRC2010=$TempDir"/Deformation_Fields/JFRC2010_JRC2018_"$genderT"_20x_gen1"
-elif [ $GENDER == "m" ]; then
+elif [[ $GENDER == "m" ]]; then
     reformat_JRC2018_to_JFRC2010=$TempDir"/Deformation_Fields/JFRC2010_JRC2018_"$genderT"_40x"
 fi
 
 # "Somehow, 20x_gen1 is the best aligned result than the 40x alignment"
-
-
-# Ensure existence of required inputs from unaligned neuron separation.
-UNSR_TO_DEL="sentinel_nonexistent_file"
-UNALIGNED_NEUSEP_EXISTS=1
-if [ ! -e $Unaligned_Neuron_Separator_Result_V3DPBD ]; then
-    echo -e "Warning: unaligned neuron separation result $Unaligned_Neuron_Separator_Result_V3DPBD nor $Unaligned_Neuron_Separator_Result_RAW exists. Perhaps user has deleted neuron separations?"
-    UNALIGNED_NEUSEP_EXISTS=0
-fi
 
 
 # -------------------------------------------------------------------------------------------
@@ -174,10 +163,6 @@ else
     echo "+---------------------------------------------------------------------------------------+"
     START=`date '+%F %T'`
     # Expect to take far less than 1 hour
-    if [ ! -e $Unaligned_Neuron_Separator_Result_RAW ]; then
-        echo "Warning: $PREPROCIMG will be given a nonexistent $Unaligned_Neuron_Separator_Result_V3DPBD"
-    fi
-
     #timeout --preserve-status 6000m 
     # Note that this macro does not seem to work in --headless mode
     $FIJI -macro $PREPROCIMG "$OUTPUT/,$filename.,$Path,$TempDir/,$RESX,$RESZ,$NSLOTS,$objective,$templateBr,$BrainShape,$Unaligned_Neuron_Separator_Result_V3DPBD" >$OUTPUT/preproc.log 2>&1
@@ -190,31 +175,31 @@ fi
 OL="$(<$OLSHAPE)"
 echo $OL
 
-if [ "$OL" == "Intact" ]; then
+if [[ "$OL" == "Intact" ]]; then
     iniT=$JRC2018_20x
-elif [ "$OL" == "Left_OL_missing" ]; then
+elif [[ "$OL" == "Left_OL_missing" ]]; then
     iniT=$JRC2018_20x_noLOL
-elif [ "$OL" == "Right_OL_missing" ]; then
+elif [[ "$OL" == "Right_OL_missing" ]]; then
     iniT=$JRC2018_20x_noROL
-elif [ "$OL" == "Both_OL_missing" ]; then
+elif [[ "$OL" == "Both_OL_missing" ]]; then
     iniT=$JRC2018_20x_noOL
-elif [ "$OL" == "Both_OL_missing (40x)" ]; then
+elif [[ "$OL" == "Both_OL_missing (40x)" ]]; then
     iniT=$JRC2018_20x_noOL
 fi
 
-if [ $GENDER == "f" ]; then
-    if [ $RESX == "0.621481" ]; then
+if [[ $GENDER == "f" ]]; then
+    if [[ $RESX == "0.621481" ]]; then
         reformat_JRC2018_to_U=$reformat_JRC2018F_gen1_to_U
-    elif [ $RESX == "0.5189161" ]; then
+    elif [[ $RESX == "0.5189161" ]]; then
         reformat_JRC2018_to_U=$reformat_JRC2018F_HR_to_U
-    elif [ $RESX == "0.4413373" ]; then
+    elif [[ $RESX == "0.4413373" ]]; then
         reformat_JRC2018_to_U=$reformat_JRC2018F_40x_to_U
         iniT=$JRC2018_40x_NOOL
     fi
 fi
 
 # For TEST ############################################
-if [ $testmode == 1 ]; then
+if [[ $testmode == 1 ]]; then
     gloval_nc82_nrrd=$OUTPUT"/JRC2018MALE_JFRC2014_63x_DistCorrected_01_warp.nrrd"
     iniT=$TempDir"/JFRC2014_63x_DistCorrected_G15.nrrd"
 fi
@@ -233,15 +218,13 @@ else
     START=`date '+%F %T'`
     $CMTK/make_initial_affine --principal_axes $iniT $gloval_nc82_nrrd $registered_initial_xform
     STOP=`date '+%F %T'`
-    if [ ! -e $registered_initial_xform ]; then
+    if [[ ! -e $registered_initial_xform ]]; then
         echo -e "Error: CMTK make initial affine failed"
         exit -1
     fi
     echo "cmtk_initial_affine start: $START"
     echo "cmtk_initial_affine stop: $STOP"
 
-
-    # CMTK registration
     echo " "
     echo "+----------------------------------------------------------------------+"
     echo "| Running CMTK registration"
@@ -250,7 +233,7 @@ else
     START=`date '+%F %T'`
     $CMTK/registration --threads $NSLOTS --initial $registered_initial_xform --dofs 6,9 --accuracy 0.8 -o $registered_affine_xform $iniT $gloval_nc82_nrrd
     STOP=`date '+%F %T'`
-    if [ ! -e $registered_affine_xform ]; then
+    if [[ ! -e $registered_affine_xform ]]; then
         echo -e "Error: CMTK registration failed"
         exit -1
     fi
@@ -270,7 +253,7 @@ else
     START=`date '+%F %T'`
     $CMTK/warp --threads $NSLOTS -o $registered_warp_xform --grid-spacing 80 --fast --exploration 26 --coarsest 8 --accuracy 0.8 --refine 4 --energy-weight 1e-1 --ic-weight 0 --initial $registered_affine_xform $iniT $gloval_nc82_nrrd
     STOP=`date '+%F %T'`
-    if [ ! -e $registered_warp_xform ]; then
+    if [[ ! -e $registered_warp_xform ]]; then
         echo -e "Error: CMTK warping failed"
         exit -1
     fi
@@ -297,7 +280,7 @@ function nrrd2Raw() {
         START=`date '+%F %T'`
         $FIJI --headless -macro $NRRDCONV $_PARAMS >$LOGFILE 2>&1
         STOP=`date '+%F %T'`
-        if [ ! -e $OUTPUTRAW ]; then
+        if [[ ! -e $OUTPUTRAW ]]; then
             echo -e "Error: NRRD -> raw conversion failed"
             exit -1
         fi
@@ -328,7 +311,7 @@ function reformat() {
         $CMTK/reformatx -o "$_sig" --floating $_gsig $_TEMP $_DEFFIELD
         STOP=`date '+%F %T'`
 
-        if [ ! -e $_sig ]; then
+        if [[ ! -e $_sig ]]; then
             echo -e "Error: CMTK reformatting signal failed"
             exit -1
         fi
@@ -391,9 +374,7 @@ function scoreGen() {
 
         START=`date '+%F %T'`
         # Expect to take far less than 1 hour
-        if [ ! -e $Unaligned_Neuron_Separator_Result_RAW ]; then
-            echo "Warning: Alignement Score generation:ZNCC, does not need Xvfb"
-        fi
+        # Alignment Score generation:ZNCC, does not need Xvfb
         $FIJI --headless -macro $SCOREGENERATION $OUTPUT/,$_outname,$NSLOTS,$_scoretemp >$OUTPUT/scoregen.log 2>&1
         STOP=`date '+%F %T'`
 
@@ -451,17 +432,17 @@ gsig=$OUTPUT"/"$filename
 reformatAll "$TSTRING" "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
 scoreGen $sig"_01.nrrd" $iniT "score2018"
 
-if [[ -e $Global_Aligned_Separator_Result ]]; then 
+if [[ -e $Global_Aligned_Separator_Result ]]; then
     prefix=$OUTPUT"/REG_JRC2018_"$genderT"_ConsolidatedLabel_"$TRESOLUTION
     sig=$prefix".nrrd"
     sigraw=$prefix".v3draw"
     gsig=$Global_Aligned_Separator_Result
     TSTRING="JRC2018 "$genderT"_neuron_separator"
     reformat "$TSTRING" "$gsig" "$TEMP" "$DEFFIELD" "$sig" "" "RAWOUT_NEURON"
-    nrrd2Raw "$v3draw,$sig"
+    nrrd2Raw "$sigraw,$sig"
 fi
 
-writeProperties "$RAWOUT" "$RAWOUT_NEURON" "JRC2018_${genderT}" "$TRESOLUTION" "0.44x0.44x0.44" "1348x642x472" "$score2018"
+writeProperties "$RAWOUT" "$RAWOUT_NEURON" "JRC2018_${genderT}_${TRESOLUTION}" "$TRESOLUTION" "0.44x0.44x0.44" "1348x642x472" "$score2018"
 
 
 ########################################################################################################
@@ -482,10 +463,10 @@ if [[ -e $Global_Aligned_Separator_Result ]]; then
     gsig=$Global_Aligned_Separator_Result
     TSTRING="JRC2018 UNISEX_neuron_separator"
     reformat "$TSTRING" "$gsig" "$TEMP" "$DEFFIELD" "$sig" "" "RAWOUT_NEURON"
-    nrrd2Raw "$v3draw,$sig"
+    nrrd2Raw "$sigraw,$sig"
 fi
 
-writeProperties "$RAWOUT" "$RAWOUT_NEURON" "JRC2018_Unisex" "$TRESOLUTION" "0.44x0.44x0.44" "1427x668x394" ""
+writeProperties "$RAWOUT" "$RAWOUT_NEURON" "JRC2018_Unisex_${TRESOLUTION}" "$TRESOLUTION" "0.44x0.44x0.44" "1427x668x394" ""
 
 
 ########################################################################################################
@@ -501,9 +482,9 @@ gsig=$OUTPUT"/"$filename
 reformatAll "$TSTRING" "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
 
 SCORETEMP=$JFRC2010
-if [ "$OL" == "Both_OL_missing (40x)" ]; then
+if [[ "$OL" == "Both_OL_missing (40x)" ]]; then
     SCORETEMP=$JFRC2010NOOL
-elif [ "$OL" == "Both_OL_missing" ]; then
+elif [[ "$OL" == "Both_OL_missing" ]]; then
     SCORETEMP=$JFRC2010NOOL
 fi
 scoreGen $sig"_01.nrrd" "$SCORETEMP" "score2010"
@@ -523,12 +504,12 @@ gsig=$OUTPUT"/"$filename
 reformatAll "$TSTRING" "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
 
 if [[ $GENDER =~ "m" ]]; then
-    ALIGNMENT_SPACE="JFRC2014_63x"
+    ALIGNMENT_SPACE="JFRC2014_20x"
 else
-    ALIGNMENT_SPACE="JFRC2013_63x"
+    ALIGNMENT_SPACE="JFRC2013_20x"
 fi
 
-writeProperties "$RAWOUT" "" "$ALIGNMENT_SPACE" "$TRESOLUTION" "0.4653716x0.4653716x0.76" "1184x592x218" ""
+writeProperties "$RAWOUT" "" "$ALIGNMENT_SPACE" "20x" "0.4653716x0.4653716x0.76" "1184x592x218" ""
 
 
 ########################################################################################################
@@ -542,16 +523,25 @@ TEMP=$TempDir"/JRC2018_UNISEX_20x_HR.nrrd"
 gsig=$OUTPUT"/"$filename
 reformatAll "$TSTRING" "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
 
-writeProperties "$RAWOUT" "" "JRC2018_Unisex_20x_HR" "$TRESOLUTION" "0.5189161x0.5189161x1.0" "1210x566x174" ""
+writeProperties "$RAWOUT" "" "JRC2018_Unisex_20x_HR" "20x" "0.5189161x0.5189161x1.0" "1210x566x174" ""
 
+
+# -------------------------------------------------------------------------------------------
+
+echo "Converting all v3draw files to v3dpbd format"
+compressAllRaw "$Vaa3D" "$OUTPUT"
+
+
+# -------------------------------------------------------------------------------------------
 
 echo "+----------------------------------------------------------------------+"
 echo "| Copying files to final destination"
 echo "+----------------------------------------------------------------------+"
 mkdir -p $FINALOUTPUT/debug
 cp $OUTPUT/*.{png,jpg,log,txt} $FINALOUTPUT/debug
-cp $OUTPUT/REG*.v3draw $FINALOUTPUT
+cp $OUTPUT/REG*.v3dpbd $FINALOUTPUT
 cp $OUTPUT/REG*.properties $FINALOUTPUT
 
-compressAllRaw "$Vaa3D" "$FINALOUTPUT"
+echo "$0 done"
+
 
