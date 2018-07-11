@@ -22,8 +22,8 @@ parseParameters "$@"
 #  $NSLOTS
 
 function expandRes() {
-    local _res="$2"
-    local _result_var="$1"
+    local _res="$1"
+    local _result_var="$2"
     if [[ $_res == "0.44" ]]; then
         result="0.4413373"
     elif [[ $_res == "0.52" ]]; then
