@@ -159,7 +159,7 @@ if [[ -e $OLSHAPE ]]; then
 else
     echo "+---------------------------------------------------------------------------------------+"
     echo "| Running OtsunaBrain preprocessing step"
-    echo "| $FIJI -macro $PREPROCIMG \"$OUTPUT/,$filename.,$Path,$TempDir,$RESX,$RESZ,$NSLOTS,$objective\""
+    echo "| $FIJI -macro $PREPROCIMG \"$OUTPUT/,$filename.,$Path,$TempDir,$RESX,$RESZ,$NSLOTS,$objective,$templateBr,$BrainShape,$Unaligned_Neuron_Separator_Result_V3DPBD\""
     echo "+---------------------------------------------------------------------------------------+"
     START=`date '+%F %T'`
     # Expect to take far less than 1 hour
