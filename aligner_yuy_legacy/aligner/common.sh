@@ -41,8 +41,8 @@ parseParameters()
     parseParameter INPUT1_RES ".inputs[0].voxel_size"
     parseParameter INPUT1_DIMS ".inputs[0].image_size"
     parseParameter INPUT1_NEURONS ".inputs[0].neuron_mask"
-    parseParameter INPUT1_INPUT1_GENDER ".inputs[0].gender"
-    parseParameter INPUT1_INPUT1_MOUNTING_PROTOCOL ".inputs[0].mounting_protocol"
+    parseParameter INPUT1_GENDER ".inputs[0].gender"
+    parseParameter INPUT1_MOUNTING_PROTOCOL ".inputs[0].mounting_protocol"
 
     parseParameter INPUT2_FILE ".inputs[1].filepath"
     parseParameter INPUT2_AREA ".inputs[1].area"
@@ -52,8 +52,8 @@ parseParameters()
     parseParameter INPUT2_RES ".inputs[1].voxel_size"
     parseParameter INPUT2_DIMS ".inputs[1].image_size"
     parseParameter INPUT2_NEURONS ".inputs[1].neuron_mask"
-    parseParameter INPUT2_INPUT1_GENDER ".inputs[1].gender"
-    parseParameter INPUT2_INPUT1_MOUNTING_PROTOCOL ".inputs[1].mounting_protocol"
+    parseParameter INPUT2_GENDER ".inputs[1].gender"
+    parseParameter INPUT2_MOUNTING_PROTOCOL ".inputs[1].mounting_protocol"
 
     INPUT1_RESX=$(echo $INPUT1_RES | cut -f1 -d'x')
     INPUT1_RESY=$(echo $INPUT1_RES | cut -f2 -d'x')
