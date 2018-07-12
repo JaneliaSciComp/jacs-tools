@@ -38,7 +38,7 @@ TMPLDIR=$TEMPLATE_DIR
 TOOLDIR="${TOOL_DIR:-/opt}"
 WORKDIR=$WORK_DIR
 
-MP=$MOUNTING_PROTOCOL
+MP=$INPUT1_MOUNTING_PROTOCOL
 NEUBRAIN=$INPUT1_NEURONS
 
 # subject parameters
@@ -52,7 +52,7 @@ CHN=$INPUT1_CHANNELS
 
 # special parameters
 ZFLIP=$ZFLIP
-GENDER=$GENDER
+INPUT1_GENDER=$INPUT1_GENDER
 
 # tools
 Vaa3D=`readItemFromConf $CONFIGFILE "Vaa3D"`
@@ -70,7 +70,7 @@ FLIRT=${TOOLDIR}"/"${FLIRT}
 # templates
 TARREF=`readItemFromConf $CONFIGFILE "REFNO"`
 
-if [[ $GENDER =~ "m" ]]
+if [[ $INPUT1_GENDER =~ "m" ]]
 then
 # male fly brain
 TARSX=`readItemFromConf $CONFIGFILE "tgtMFBSXDPXCropped"`
@@ -861,7 +861,7 @@ echo "alignment.image.channels=$INPUT1_CHANNELS" >> $META
 echo "alignment.image.refchan=$INPUT1_REF" >> $META
 echo "alignment.verify.filename=${ALIGNVERIFY}" >> $META
 
-if [[ $GENDER =~ "m" ]]
+if [[ $INPUT1_GENDER =~ "m" ]]
 then
 # male fly brain
 echo "alignment.space.name=JFRC2014_63x" >> $META

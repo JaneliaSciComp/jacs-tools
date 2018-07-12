@@ -34,8 +34,8 @@ SUBVNC=$INPUT1_FILE
 SUBREF=$INPUT1_REF
 CONSLABEL=$INPUT1_NEURONS
 CHN=$INPUT1_CHANNELS
-GENDER=$GENDER
-MP=$MOUNTING_PROTOCOL
+INPUT1_GENDER=$INPUT1_GENDER
+MP=$INPUT1_MOUNTING_PROTOCOL
 
 RESX=$INPUT1_RESX
 RESY=$INPUT1_RESY
@@ -43,7 +43,7 @@ RESZ=$INPUT1_RESZ
 
 # special parameters
 ZFLIP=$ZFLIP
-GENDER=$GENDER
+INPUT1_GENDER=$INPUT1_GENDER
 
 # tools
 Vaa3D=`readItemFromConf $CONFIGFILE "Vaa3D"`
@@ -60,7 +60,7 @@ VNCTEMPLATEFEMALE=`readItemFromConf $CONFIGFILE "tgtVNC20xAFemale"`
 VNCTEMPLATEMALE=`readItemFromConf $CONFIGFILE "tgtVNC20xAMale"`
 
 
-if [[ $GENDER =~ "m" ]]
+if [[ $INPUT1_GENDER =~ "m" ]]
 then
 # male fly vnc
 Tfile=${TMPLDIR}"/"${VNCTEMPLATEMALE}
@@ -80,7 +80,7 @@ echo "WORKDIR: $WORKDIR"
 echo "SUBVNC: $SUBVNC"
 echo "SUBREF: $SUBREF"
 echo "MountingProtocol: $MP"
-echo "Gender: $GENDER"
+echo "Gender: $INPUT1_GENDER"
 echo "RESX: $RESX"
 echo "RESY: $RESY"
 echo "RESZ: $RESZ"
@@ -209,7 +209,7 @@ cd $OUTPUT
 # -------------------------------------------------------------------------------------------
 echo "+---------------------------------------------------------------------------------------+"
 echo "| Running Otsuna preprocessing step                                                     |"
-echo "| $FIJI -macro $PREPROCIMG \"$OUTPUT/,preprocResult,$LATTIF,$SUBVNC,ssr,$RESX,$RESY,$GENDER,$Unaligned_Neuron_Separator_Result_V3DPBD,$NSLOTS\" |"
+echo "| $FIJI -macro $PREPROCIMG \"$OUTPUT/,preprocResult,$LATTIF,$SUBVNC,ssr,$RESX,$RESY,$INPUT1_GENDER,$Unaligned_Neuron_Separator_Result_V3DPBD,$NSLOTS\" |"
 echo "+---------------------------------------------------------------------------------------+"
 START=`date '+%F %T'`
 # Expect to take far less than 1 hour
@@ -217,7 +217,7 @@ if [ ! -e $Unaligned_Neuron_Separator_Result_V3DPBD ]
 then
   echo "Warning: $PREPROCIMG will be given a nonexistent $Unaligned_Neuron_Separator_Result_V3DPBD"
 fi
-$FIJI -macro $PREPROCIMG "$OUTPUT/,preprocResult,$LATTIF,$SUBVNC,ssr,$RESX,$RESY,$GENDER,$Unaligned_Neuron_Separator_Result_V3DPBD,$NSLOTS" >$OUTPUT/preproc.log 2>&1
+$FIJI -macro $PREPROCIMG "$OUTPUT/,preprocResult,$LATTIF,$SUBVNC,ssr,$RESX,$RESY,$INPUT1_GENDER,$Unaligned_Neuron_Separator_Result_V3DPBD,$NSLOTS" >$OUTPUT/preproc.log 2>&1
 #fpid=$!
 #echo "Monitoring port=$XVFB_PORT pid=$fpid"
 #. ${TOOLDIR}/jacs-scripts/monitorXvfb.sh $XVFB_PORT $fpid 3600
@@ -243,7 +243,7 @@ then
   echo "alignment.image.area=VNC" >> $META
   echo "alignment.image.channels=$INPUT1_CHANNELS" >> $META
   echo "alignment.image.refchan=$INPUT1_REF" >> $META
-  if [[ $GENDER =~ "m" ]]
+  if [[ $INPUT1_GENDER =~ "m" ]]
   then
     # male fly brain
     echo "alignment.space.name=MaleVNC2016_20x" >> $META
@@ -521,10 +521,10 @@ echo "z_projection stop: $STOP"
 # -------------------------------------------------------------------------------------------                                                                                                                                                           
 echo "+--------------------------------------------------------------------------------------------------------+"
 echo "| Running Otsuna scoring step                                                                            |"
-echo "| $FIJI -macro $POSTSCORE \"$registered_pp_bgwarp_nrrd,PostScore,$OUTPUT/,$Tfile,$POSTSCOREMASK,$GENDER\"|"
+echo "| $FIJI -macro $POSTSCORE \"$registered_pp_bgwarp_nrrd,PostScore,$OUTPUT/,$Tfile,$POSTSCOREMASK,$INPUT1_GENDER\"|"
 echo "+--------------------------------------------------------------------------------------------------------+"
 START=`date '+%F %T'`
-$FIJI -macro $POSTSCORE "$registered_pp_bgwarp_nrrd,PostScore,$OUTPUT/,$Tfile,$POSTSCOREMASK,$GENDER"
+$FIJI -macro $POSTSCORE "$registered_pp_bgwarp_nrrd,PostScore,$OUTPUT/,$Tfile,$POSTSCOREMASK,$INPUT1_GENDER"
 STOP=`date '+%F %T'`
 if [ ! -e $registered_otsuna_qual ]
 then
@@ -580,7 +580,7 @@ echo "alignment.stack.filename="${registered_pp_warp_v3draw_filename} >> $META
 echo "alignment.image.area=VNC" >> $META
 echo "alignment.image.channels=$INPUT1_CHANNELS" >> $META
 echo "alignment.image.refchan=$INPUT1_REF" >> $META
-if [[ $GENDER =~ "m" ]]
+if [[ $INPUT1_GENDER =~ "m" ]]
 then
 # male fly brain
 echo "alignment.space.name=MaleVNC2016_20x" >> $META

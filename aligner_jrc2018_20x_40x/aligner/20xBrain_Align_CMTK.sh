@@ -14,8 +14,8 @@ parseParameters "$@"
 #  $INPUT1_REF
 #  $INPUT1_NEURONS
 #  $INPUT1_CHANNELS
-#  $GENDER
-#  $MOUNTING_PROTOCOL
+#  $INPUT1_GENDER
+#  $INPUT1_MOUNTING_PROTOCOL
 #  $INPUT1_RESX
 #  $INPUT1_RESY
 #  $INPUT1_RESZ
@@ -95,14 +95,14 @@ fi
 
 echo "TRESOLUTION "$TRESOLUTION
 
-if [[ $GENDER == "f" ]]; then
+if [[ $INPUT1_GENDER == "f" ]]; then
 
     genderT="FEMALE"
     JFRC20DPX=$TempDir"/JFRC2013_20x_New_dist_G16.nrrd"
     reformat_JRC2018_to_JFRC20DPX=$TempDir"/Deformation_Fields/JFRC2013_JRC2018_FEMALE_20x_gen1"
     TEMPNAME="JFRC2013"
 
-elif [[ $GENDER == "m" ]]; then
+elif [[ $INPUT1_GENDER == "m" ]]; then
 
     genderT="MALE"
     JFRC20DPX=$TempDir"/JFRC2014_20x_New_dist_G15.nrrd"
@@ -111,7 +111,7 @@ elif [[ $GENDER == "m" ]]; then
 
 fi
 
-echo "GENDER; "$GENDER
+echo "INPUT1_GENDER; "$INPUT1_GENDER
 echo "genderT; "$genderT
 echo "JFRC20DPX; "$JFRC20DPX
 echo "reformat_JRC2018_to_JFRC20DPX; "$reformat_JRC2018_to_JFRC20DPX
@@ -143,9 +143,9 @@ registered_warp_xform=$OUTPUT"/warp.xform"
 
 reformat_JRC2018_to_Uni=$TempDir"/Deformation_Fields/JRC2018_Unisex_JRC2018_"$genderT"_"$TRESOLUTION
 
-if [[ $GENDER == "f" ]]; then
+if [[ $INPUT1_GENDER == "f" ]]; then
     reformat_JRC2018_to_JFRC2010=$TempDir"/Deformation_Fields/JFRC2010_JRC2018_"$genderT"_20x_gen1"
-elif [[ $GENDER == "m" ]]; then
+elif [[ $INPUT1_GENDER == "m" ]]; then
     reformat_JRC2018_to_JFRC2010=$TempDir"/Deformation_Fields/JFRC2010_JRC2018_"$genderT"_40x"
 fi
 
@@ -187,7 +187,7 @@ elif [[ "$OL" == "Both_OL_missing (40x)" ]]; then
     iniT=$JRC2018_20x_noOL
 fi
 
-if [[ $GENDER == "f" ]]; then
+if [[ $INPUT1_GENDER == "f" ]]; then
     if [[ $RESX == "0.621481" ]]; then
         reformat_JRC2018_to_U=$reformat_JRC2018F_gen1_to_U
     elif [[ $RESX == "0.5189161" ]]; then
@@ -503,7 +503,7 @@ TEMP="$JFRC20DPX"
 gsig=$OUTPUT"/"$filename
 reformatAll "$TSTRING" "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
 
-if [[ $GENDER =~ "m" ]]; then
+if [[ $INPUT1_GENDER =~ "m" ]]; then
     ALIGNMENT_SPACE="JFRC2014_20x"
 else
     ALIGNMENT_SPACE="JFRC2013_20x"
