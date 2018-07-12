@@ -513,7 +513,6 @@ echo "alignment.space.name=$UNIFIED_SPACE" >> $META
 echo "alignment.resolution.voxels=0.62x0.62x0.62" >> $META
 echo "alignment.image.size=1024x512x218" >> $META
 echo "alignment.objective=20x" >> $META
-echo "default=true" >> $META
 echo "alignment.quality.score.ncc=$SCORE" >> $META
 echo "alignment.quality.score.qi=$QISCORE" >> $META
 echo "alignment.quality.score.jbaqi=$JBAQiScore" >> $META

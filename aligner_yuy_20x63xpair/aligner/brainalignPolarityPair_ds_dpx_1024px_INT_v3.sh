@@ -1297,7 +1297,6 @@ echo "alignment.quality.score.ncc=$SCORE" >> $META
 if [[ -f "$NEUSXALINGED" ]]; then
     echo "neuron.masks.filename=NeuronAligned63xScale.v3draw" >> $META
 fi
-echo "default=true" >> $META
 fi
 
 compressAllRaw $Vaa3D $WORKDIR

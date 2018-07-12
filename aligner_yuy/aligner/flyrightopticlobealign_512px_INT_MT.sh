@@ -535,7 +535,6 @@ echo "alignment.resolution.voxels=${RESX}x${RESY}x${RESZ}" >> $META
 echo "alignment.image.size=1712x1370x492" >> $META
 echo "alignment.bounding.box=990x1610x180x860x0x491" >> $META
 echo "alignment.objective=63x" >> $META
-echo "default=true" >> $META
 if [[ -f "$NEURONALIGNED" ]]; then
 echo "neuron.masks.filename=NeuronAligned63xScale.v3draw" >> $META
 fi

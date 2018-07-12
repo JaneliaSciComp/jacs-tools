@@ -254,7 +254,6 @@ then
   echo "alignment.resolution.voxels=0.52x0.52x1.00" >> $META
   echo "alignment.image.size=512x1024x185" >> $META
   echo "alignment.objective=20x" >> $META
-  echo "default=true" >> $META
 
   exit -1
 fi
@@ -600,7 +599,6 @@ then
 else
   echo "WARNING: No $CONSLABEL_FN produced.  Not picked up by warped-result alignment step."
 fi
-echo "default=true" >> $META
 fi
 
 compressAllRaw $Vaa3D $WORKDIR

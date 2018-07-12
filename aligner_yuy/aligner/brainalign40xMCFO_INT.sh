@@ -878,7 +878,6 @@ echo "alignment.quality.score.ncc=$SCORE" >> $META
 if [[ -f "$SXNEURONALIGNED" ]]; then
     echo "neuron.masks.filename="${XSNEURONALIGNED_FN} >> $META
 fi
-echo "default=true" >> $META
 fi
 
 compressAllRaw $Vaa3D $WORKDIR

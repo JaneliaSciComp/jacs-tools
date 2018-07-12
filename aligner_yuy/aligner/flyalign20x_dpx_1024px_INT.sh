@@ -693,7 +693,6 @@ fi
 echo "alignment.resolution.voxels=0.46x0.46x0.46" >> $META
 echo "alignment.image.size=1184x592x218" >> $META
 echo "alignment.objective=20x" >> $META
-echo "default=true" >> $META
 if [[ -f "$NEUBRAINALIGNEDYFLIP" ]]; then
 echo "neuron.masks.filename=ConsolidatedLabelBrain.v3draw" >> $META
 fi
