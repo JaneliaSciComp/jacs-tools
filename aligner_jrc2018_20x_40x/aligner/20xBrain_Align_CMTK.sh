@@ -395,6 +395,7 @@ function writeProperties() {
     local _voxel_size="$5"
     local _image_size="$6"
     local _ncc_score="$7"
+    local _bridged_from="$8"
 
     raw_filename=`basename ${_raw_aligned}`
     prefix=${raw_filename%%.*}
@@ -416,6 +417,9 @@ function writeProperties() {
             raw_neurons_filename=`basename ${_raw_aligned_neurons}`
             echo "neuron.masks.filename=$raw_neurons_filename" >> $META
         fi
+        if [[ ! -z "$_bridged_from" ]]; then
+            echo "alignment.bridged.from=$_bridged_from" >> $META
+        fi
     fi
 }
 
@@ -425,7 +429,9 @@ function writeProperties() {
 ########################################################################################################
 
 DEFFIELD=$registered_warp_xform
-sig=$OUTPUT"/REG_JRC2018_"$genderT"_"$TRESOLUTION
+fn="REG_JRC2018_"$genderT"_"$TRESOLUTION
+main_aligned_file=${fn}".v3draw"
+sig=$OUTPUT"/"$main_alignment
 TSTRING="JRC2018 $genderT"
 TEMP="$iniT"
 gsig=$OUTPUT"/"$filename
@@ -442,7 +448,7 @@ if [[ -e $Global_Aligned_Separator_Result ]]; then
     nrrd2Raw "$sigraw,$sig"
 fi
 
-writeProperties "$RAWOUT" "$RAWOUT_NEURON" "JRC2018_${genderT}_${TRESOLUTION}" "$TRESOLUTION" "0.44x0.44x0.44" "1348x642x472" "$score2018"
+writeProperties "$RAWOUT" "$RAWOUT_NEURON" "JRC2018_${genderT}_${TRESOLUTION}" "$TRESOLUTION" "0.44x0.44x0.44" "1348x642x472" "$score2018" ""
 
 
 ########################################################################################################
@@ -466,7 +472,7 @@ if [[ -e $Global_Aligned_Separator_Result ]]; then
     nrrd2Raw "$sigraw,$sig"
 fi
 
-writeProperties "$RAWOUT" "$RAWOUT_NEURON" "JRC2018_Unisex_${TRESOLUTION}" "$TRESOLUTION" "0.44x0.44x0.44" "1427x668x394" ""
+writeProperties "$RAWOUT" "$RAWOUT_NEURON" "JRC2018_Unisex_${TRESOLUTION}" "$TRESOLUTION" "0.44x0.44x0.44" "1427x668x394" "" "$main_aligned_file"
 
 
 ########################################################################################################
@@ -489,7 +495,7 @@ elif [[ "$OL" == "Both_OL_missing" ]]; then
 fi
 scoreGen $sig"_01.nrrd" "$SCORETEMP" "score2010"
 
-writeProperties "$RAWOUT" "" "$UNIFIED_SPACE" "20x" "0.62x0.62x1.00" "1024x512x218" $score2010
+writeProperties "$RAWOUT" "" "$UNIFIED_SPACE" "20x" "0.62x0.62x1.00" "1024x512x218" "$score2010" "$main_aligned_file"
 
 
 ########################################################################################################
@@ -509,7 +515,7 @@ else
     ALIGNMENT_SPACE="JFRC2013_20x"
 fi
 
-writeProperties "$RAWOUT" "" "$ALIGNMENT_SPACE" "20x" "0.4653716x0.4653716x0.76" "1184x592x218" ""
+writeProperties "$RAWOUT" "" "$ALIGNMENT_SPACE" "20x" "0.4653716x0.4653716x0.76" "1184x592x218" "" "$main_aligned_file"
 
 
 ########################################################################################################
@@ -523,7 +529,7 @@ TEMP=$TempDir"/JRC2018_UNISEX_20x_HR.nrrd"
 gsig=$OUTPUT"/"$filename
 reformatAll "$TSTRING" "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
 
-writeProperties "$RAWOUT" "" "JRC2018_Unisex_20x_HR" "20x" "0.5189161x0.5189161x1.0" "1210x566x174" ""
+writeProperties "$RAWOUT" "" "JRC2018_Unisex_20x_HR" "20x" "0.5189161x0.5189161x1.0" "1210x566x174" "$main_aligned_file"
 
 
 # -------------------------------------------------------------------------------------------
@@ -539,6 +545,7 @@ echo "| Copying files to final destination"
 echo "+----------------------------------------------------------------------+"
 mkdir -p $FINALOUTPUT/debug
 cp $OUTPUT/*.{png,jpg,log,txt} $FINALOUTPUT/debug
+cp -R $OUTPUT/*.xform $FINALOUTPUT/debug
 cp $OUTPUT/REG*.v3dpbd $FINALOUTPUT
 cp $OUTPUT/REG*.properties $FINALOUTPUT
 
