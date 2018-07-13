@@ -173,7 +173,7 @@ else
 fi
 
 OL="$(<$OLSHAPE)"
-echo $OL
+echo "OLSHAPE; "$OL
 
 if [[ "$OL" == "Intact" ]]; then
     iniT=$JRC2018_20x
@@ -206,6 +206,7 @@ fi
 
 echo "iniT; "$iniT
 echo "gloval_nc82_nrrd; "$gloval_nc82_nrrd
+echo ""
 
 # -------------------------------------------------------------------------------------------
 if [[ -e $registered_initial_xform ]]; then
@@ -302,11 +303,9 @@ function reformat() {
     if [[ -e $_sig ]]; then
         echo "Already exists: $_sig"
     else
-        echo " "
-        echo "+----------------------------------------------------------------------+"
-        echo "| Running CMTK $_TSTRING $_channel reformatting"
-        echo "| $CMTK/reformatx -o $_sig --floating $_gsig $_TEMP $_DEFFIELD"
-        echo "+----------------------------------------------------------------------+"
+        echo "--------------"
+        echo "Running CMTK $_TSTRING $_channel reformatting"
+        echo "$CMTK/reformatx -o $_sig --floating $_gsig $_TEMP $_DEFFIELD"
         START=`date '+%F %T'`
         $CMTK/reformatx -o "$_sig" --floating $_gsig $_TEMP $_DEFFIELD
         STOP=`date '+%F %T'`
@@ -316,8 +315,10 @@ function reformat() {
             exit -1
         fi
 
+        echo "--------------"
         echo "cmtk_reformatting $TSTRING $_channel start: $START"
         echo "cmtk_reformatting $TSTRING $_channel stop: $STOP"
+        echo " "
     fi
     eval $_result_var="'$_sig'"
 }
@@ -423,15 +424,21 @@ function writeProperties() {
     fi
 }
 
+function banner() {
+    echo "------------------------------------------------------------------------------------------------------------"
+    echo " $1"
+    echo "------------------------------------------------------------------------------------------------------------"
+}
 
 ########################################################################################################
 # JRC2018 gender-specific alignment
 ########################################################################################################
 
+banner "JRC2018 gender-specific alignment"
 DEFFIELD=$registered_warp_xform
 fn="REG_JRC2018_"$genderT"_"$TRESOLUTION
 main_aligned_file=${fn}".v3draw"
-sig=$OUTPUT"/"$main_alignment
+sig=$OUTPUT"/"$fn
 TSTRING="JRC2018 $genderT"
 TEMP="$iniT"
 gsig=$OUTPUT"/"$filename
@@ -455,6 +462,7 @@ writeProperties "$RAWOUT" "$RAWOUT_NEURON" "JRC2018_${genderT}_${TRESOLUTION}" "
 # JRC2018 unisex alignment
 ########################################################################################################
 
+banner "JRC2018 unisex alignment"
 DEFFIELD="$reformat_JRC2018_to_Uni $registered_warp_xform"
 sig=$OUTPUT"/REG_UNISEX_"$TRESOLUTION
 TSTRING="JRC2018 UNISEX"
@@ -479,6 +487,7 @@ writeProperties "$RAWOUT" "$RAWOUT_NEURON" "JRC2018_Unisex_${TRESOLUTION}" "$TRE
 # JFRC2010 alignment
 ########################################################################################################
 
+banner "JFRC2010 alignment"
 #"--inverse takes 1.5h / channel for reformatting"
 DEFFIELD="$reformat_JRC2018_to_JFRC2010 $registered_warp_xform"
 sig=$OUTPUT"/REG_JFRC2010_"$TRESOLUTION
@@ -502,6 +511,7 @@ writeProperties "$RAWOUT" "" "$UNIFIED_SPACE" "20x" "0.62x0.62x1.00" "1024x512x2
 # JFRC2013/JFRC2014 aligmment
 ########################################################################################################
 
+banner "JFRC2013/JFRC2014 aligmment"
 DEFFIELD="$reformat_JRC2018_to_JFRC20DPX $registered_warp_xform"
 sig=$OUTPUT"/REG_"$TEMPNAME"_"$TRESOLUTION
 TSTRING="JFRC2013/2014"
@@ -521,7 +531,9 @@ writeProperties "$RAWOUT" "" "$ALIGNMENT_SPACE" "20x" "0.4653716x0.4653716x0.76"
 ########################################################################################################
 # JFRC2018 Unisex High-resolution (for color depth search)
 ########################################################################################################
-if [[ TRESOLUTION != "20x_HR" ]]; then
+if [[ $TRESOLUTION != "20x_HR" ]]; then
+
+    banner "JFRC2018 Unisex High-resolution (for color depth search)"
     DEFFIELD="$reformat_JRC2018_to_Uni $registered_warp_xform"
     sig=$OUTPUT"/REG_UNISEX_ColorMIP_HR"
     TSTRING="JRC2018 UNISEX HR for ColorMIP"
@@ -530,6 +542,7 @@ if [[ TRESOLUTION != "20x_HR" ]]; then
     reformatAll "$TSTRING" "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
 
     writeProperties "$RAWOUT" "" "JRC2018_Unisex_20x_HR" "20x" "0.5189161x0.5189161x1.0" "1210x566x174" "" "$main_aligned_file"
+
 fi
 
 # -------------------------------------------------------------------------------------------
