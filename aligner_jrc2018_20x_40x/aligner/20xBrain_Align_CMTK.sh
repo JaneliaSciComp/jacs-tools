@@ -529,7 +529,7 @@ TEMP=$TempDir"/JRC2018_UNISEX_20x_HR.nrrd"
 gsig=$OUTPUT"/"$filename
 reformatAll "$TSTRING" "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
 
-writeProperties "$RAWOUT" "" "JRC2018_Unisex_20x_HR" "20x" "0.5189161x0.5189161x1.0" "1210x566x174" "$main_aligned_file"
+writeProperties "$RAWOUT" "" "JRC2018_Unisex_20x_HR" "20x" "0.5189161x0.5189161x1.0" "1210x566x174" "" "$main_aligned_file"
 
 
 # -------------------------------------------------------------------------------------------
