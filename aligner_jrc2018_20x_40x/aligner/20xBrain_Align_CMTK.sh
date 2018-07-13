@@ -141,7 +141,7 @@ registered_initial_xform=$OUTPUT"/initial.xform"
 registered_affine_xform=$OUTPUT"/affine.xform"
 registered_warp_xform=$OUTPUT"/warp.xform"
 
-reformat_JRC2018_to_Uni=$TempDir"/Deformation_Fields/JRC2018_Unisex_JRC2018_"$genderT"_"$TRESOLUTION
+reformat_JRC2018_to_Uni=$TempDir"/Deformation_Fields/JRC2018_Unisex_JRC2018_"$genderT"_40x"
 
 if [[ $INPUT1_GENDER == "f" ]]; then
     reformat_JRC2018_to_JFRC2010=$TempDir"/Deformation_Fields/JFRC2010_JRC2018_"$genderT"_20x_gen1"
@@ -521,16 +521,16 @@ writeProperties "$RAWOUT" "" "$ALIGNMENT_SPACE" "20x" "0.4653716x0.4653716x0.76"
 ########################################################################################################
 # JFRC2018 Unisex High-resolution (for color depth search)
 ########################################################################################################
+if [[ TRESOLUTION != "20x_HR" ]]; then
+    DEFFIELD="$reformat_JRC2018_to_Uni $registered_warp_xform"
+    sig=$OUTPUT"/REG_UNISEX_ColorMIP_HR"
+    TSTRING="JRC2018 UNISEX HR for ColorMIP"
+    TEMP=$TempDir"/JRC2018_UNISEX_20x_HR.nrrd"
+    gsig=$OUTPUT"/"$filename
+    reformatAll "$TSTRING" "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
 
-DEFFIELD="$reformat_JRC2018_to_Uni $registered_warp_xform"
-sig=$OUTPUT"/REG_UNISEX_ColorMIP_HR"
-TSTRING="JRC2018 UNISEX HR for ColorMIP"
-TEMP=$TempDir"/JRC2018_UNISEX_20x_HR.nrrd"
-gsig=$OUTPUT"/"$filename
-reformatAll "$TSTRING" "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
-
-writeProperties "$RAWOUT" "" "JRC2018_Unisex_20x_HR" "20x" "0.5189161x0.5189161x1.0" "1210x566x174" "" "$main_aligned_file"
-
+    writeProperties "$RAWOUT" "" "JRC2018_Unisex_20x_HR" "20x" "0.5189161x0.5189161x1.0" "1210x566x174" "" "$main_aligned_file"
+fi
 
 # -------------------------------------------------------------------------------------------
 
