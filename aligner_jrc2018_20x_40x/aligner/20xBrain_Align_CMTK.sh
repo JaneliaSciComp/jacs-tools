@@ -292,19 +292,18 @@ function nrrd2Raw() {
 
 # Reformat a single NRRD file to the target deformation field
 function reformat() {
-    local _TSTRING="$1"
-    local _gsig="$2"
-    local _TEMP="$3"
-    local _DEFFIELD="$4"
-    local _sig="$5"
-    local _channel="$6"
-    local _result_var="$7"
+    local _gsig="$1"
+    local _TEMP="$2"
+    local _DEFFIELD="$3"
+    local _sig="$4"
+    local _channel="$5"
+    local _result_var="$6"
 
     if [[ -e $_sig ]]; then
         echo "Already exists: $_sig"
     else
         echo "--------------"
-        echo "Running CMTK $_TSTRING $_channel reformatting"
+        echo "Running CMTK reformatting on channel $_channel"
         echo "$CMTK/reformatx -o $_sig --floating $_gsig $_TEMP $_DEFFIELD"
         START=`date '+%F %T'`
         $CMTK/reformatx -o "$_sig" --floating $_gsig $_TEMP $_DEFFIELD
@@ -325,12 +324,11 @@ function reformat() {
 
 # Reformat all the channels to the same template
 function reformatAll() {
-    local _TSTRING="$1"
-    local _gsig="$2"
-    local _TEMP="$3"
-    local _DEFFIELD="$4"
-    local _sig="$5"
-    local _result_var="$6"
+    local _gsig="$1"
+    local _TEMP="$2"
+    local _DEFFIELD="$3"
+    local _sig="$4"
+    local _result_var="$5"
 
     RAWOUT="${_sig}.v3draw" # Raw output file combining all the aligned channels
     RAWCONVPARAM=$RAWOUT
@@ -340,7 +338,7 @@ function reformatAll() {
     for ((i=1; i<=$INPUT1_CHANNELS; i++)); do
         GLOBAL_NRRD="${_gsig}_0${i}.nrrd"
         OUTPUT_NRRD="${_sig}_0${i}.nrrd"
-        reformat "$_TSTRING" "$GLOBAL_NRRD" "$_TEMP" "$_DEFFIELD" "$OUTPUT_NRRD" "$i" "ignore"
+        reformat "$GLOBAL_NRRD" "$_TEMP" "$_DEFFIELD" "$OUTPUT_NRRD" "$i" "ignore"
         if (( i>1 )); then
             # Add all signal channels to the final RAW file
             RAWCONVPARAM="$RAWCONVPARAM,$OUTPUT_NRRD"
@@ -434,15 +432,14 @@ function banner() {
 # JRC2018 gender-specific alignment
 ########################################################################################################
 
-banner "JRC2018 gender-specific alignment"
+banner "JRC2018 $genderT alignment"
 DEFFIELD=$registered_warp_xform
 fn="REG_JRC2018_"$genderT"_"$TRESOLUTION
 main_aligned_file=${fn}".v3draw"
 sig=$OUTPUT"/"$fn
-TSTRING="JRC2018 $genderT"
 TEMP="$iniT"
 gsig=$OUTPUT"/"$filename
-reformatAll "$TSTRING" "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
+reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
 scoreGen $sig"_01.nrrd" $iniT "score2018"
 
 if [[ -e $Global_Aligned_Separator_Result ]]; then
@@ -450,8 +447,7 @@ if [[ -e $Global_Aligned_Separator_Result ]]; then
     sig=$prefix".nrrd"
     sigraw=$prefix".v3draw"
     gsig=$Global_Aligned_Separator_Result
-    TSTRING="JRC2018 "$genderT"_neuron_separator"
-    reformat "$TSTRING" "$gsig" "$TEMP" "$DEFFIELD" "$sig" "" "RAWOUT_NEURON"
+    reformat "$gsig" "$TEMP" "$DEFFIELD" "$sig" "" "RAWOUT_NEURON"
     nrrd2Raw "$sigraw,$sig"
 fi
 
@@ -465,18 +461,16 @@ writeProperties "$RAWOUT" "$RAWOUT_NEURON" "JRC2018_${genderT}_${TRESOLUTION}" "
 banner "JRC2018 unisex alignment"
 DEFFIELD="$reformat_JRC2018_to_Uni $registered_warp_xform"
 sig=$OUTPUT"/REG_UNISEX_"$TRESOLUTION
-TSTRING="JRC2018 UNISEX"
 TEMP="$JRC2018_Unisex"
 gsig=$OUTPUT"/"$filename
-reformatAll "$TSTRING" "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
+reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
 
 if [[ -e $Global_Aligned_Separator_Result ]]; then
     prefix=$OUTPUT"/REG_UNISEX_ConsolidatedLabel_"$TRESOLUTION
     sig=$prefix".nrrd"
     sigraw=$prefix".v3draw"
     gsig=$Global_Aligned_Separator_Result
-    TSTRING="JRC2018 UNISEX_neuron_separator"
-    reformat "$TSTRING" "$gsig" "$TEMP" "$DEFFIELD" "$sig" "" "RAWOUT_NEURON"
+    reformat "$gsig" "$TEMP" "$DEFFIELD" "$sig" "" "RAWOUT_NEURON"
     nrrd2Raw "$sigraw,$sig"
 fi
 
@@ -491,10 +485,9 @@ banner "JFRC2010 alignment"
 #"--inverse takes 1.5h / channel for reformatting"
 DEFFIELD="$reformat_JRC2018_to_JFRC2010 $registered_warp_xform"
 sig=$OUTPUT"/REG_JFRC2010_"$TRESOLUTION
-TSTRING="JFRC2010"
 TEMP="$JFRC2010"
 gsig=$OUTPUT"/"$filename
-reformatAll "$TSTRING" "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
+reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
 
 SCORETEMP=$JFRC2010
 if [[ "$OL" == "Both_OL_missing (40x)" ]]; then
@@ -514,10 +507,9 @@ writeProperties "$RAWOUT" "" "$UNIFIED_SPACE" "20x" "0.62x0.62x1.00" "1024x512x2
 banner "JFRC2013/JFRC2014 aligmment"
 DEFFIELD="$reformat_JRC2018_to_JFRC20DPX $registered_warp_xform"
 sig=$OUTPUT"/REG_"$TEMPNAME"_"$TRESOLUTION
-TSTRING="JFRC2013/2014"
 TEMP="$JFRC20DPX"
 gsig=$OUTPUT"/"$filename
-reformatAll "$TSTRING" "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
+reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
 
 if [[ $INPUT1_GENDER =~ "m" ]]; then
     ALIGNMENT_SPACE="JFRC2014_20x"
@@ -536,10 +528,9 @@ if [[ $TRESOLUTION != "20x_HR" ]]; then
     banner "JFRC2018 Unisex High-resolution (for color depth search)"
     DEFFIELD="$reformat_JRC2018_to_Uni $registered_warp_xform"
     sig=$OUTPUT"/REG_UNISEX_ColorMIP_HR"
-    TSTRING="JRC2018 UNISEX HR for ColorMIP"
     TEMP=$TempDir"/JRC2018_UNISEX_20x_HR.nrrd"
     gsig=$OUTPUT"/"$filename
-    reformatAll "$TSTRING" "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
+    reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
 
     writeProperties "$RAWOUT" "" "JRC2018_Unisex_20x_HR" "20x" "0.5189161x0.5189161x1.0" "1210x566x174" "" "$main_aligned_file"
 
