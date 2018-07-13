@@ -42,10 +42,12 @@ echo "Installing CMTK"
 # Prereqs for CMTK
 yum install -y fftw-libs-double
 # Install CMTK
-CMTK_FILE=cmtk-2.2.6-sl7.tgz
+#CMTK_FILE=cmtk-2.2.6-sl7.tgz
+CMTK_FILE=cmtk-20171001-sl7avx.tgz
 curl -s http://workstation.int.janelia.org/files/tools/{$CMTK_FILE} -o '#1'
 tar xvf $CMTK_FILE && /bin/rm -f $CMTK_FILE
-ln -s cmtk-2.2.6 CMTK
+#ln -s cmtk-2.2.6 CMTK
+ln -s cmtk-scm-2017-10-01 CMTK
 
 echo "Installing dependencies"
 EPEL_FILE=epel-release-latest-7.noarch.rpm
