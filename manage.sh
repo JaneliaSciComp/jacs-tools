@@ -61,7 +61,6 @@ do
             exit 1
         fi
 
-        shift 1 # remove command parameter from args
         echo "Will deploy these images: $@"
 
         for ALIGNER in "$@"
@@ -82,7 +81,6 @@ do
 
     elif [ "$COMMAND" == "clean" ]; then
 
-        shift 1 # remove command parameter from args
         echo "Will clean these images: $@"
 
         for ALIGNER in "$@"
