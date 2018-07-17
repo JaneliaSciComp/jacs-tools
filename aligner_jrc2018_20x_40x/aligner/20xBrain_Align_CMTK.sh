@@ -457,21 +457,23 @@ writeProperties "$RAWOUT" "$RAWOUT_NEURON" "JRC2018_${genderT}_${TRESOLUTION}" "
 ########################################################################################################
 # JRC2018 unisex alignment
 ########################################################################################################
+if [[ $TRESOLUTION != "20x_gen1" ]]; then
 
-banner "JRC2018 unisex alignment"
-DEFFIELD="$reformat_JRC2018_to_Uni $registered_warp_xform"
-sig=$OUTPUT"/REG_UNISEX_"$TRESOLUTION
-TEMP="$JRC2018_Unisex"
-gsig=$OUTPUT"/"$filename
-reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
+    banner "JRC2018 unisex alignment"
+    DEFFIELD="$reformat_JRC2018_to_Uni $registered_warp_xform"
+    sig=$OUTPUT"/REG_UNISEX_"$TRESOLUTION
+    TEMP="$JRC2018_Unisex"
+    gsig=$OUTPUT"/"$filename
+    reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
 
-if [[ -e $Global_Aligned_Separator_Result ]]; then
-    prefix=$OUTPUT"/REG_UNISEX_ConsolidatedLabel_"$TRESOLUTION
-    sig=$prefix".nrrd"
-    sigraw=$prefix".v3draw"
-    gsig=$Global_Aligned_Separator_Result
-    reformat "$gsig" "$TEMP" "$DEFFIELD" "$sig" "" "RAWOUT_NEURON"
-    nrrd2Raw "$sigraw,$sig"
+    if [[ -e $Global_Aligned_Separator_Result ]]; then
+        prefix=$OUTPUT"/REG_UNISEX_ConsolidatedLabel_"$TRESOLUTION
+        sig=$prefix".nrrd"
+        sigraw=$prefix".v3draw"
+        gsig=$Global_Aligned_Separator_Result
+        reformat "$gsig" "$TEMP" "$DEFFIELD" "$sig" "" "RAWOUT_NEURON"
+        nrrd2Raw "$sigraw,$sig"
+    fi
 fi
 
 writeProperties "$RAWOUT" "$RAWOUT_NEURON" "JRC2018_Unisex_${TRESOLUTION}" "$TRESOLUTION" "0.44x0.44x0.44" "1427x668x394" "" "$main_aligned_file"
