@@ -433,6 +433,7 @@ function banner() {
 ########################################################################################################
 
 banner "JRC2018 $genderT alignment"
+RAWOUT_NEURON=""
 DEFFIELD=$registered_warp_xform
 fn="REG_JRC2018_"$genderT"_"$TRESOLUTION
 main_aligned_file=${fn}".v3draw"
@@ -443,12 +444,12 @@ reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
 scoreGen $sig"_01.nrrd" $iniT "score2018"
 
 if [[ -e $Global_Aligned_Separator_Result ]]; then
-    prefix=$OUTPUT"/REG_JRC2018_"$genderT"_ConsolidatedLabel_"$TRESOLUTION
+    prefix="${OUTPUT}/${fn}_ConsolidatedLabel"
     sig=$prefix".nrrd"
-    sigraw=$prefix".v3draw"
+    RAWOUT_NEURON=$prefix".v3draw"
     gsig=$Global_Aligned_Separator_Result
-    reformat "$gsig" "$TEMP" "$DEFFIELD" "$sig" "" "RAWOUT_NEURON"
-    nrrd2Raw "$sigraw,$sig"
+    reformat "$gsig" "$TEMP" "$DEFFIELD" "$sig" "" "ignore"
+    nrrd2Raw "$RAWOUT_NEURON,$sig"
 fi
 
 writeProperties "$RAWOUT" "$RAWOUT_NEURON" "JRC2018_${genderT}_${TRESOLUTION}" "$TRESOLUTION" "0.44x0.44x0.44" "1348x642x472" "$score2018" ""
@@ -460,23 +461,26 @@ writeProperties "$RAWOUT" "$RAWOUT_NEURON" "JRC2018_${genderT}_${TRESOLUTION}" "
 if [[ $TRESOLUTION != "20x_gen1" ]]; then
 
     banner "JRC2018 unisex alignment"
+    RAWOUT_NEURON=""
     DEFFIELD="$reformat_JRC2018_to_Uni $registered_warp_xform"
-    sig=$OUTPUT"/REG_UNISEX_"$TRESOLUTION
+    fn="REG_UNISEX_"$TRESOLUTION
+    sig=$OUTPUT"/"$fn
     TEMP="$JRC2018_Unisex"
     gsig=$OUTPUT"/"$filename
     reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
 
     if [[ -e $Global_Aligned_Separator_Result ]]; then
-        prefix=$OUTPUT"/REG_UNISEX_ConsolidatedLabel_"$TRESOLUTION
+        prefix=$sig"_ConsolidatedLabel"
         sig=$prefix".nrrd"
-        sigraw=$prefix".v3draw"
+        RAWOUT_NEURON=$prefix".v3draw"
         gsig=$Global_Aligned_Separator_Result
-        reformat "$gsig" "$TEMP" "$DEFFIELD" "$sig" "" "RAWOUT_NEURON"
-        nrrd2Raw "$sigraw,$sig"
+        reformat "$gsig" "$TEMP" "$DEFFIELD" "$sig" "" "ignore"
+        nrrd2Raw "$RAWOUT_NEURON,$sig"
     fi
+
+    writeProperties "$RAWOUT" "$RAWOUT_NEURON" "JRC2018_Unisex_${TRESOLUTION}" "$TRESOLUTION" "0.44x0.44x0.44" "1427x668x394" "" "$main_aligned_file"
 fi
 
-writeProperties "$RAWOUT" "$RAWOUT_NEURON" "JRC2018_Unisex_${TRESOLUTION}" "$TRESOLUTION" "0.44x0.44x0.44" "1427x668x394" "" "$main_aligned_file"
 
 
 ########################################################################################################
