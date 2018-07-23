@@ -1660,7 +1660,7 @@ if(SizeM!=0){
 						selectImage(neuron2);
 					}else if(Neuron_SepEXT==1){
 						open(PathConsolidatedLabel);
-			//			run("Flip Vertically", "stack");
+						run("Rotate 90 Degrees Right");
 						
 						if(nSlices!=NC82SliceNum){
 							print("Neuron separator result has different slice number; "+nSlices+"  nc82; "+NC82SliceNum);
@@ -1678,7 +1678,7 @@ if(SizeM!=0){
 						selectImage(neuron3);
 					}else if(Neuron_SepEXT==1){
 						open(PathConsolidatedLabel);
-				//		run("Flip Vertically", "stack");
+						run("Rotate 90 Degrees Right");
 						
 						if(nSlices!=NC82SliceNum){
 							print("Neuron separator result has different slice number; "+nSlices+"  nc82; "+NC82SliceNum);
@@ -1692,7 +1692,7 @@ if(SizeM!=0){
 					
 				}else if (neuronNum==startNeuronNum+3){
 					open(PathConsolidatedLabel);
-		//			run("Flip Vertically", "stack");
+					run("Rotate 90 Degrees Right");
 					
 					if(nSlices!=NC82SliceNum){
 						print("Neuron separator result has different slice number; "+nSlices+"  nc82; "+NC82SliceNum);
