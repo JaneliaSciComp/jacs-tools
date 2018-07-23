@@ -1,6 +1,12 @@
 #!/bin/bash
+#
+# Management script for Singularity containers
+#
 
 BUILD_DIR=./build
+
+# Exit on error
+set -e
 
 if [ "$#" -lt 2 ]; then
     echo "Usage: `basename $0` [build|shell|clean|deploy] [tool1] [tool2] .. [tooln]"
