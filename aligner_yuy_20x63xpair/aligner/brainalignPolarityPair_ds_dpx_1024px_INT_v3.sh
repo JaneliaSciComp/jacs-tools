@@ -623,9 +623,15 @@ echo " RCMAT: $RCMAT exists"
 else
 #---exe---#
 message " Initial align 20x subject " 
+export FSLOUTPUTTYPE=NIFTI_GZ
 $FLIRT -v -in $MDS -ref $FDS -omat $RCMAT -cost normmi -searchrx -120 120 -searchry -120 120 -searchrz -120 120 -dof 12 -datatype char
 fi
 
+if ( ! is_file_exist "$RCMAT" )
+then
+    echo "Missing FLIRT output file $RCMAT"
+    exit(1)
+fi
 
 if ( is_file_exist "$RCOUT" )
 then
