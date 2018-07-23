@@ -93,6 +93,11 @@ elif [[ $RESX == "0.4413373" ]]; then
     TRESOLUTION="40x"
 fi
 
+if [[ ! -z $TRESOLUTION ]]; then
+    echo "Error: unsupported resolution $RESX"
+    exit 1;
+fi
+
 echo "TRESOLUTION "$TRESOLUTION
 
 if [[ $INPUT1_GENDER == "f" ]]; then
