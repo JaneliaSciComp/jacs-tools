@@ -18,10 +18,10 @@ echo "Installing Vaa3d"
 # Prereqs for Vaa3d
 yum install -y mesa-libGLU qt qt-x11 libXv numactl-libs
 # Install Vaa3d
-VAA3D_FILE=vaa3d-redhat-mark8.tgz
+VAA3D_FILE=vaa3d-redhat-mark10.tgz
 curl -s http://workstation.int.janelia.org/files/tools/{$VAA3D_FILE} -o '#1'
 tar xvf $VAA3D_FILE && /bin/rm -f $VAA3D_FILE
-ln -s /opt/vaa3d-redhat-mark8 Vaa3D
+ln -s /opt/vaa3d-redhat-mark10 Vaa3D
 
 echo "Installing other dependencies"
 EPEL_FILE=epel-release-latest-7.noarch.rpm
