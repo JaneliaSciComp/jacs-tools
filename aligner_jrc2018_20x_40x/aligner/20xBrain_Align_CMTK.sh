@@ -6,6 +6,8 @@
 DIR=$(cd "$(dirname "$0")"; pwd)
 . $DIR/common.sh
 parseParameters "$@"
+# Possible values: "Intact", "Both_OL_missing (40x)", "Unknown"
+BrainShape=$3
 
 # Available input variables:
 #  $TEMPLATE_DIR
@@ -34,20 +36,13 @@ PREPROCIMG=$DIR"/20x_40x_Brain_Global_Aligner_Pipeline.ijm"
 SCOREGENERATION=$DIR"/Score_Generator_Cluster.ijm"
 
 templateBr="JRC2018" #"JFRC2014", "JFRC2013", "JFRC2014", "JRC2018"
-
 filename="PRE_PROCESSED"
 Path=$INPUT1_FILE
 objective=$INPUT1_OBJECTIVE
-expandRes $INPUT1_RESX RESX
-expandRes $INPUT1_RESY RESY
-expandRes $INPUT1_RESZ RESZ
 OUTPUT=$WORK_DIR"/Output"
 FINALOUTPUT=$WORK_DIR"/FinalOutputs"
 TempDir=$TEMPLATE_DIR/jrc2018_20x_40x_templates
 testmode=0
-
-# Possible values: "Intact", "Both_OL_missing (40x)", "Unknown"
-BrainShape=$3
 
 #
 # Expand resolutions from TMOG
@@ -248,6 +243,12 @@ function banner() {
 }
 
 
+# Main Script
+
+expandRes $INPUT1_RESX RESX
+expandRes $INPUT1_RESY RESY
+expandRes $INPUT1_RESZ RESZ
+
 if [[ ! -d $OUTPUT ]]; then
     mkdir $OUTPUT
 fi
@@ -288,7 +289,7 @@ elif [[ $RESX == "0.5189161" ]]; then
 elif [[ $RESX == "0.4413373" ]]; then
     TRESOLUTION="40x"
 else
-    echo "Error: unsupported input resolution $RESX"
+    echo "Error: Input resolution $RESX is not supported"
     writeErrorProperties "AlignerError" "JRC2018_${genderT}" "$objective" "Input resolution $RESX is not supported"
     exit 0;
 fi
@@ -341,17 +342,6 @@ OLSHAPE="$OUTPUT/OL_shape.txt"
 if [[ -e $OLSHAPE ]]; then
     echo "Already exists: $OLSHAPE"
 else
-
-    #if [ -e $Unaligned_Neuron_Separator_Result_V3DPBD ]; then
-    #    NEURONSZFLIP=${OUTPUT}"/ConsolidatedLabel_zflip.v3draw"
-    #    if [[ $ZFLIP =~ "zflip" ]]; then
-    #        #---exe---#
-    #        message " Flipping the neurons along z-axis "
-    #        time $Vaa3D -x ireg -f zflip -i $Unaligned_Neuron_Separator_Result_V3DPBD -o $NEURONSZFLIP
-    #        Unaligned_Neuron_Separator_Result_V3DPBD=$NEURONSZFLIP
-    #    fi
-    #fi
-
     echo "+---------------------------------------------------------------------------------------+"
     echo "| Running OtsunaBrain preprocessing step"
     echo "| $FIJI -macro $PREPROCIMG \"$OUTPUT/,$filename.,$Path,$TempDir,$RESX,$RESZ,$NSLOTS,$objective,$templateBr,$BrainShape,$Unaligned_Neuron_Separator_Result_V3DPBD\""
@@ -366,7 +356,7 @@ else
     echo "Otsuna_Brain preprocessing start: $START"
     echo "Otsuna_Brain preprocessing stop: $STOP"
     # check for prealigner errors
-    LOGFILE="${OUTPUT}20x_brain_pre_aligner_log.txt"
+    LOGFILE="${OUTPUT}/20x_brain_pre_aligner_log.txt"
     PreAlignerError=`grep "PreAlignerError: " $LOGFILE | head -n1 | sed "s/PreAlignerError: //"`
     echo "PreAlignerError: $PreAlignerError"
     if [[ ! -z "$PreAlignerError" ]]; then
