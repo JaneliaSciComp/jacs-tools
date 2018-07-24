@@ -238,7 +238,7 @@ if(channels==1 && nSlices>240){
 }
 
 if(channels==1 && nSlices<240){
-	print("There is no neuron channel; slice num; "+nSlices);
+	print("PreAlignerError: There are no signal channels");
 	
 	logsum=getInfo("log");
 	filepath=savedir+"20x_brain_pre_aligner_log.txt";

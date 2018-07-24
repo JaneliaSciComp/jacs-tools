@@ -21,21 +21,6 @@ parseParameters "$@"
 #  $INPUT1_RESZ
 #  $NSLOTS
 
-function expandRes() {
-    local _res="$1"
-    local _result_var="$2"
-    if [[ $_res == "0.44" ]]; then
-        result="0.4413373"
-    elif [[ $_res == "0.52" ]]; then
-        result="0.5189161"
-    elif [[ $_res == "0.62" ]]; then
-        result="0.621481"
-    else
-        result=$_res
-    fi
-    eval $_result_var="'$result'"
-}
-
 export CMTK_WRITE_UNCOMPRESSED=1
 
 # Tools
@@ -64,209 +49,23 @@ testmode=0
 # Possible values: "Intact", "Both_OL_missing (40x)", "Unknown"
 BrainShape=$3
 
-if [[ ! -d $OUTPUT ]]; then
-    mkdir $OUTPUT
-fi
-
-if [[ ! -d $FINALOUTPUT ]]; then
-    mkdir $FINALOUTPUT
-fi
-
-if [[ ! -e $PREPROCIMG ]]; then
-    echo "Preprocess macro could not be found at $PREPROCIMG"
-    exit 1
-fi
-
-if [[ ! -e $FIJI ]]; then
-    echo "Fiji cannot be found at $FIJI"
-    exit 1
-fi
-
-Unaligned_Neuron_Separator_Result_V3DPBD=$INPUT1_NEURONS
-Global_Aligned_Separator_Result=$OUTPUT"/GLOBAL_ConsolidatedLabel.nrrd"
-
-if [[ $RESX == "0.621481" ]]; then
-    TRESOLUTION="20x_gen1"
-elif [[ $RESX == "0.5189161" ]]; then
-    TRESOLUTION="20x_HR"
-elif [[ $RESX == "0.4413373" ]]; then
-    TRESOLUTION="40x"
-fi
-
-if [[ ! -z $TRESOLUTION ]]; then
-    echo "Error: unsupported resolution $RESX"
-    exit 1;
-fi
-
-echo "TRESOLUTION "$TRESOLUTION
-
-if [[ $INPUT1_GENDER == "f" ]]; then
-
-    genderT="FEMALE"
-    JFRC20DPX=$TempDir"/JFRC2013_20x_New_dist_G16.nrrd"
-    reformat_JRC2018_to_JFRC20DPX=$TempDir"/Deformation_Fields/JFRC2013_JRC2018_FEMALE_20x_gen1"
-    TEMPNAME="JFRC2013"
-
-elif [[ $INPUT1_GENDER == "m" ]]; then
-
-    genderT="MALE"
-    JFRC20DPX=$TempDir"/JFRC2014_20x_New_dist_G15.nrrd"
-    reformat_JRC2018_to_JFRC20DPX=$TempDir"/Deformation_Fields/JFRC2014_JRC2018_MALE_40x"
-    TEMPNAME="JFRC2014"
-
-fi
-
-echo "INPUT1_GENDER; "$INPUT1_GENDER
-echo "genderT; "$genderT
-echo "JFRC20DPX; "$JFRC20DPX
-echo "reformat_JRC2018_to_JFRC20DPX; "$reformat_JRC2018_to_JFRC20DPX
-
-# "-------------------Template----------------------"
-JRC2018_20x=$TempDir"/JRC2018_"$genderT"_"$TRESOLUTION".nrrd"
-JRC2018_20x_noLOL=$TempDir"/JRC2018_"$genderT"_"$TRESOLUTION"_noLOL.nrrd"
-JRC2018_20x_noROL=$TempDir"/JRC2018_"$genderT"_"$TRESOLUTION"_noROL.nrrd"
-JRC2018_20x_noOL=$TempDir"/JRC2018_"$genderT"_"$TRESOLUTION"_noOL.nrrd"
-
-JRC2018_40x=$TempDir"/JRC2018_"$genderT"_"$TRESOLUTION".nrrd"
-JRC2018_40x_NOOL=$TempDir"/JRC2018_"$genderT"_"$TRESOLUTION"_noOL.nrrd"
-
-JRC2018_Unisex=$TempDir"/JRC2018_UNISEX_"$TRESOLUTION".nrrd"
-
-JFRC2010=$TempDir"/JFRC2010_16bit.nrrd"
-JFRC2010NOOL=$TempDir"/JFRC2010_16bit_noOL.nrrd"
-
-# "-------------------Global aligned files----------------------"
-gloval_nc82_nrrd=$OUTPUT"/"$filename"_01.nrrd"
-gloval_signalNrrd1=$OUTPUT"/"$filename"_02.nrrd"
-gloval_signalNrrd2=$OUTPUT"/"$filename"_03.nrrd"
-gloval_signalNrrd3=$OUTPUT"/"$filename"_04.nrrd"
-
-# "-------------------Deformation fields----------------------"
-registered_initial_xform=$OUTPUT"/initial.xform"
-registered_affine_xform=$OUTPUT"/affine.xform"
-registered_warp_xform=$OUTPUT"/warp.xform"
-
-reformat_JRC2018_to_Uni=$TempDir"/Deformation_Fields/JRC2018_Unisex_JRC2018_"$genderT"_40x"
-
-if [[ $INPUT1_GENDER == "f" ]]; then
-    reformat_JRC2018_to_JFRC2010=$TempDir"/Deformation_Fields/JFRC2010_JRC2018_"$genderT"_20x_gen1"
-elif [[ $INPUT1_GENDER == "m" ]]; then
-    reformat_JRC2018_to_JFRC2010=$TempDir"/Deformation_Fields/JFRC2010_JRC2018_"$genderT"_40x"
-fi
-
-# "Somehow, 20x_gen1 is the best aligned result than the 40x alignment"
-
-
-# -------------------------------------------------------------------------------------------
-OLSHAPE="$OUTPUT/OL_shape.txt"
-if [[ -e $OLSHAPE ]]; then
-    echo "Already exists: $OLSHAPE"
-else
-    echo "+---------------------------------------------------------------------------------------+"
-    echo "| Running OtsunaBrain preprocessing step"
-    echo "| $FIJI -macro $PREPROCIMG \"$OUTPUT/,$filename.,$Path,$TempDir,$RESX,$RESZ,$NSLOTS,$objective,$templateBr,$BrainShape,$Unaligned_Neuron_Separator_Result_V3DPBD\""
-    echo "+---------------------------------------------------------------------------------------+"
-    START=`date '+%F %T'`
-    # Expect to take far less than 1 hour
-    #timeout --preserve-status 6000m 
-    # Note that this macro does not seem to work in --headless mode
-    $FIJI -macro $PREPROCIMG "$OUTPUT/,$filename.,$Path,$TempDir/,$RESX,$RESZ,$NSLOTS,$objective,$templateBr,$BrainShape,$Unaligned_Neuron_Separator_Result_V3DPBD" >$OUTPUT/preproc.log 2>&1
-
-    STOP=`date '+%F %T'`
-    echo "Otsuna_Brain preprocessing start: $START"
-    echo "Otsuna_Brain preprocessing stop: $STOP"
-fi
-
-OL="$(<$OLSHAPE)"
-echo "OLSHAPE; "$OL
-
-if [[ "$OL" == "Intact" ]]; then
-    iniT=$JRC2018_20x
-elif [[ "$OL" == "Left_OL_missing" ]]; then
-    iniT=$JRC2018_20x_noLOL
-elif [[ "$OL" == "Right_OL_missing" ]]; then
-    iniT=$JRC2018_20x_noROL
-elif [[ "$OL" == "Both_OL_missing" ]]; then
-    iniT=$JRC2018_20x_noOL
-elif [[ "$OL" == "Both_OL_missing (40x)" ]]; then
-    iniT=$JRC2018_20x_noOL
-fi
-
-if [[ $INPUT1_GENDER == "f" ]]; then
-    if [[ $RESX == "0.621481" ]]; then
-        reformat_JRC2018_to_U=$reformat_JRC2018F_gen1_to_U
-    elif [[ $RESX == "0.5189161" ]]; then
-        reformat_JRC2018_to_U=$reformat_JRC2018F_HR_to_U
-    elif [[ $RESX == "0.4413373" ]]; then
-        reformat_JRC2018_to_U=$reformat_JRC2018F_40x_to_U
-        iniT=$JRC2018_40x_NOOL
+#
+# Expand resolutions from TMOG
+#
+function expandRes() {
+    local _res="$1"
+    local _result_var="$2"
+    if [[ $_res == "0.44" ]]; then
+        result="0.4413373"
+    elif [[ $_res == "0.52" ]]; then
+        result="0.5189161"
+    elif [[ $_res == "0.62" ]]; then
+        result="0.621481"
+    else
+        result=$_res
     fi
-fi
-
-# For TEST ############################################
-if [[ $testmode == 1 ]]; then
-    gloval_nc82_nrrd=$OUTPUT"/JRC2018MALE_JFRC2014_63x_DistCorrected_01_warp.nrrd"
-    iniT=$TempDir"/JFRC2014_63x_DistCorrected_G15.nrrd"
-fi
-
-echo "iniT; "$iniT
-echo "gloval_nc82_nrrd; "$gloval_nc82_nrrd
-echo ""
-
-# -------------------------------------------------------------------------------------------
-if [[ -e $registered_initial_xform ]]; then
-    echo "Already exists: $registered_initial_xform"
-else
-    echo "+---------------------------------------------------------------------------------------+"
-    echo "| Running CMTK/make_initial_affine"
-    echo "| $iniT $gloval_nc82_nrrd $registered_initial_xform"
-    echo "+---------------------------------------------------------------------------------------+"
-    START=`date '+%F %T'`
-    $CMTK/make_initial_affine --principal_axes $iniT $gloval_nc82_nrrd $registered_initial_xform
-    STOP=`date '+%F %T'`
-    if [[ ! -e $registered_initial_xform ]]; then
-        echo -e "Error: CMTK make initial affine failed"
-        exit -1
-    fi
-    echo "cmtk_initial_affine start: $START"
-    echo "cmtk_initial_affine stop: $STOP"
-
-    echo " "
-    echo "+----------------------------------------------------------------------+"
-    echo "| Running CMTK registration"
-    echo "| $CMTK/registration --threads $NSLOTS --initial $registered_initial_xform --dofs 6,9 --auto-multi-levels 4 --accuracy 0.8 -o $registered_affine_xform $iniT $gloval_nc82_nrrd "
-    echo "+----------------------------------------------------------------------+"
-    START=`date '+%F %T'`
-    $CMTK/registration --threads $NSLOTS --initial $registered_initial_xform --dofs 6,9 --accuracy 0.8 -o $registered_affine_xform $iniT $gloval_nc82_nrrd
-    STOP=`date '+%F %T'`
-    if [[ ! -e $registered_affine_xform ]]; then
-        echo -e "Error: CMTK registration failed"
-        exit -1
-    fi
-    echo "cmtk_registration start: $START"
-    echo "cmtk_registration stop: $STOP"
-fi
-
-# CMTK warping
-if [[ -e $registered_warp_xform ]]; then
-    echo "Already exists: $registered_warp_xform"
-else
-    echo " "
-    echo "+----------------------------------------------------------------------+"
-    echo "| Running CMTK warping"
-    echo "| $CMTK/warp --threads $NSLOTS -o $registered_warp_xform --grid-spacing 80 --exploration 30 --coarsest 4 --accuracy 0.8 --refine 4 --energy-weight 1e-1 --initial $registered_affine_xform $iniT $gloval_nc82_nrrd"
-    echo "+----------------------------------------------------------------------+"
-    START=`date '+%F %T'`
-    $CMTK/warp --threads $NSLOTS -o $registered_warp_xform --grid-spacing 80 --fast --exploration 26 --coarsest 8 --accuracy 0.8 --refine 4 --energy-weight 1e-1 --ic-weight 0 --initial $registered_affine_xform $iniT $gloval_nc82_nrrd
-    STOP=`date '+%F %T'`
-    if [[ ! -e $registered_warp_xform ]]; then
-        echo -e "Error: CMTK warping failed"
-        exit -1
-    fi
-    echo "cmtk_warping start: $START"
-    echo "cmtk_warping stop: $STOP"
-fi
-
+    eval $_result_var="'$result'"
+}
 
 # Convert multiple NRRD files into a single v3draw file.
 # Params for this function are the same as for the Fiji macro, a single parameter with comma-delimited file names:
@@ -427,11 +226,246 @@ function writeProperties() {
     fi
 }
 
+# write output properties for JACS
+function writeErrorProperties() {
+    local _prefix="$1"
+    local _alignment_space="$2"
+    local _objective="$3"
+    local _error="$4"
+
+    META="${FINALOUTPUT}/${_prefix}.properties"
+    echo "alignment.error="${_error} > $META
+    echo "alignment.image.area=Brain" >> $META
+    echo "alignment.space.name=$_alignment_space" >> $META
+    echo "alignment.objective=$_objective" >> $META
+}
+
+
 function banner() {
     echo "------------------------------------------------------------------------------------------------------------"
     echo " $1"
     echo "------------------------------------------------------------------------------------------------------------"
 }
+
+
+if [[ ! -d $OUTPUT ]]; then
+    mkdir $OUTPUT
+fi
+
+if [[ ! -d $FINALOUTPUT ]]; then
+    mkdir $FINALOUTPUT
+fi
+
+if [[ ! -e $PREPROCIMG ]]; then
+    echo "Preprocess macro could not be found at $PREPROCIMG"
+    exit 1
+fi
+
+if [[ ! -e $FIJI ]]; then
+    echo "Fiji cannot be found at $FIJI"
+    exit 1
+fi
+
+Unaligned_Neuron_Separator_Result_V3DPBD=$INPUT1_NEURONS
+Global_Aligned_Separator_Result=$OUTPUT"/GLOBAL_ConsolidatedLabel.nrrd"
+
+if [[ $INPUT1_GENDER == "f" ]]; then
+    genderT="FEMALE"
+    JFRC20DPX=$TempDir"/JFRC2013_20x_New_dist_G16.nrrd"
+    reformat_JRC2018_to_JFRC20DPX=$TempDir"/Deformation_Fields/JFRC2013_JRC2018_FEMALE_20x_gen1"
+    TEMPNAME="JFRC2013"
+elif [[ $INPUT1_GENDER == "m" ]]; then
+    genderT="MALE"
+    JFRC20DPX=$TempDir"/JFRC2014_20x_New_dist_G15.nrrd"
+    reformat_JRC2018_to_JFRC20DPX=$TempDir"/Deformation_Fields/JFRC2014_JRC2018_MALE_40x"
+    TEMPNAME="JFRC2014"
+fi
+
+if [[ $RESX == "0.621481" ]]; then
+    TRESOLUTION="20x_gen1"
+elif [[ $RESX == "0.5189161" ]]; then
+    TRESOLUTION="20x_HR"
+elif [[ $RESX == "0.4413373" ]]; then
+    TRESOLUTION="40x"
+else
+    echo "Error: unsupported input resolution $RESX"
+    writeErrorProperties "AlignerError" "JRC2018_${genderT}" "$objective" "Input resolution $RESX is not supported"
+    exit 0;
+fi
+
+echo "TRESOLUTION: "$TRESOLUTION
+
+echo "INPUT1_GENDER; "$INPUT1_GENDER
+echo "genderT; "$genderT
+echo "JFRC20DPX; "$JFRC20DPX
+echo "reformat_JRC2018_to_JFRC20DPX; "$reformat_JRC2018_to_JFRC20DPX
+
+# "-------------------Template----------------------"
+JRC2018_20x=$TempDir"/JRC2018_"$genderT"_"$TRESOLUTION".nrrd"
+JRC2018_20x_noLOL=$TempDir"/JRC2018_"$genderT"_"$TRESOLUTION"_noLOL.nrrd"
+JRC2018_20x_noROL=$TempDir"/JRC2018_"$genderT"_"$TRESOLUTION"_noROL.nrrd"
+JRC2018_20x_noOL=$TempDir"/JRC2018_"$genderT"_"$TRESOLUTION"_noOL.nrrd"
+
+JRC2018_40x=$TempDir"/JRC2018_"$genderT"_"$TRESOLUTION".nrrd"
+JRC2018_40x_NOOL=$TempDir"/JRC2018_"$genderT"_"$TRESOLUTION"_noOL.nrrd"
+
+JRC2018_Unisex=$TempDir"/JRC2018_UNISEX_"$TRESOLUTION".nrrd"
+
+JFRC2010=$TempDir"/JFRC2010_16bit.nrrd"
+JFRC2010NOOL=$TempDir"/JFRC2010_16bit_noOL.nrrd"
+
+# "-------------------Global aligned files----------------------"
+gloval_nc82_nrrd=$OUTPUT"/"$filename"_01.nrrd"
+gloval_signalNrrd1=$OUTPUT"/"$filename"_02.nrrd"
+gloval_signalNrrd2=$OUTPUT"/"$filename"_03.nrrd"
+gloval_signalNrrd3=$OUTPUT"/"$filename"_04.nrrd"
+
+# "-------------------Deformation fields----------------------"
+registered_initial_xform=$OUTPUT"/initial.xform"
+registered_affine_xform=$OUTPUT"/affine.xform"
+registered_warp_xform=$OUTPUT"/warp.xform"
+
+reformat_JRC2018_to_Uni=$TempDir"/Deformation_Fields/JRC2018_Unisex_JRC2018_"$genderT"_40x"
+
+if [[ $INPUT1_GENDER == "f" ]]; then
+    reformat_JRC2018_to_JFRC2010=$TempDir"/Deformation_Fields/JFRC2010_JRC2018_"$genderT"_20x_gen1"
+elif [[ $INPUT1_GENDER == "m" ]]; then
+    reformat_JRC2018_to_JFRC2010=$TempDir"/Deformation_Fields/JFRC2010_JRC2018_"$genderT"_40x"
+fi
+
+# "Somehow, 20x_gen1 is the best aligned result than the 40x alignment"
+
+
+# -------------------------------------------------------------------------------------------
+OLSHAPE="$OUTPUT/OL_shape.txt"
+if [[ -e $OLSHAPE ]]; then
+    echo "Already exists: $OLSHAPE"
+else
+
+    #if [ -e $Unaligned_Neuron_Separator_Result_V3DPBD ]; then
+    #    NEURONSZFLIP=${OUTPUT}"/ConsolidatedLabel_zflip.v3draw"
+    #    if [[ $ZFLIP =~ "zflip" ]]; then
+    #        #---exe---#
+    #        message " Flipping the neurons along z-axis "
+    #        time $Vaa3D -x ireg -f zflip -i $Unaligned_Neuron_Separator_Result_V3DPBD -o $NEURONSZFLIP
+    #        Unaligned_Neuron_Separator_Result_V3DPBD=$NEURONSZFLIP
+    #    fi
+    #fi
+
+    echo "+---------------------------------------------------------------------------------------+"
+    echo "| Running OtsunaBrain preprocessing step"
+    echo "| $FIJI -macro $PREPROCIMG \"$OUTPUT/,$filename.,$Path,$TempDir,$RESX,$RESZ,$NSLOTS,$objective,$templateBr,$BrainShape,$Unaligned_Neuron_Separator_Result_V3DPBD\""
+    echo "+---------------------------------------------------------------------------------------+"
+    START=`date '+%F %T'`
+    # Expect to take far less than 1 hour
+    #timeout --preserve-status 6000m 
+    # Note that this macro does not seem to work in --headless mode
+    $FIJI -macro $PREPROCIMG "$OUTPUT/,$filename.,$Path,$TempDir/,$RESX,$RESZ,$NSLOTS,$objective,$templateBr,$BrainShape,$Unaligned_Neuron_Separator_Result_V3DPBD" >$OUTPUT/preproc.log 2>&1
+
+    STOP=`date '+%F %T'`
+    echo "Otsuna_Brain preprocessing start: $START"
+    echo "Otsuna_Brain preprocessing stop: $STOP"
+    # check for prealigner errors
+    LOGFILE="${OUTPUT}20x_brain_pre_aligner_log.txt"
+    PreAlignerError=`grep "PreAlignerError: " $LOGFILE | head -n1 | sed "s/PreAlignerError: //"`
+    echo "PreAlignerError: $PreAlignerError"
+    if [[ ! -z "$PreAlignerError" ]]; then
+        writeErrorProperties "PreAlignerError" "JRC2018_${genderT}" "$objective" "$PreAlignerError"
+        exit 0
+    fi
+fi
+
+OL="$(<$OLSHAPE)"
+echo "OLSHAPE; "$OL
+
+if [[ "$OL" == "Intact" ]]; then
+    iniT=$JRC2018_20x
+elif [[ "$OL" == "Left_OL_missing" ]]; then
+    iniT=$JRC2018_20x_noLOL
+elif [[ "$OL" == "Right_OL_missing" ]]; then
+    iniT=$JRC2018_20x_noROL
+elif [[ "$OL" == "Both_OL_missing" ]]; then
+    iniT=$JRC2018_20x_noOL
+elif [[ "$OL" == "Both_OL_missing (40x)" ]]; then
+    iniT=$JRC2018_20x_noOL
+fi
+
+if [[ $INPUT1_GENDER == "f" ]]; then
+    if [[ $RESX == "0.621481" ]]; then
+        reformat_JRC2018_to_U=$reformat_JRC2018F_gen1_to_U
+    elif [[ $RESX == "0.5189161" ]]; then
+        reformat_JRC2018_to_U=$reformat_JRC2018F_HR_to_U
+    elif [[ $RESX == "0.4413373" ]]; then
+        reformat_JRC2018_to_U=$reformat_JRC2018F_40x_to_U
+        iniT=$JRC2018_40x_NOOL
+    fi
+fi
+
+# For TEST ############################################
+if [[ $testmode == 1 ]]; then
+    gloval_nc82_nrrd=$OUTPUT"/JRC2018MALE_JFRC2014_63x_DistCorrected_01_warp.nrrd"
+    iniT=$TempDir"/JFRC2014_63x_DistCorrected_G15.nrrd"
+fi
+
+echo "iniT; "$iniT
+echo "gloval_nc82_nrrd; "$gloval_nc82_nrrd
+echo ""
+
+# -------------------------------------------------------------------------------------------
+if [[ -e $registered_initial_xform ]]; then
+    echo "Already exists: $registered_initial_xform"
+else
+    echo "+---------------------------------------------------------------------------------------+"
+    echo "| Running CMTK/make_initial_affine"
+    echo "| $iniT $gloval_nc82_nrrd $registered_initial_xform"
+    echo "+---------------------------------------------------------------------------------------+"
+    START=`date '+%F %T'`
+    $CMTK/make_initial_affine --principal_axes $iniT $gloval_nc82_nrrd $registered_initial_xform
+    STOP=`date '+%F %T'`
+    if [[ ! -e $registered_initial_xform ]]; then
+        echo -e "Error: CMTK make initial affine failed"
+        exit -1
+    fi
+    echo "cmtk_initial_affine start: $START"
+    echo "cmtk_initial_affine stop: $STOP"
+
+    echo " "
+    echo "+----------------------------------------------------------------------+"
+    echo "| Running CMTK registration"
+    echo "| $CMTK/registration --threads $NSLOTS --initial $registered_initial_xform --dofs 6,9 --auto-multi-levels 4 --accuracy 0.8 -o $registered_affine_xform $iniT $gloval_nc82_nrrd "
+    echo "+----------------------------------------------------------------------+"
+    START=`date '+%F %T'`
+    $CMTK/registration --threads $NSLOTS --initial $registered_initial_xform --dofs 6,9 --accuracy 0.8 -o $registered_affine_xform $iniT $gloval_nc82_nrrd
+    STOP=`date '+%F %T'`
+    if [[ ! -e $registered_affine_xform ]]; then
+        echo -e "Error: CMTK registration failed"
+        exit -1
+    fi
+    echo "cmtk_registration start: $START"
+    echo "cmtk_registration stop: $STOP"
+fi
+
+# CMTK warping
+if [[ -e $registered_warp_xform ]]; then
+    echo "Already exists: $registered_warp_xform"
+else
+    echo " "
+    echo "+----------------------------------------------------------------------+"
+    echo "| Running CMTK warping"
+    echo "| $CMTK/warp --threads $NSLOTS -o $registered_warp_xform --grid-spacing 80 --exploration 30 --coarsest 4 --accuracy 0.8 --refine 4 --energy-weight 1e-1 --initial $registered_affine_xform $iniT $gloval_nc82_nrrd"
+    echo "+----------------------------------------------------------------------+"
+    START=`date '+%F %T'`
+    $CMTK/warp --threads $NSLOTS -o $registered_warp_xform --grid-spacing 80 --fast --exploration 26 --coarsest 8 --accuracy 0.8 --refine 4 --energy-weight 1e-1 --ic-weight 0 --initial $registered_affine_xform $iniT $gloval_nc82_nrrd
+    STOP=`date '+%F %T'`
+    if [[ ! -e $registered_warp_xform ]]; then
+        echo -e "Error: CMTK warping failed"
+        exit -1
+    fi
+    echo "cmtk_warping start: $START"
+    echo "cmtk_warping stop: $STOP"
+fi
+
+
 
 ########################################################################################################
 # JRC2018 gender-specific alignment
