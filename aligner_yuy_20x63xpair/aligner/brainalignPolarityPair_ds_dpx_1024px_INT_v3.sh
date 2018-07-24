@@ -630,7 +630,7 @@ fi
 if ( ! is_file_exist "$RCMAT" )
 then
     echo "Missing FLIRT output file $RCMAT"
-    exit(1)
+    exit 1
 fi
 
 if ( is_file_exist "$RCOUT" )
