@@ -89,6 +89,24 @@ function nrrd2Raw() {
     fi
 }
 
+#
+# Reverse a stack in some dimension
+# The third argument can be "xflip", "yflip", or "zflip"
+#
+function flip() {
+    local _input="$1"
+    local _output="$2"
+    local _op="$3"
+    if [[ -e $_output ]]; then
+        echo "Already exists: $_output"
+    else
+        #---exe---#
+        message " Flipping $_input with $_op"
+        $Vaa3D -x ireg -f $_op -i $_input -o $_output
+        echo ""
+    fi
+}
+
 # Reformat a single NRRD file to the target deformation field
 function reformat() {
     local _gsig="$1"
@@ -462,7 +480,7 @@ fi
 ########################################################################################################
 
 banner "JRC2018 $genderT alignment"
-RAWOUT_NEURON=""
+FLIP_NEURON=""
 DEFFIELD=$registered_warp_xform
 fn="REG_JRC2018_"$genderT"_"$TRESOLUTION
 main_aligned_file=${fn}".v3draw"
@@ -475,13 +493,16 @@ scoreGen $sig"_01.nrrd" $iniT "score2018"
 if [[ -e $Global_Aligned_Separator_Result ]]; then
     prefix="${OUTPUT}/${fn}_ConsolidatedLabel"
     sig=$prefix".nrrd"
-    RAWOUT_NEURON=$prefix".v3draw"
+    RAWOUT_NEURON=$prefix"_flipped.v3draw"
     gsig=$Global_Aligned_Separator_Result
     reformat "$gsig" "$TEMP" "$DEFFIELD" "$sig" "" "ignore"
     nrrd2Raw "$RAWOUT_NEURON,$sig"
+    FLIP_NEURON=$prefix".v3draw"
+    # flip neurons back to Neuron Annotator format
+    flip "$RAWOUT_NEURON" "$FLIP_NEURON" "yflip"
 fi
 
-writeProperties "$RAWOUT" "$RAWOUT_NEURON" "JRC2018_${genderT}_${TRESOLUTION}" "$TRESOLUTION" "0.44x0.44x0.44" "1348x642x472" "$score2018" ""
+writeProperties "$RAWOUT" "$FLIP_NEURON" "JRC2018_${genderT}_${TRESOLUTION}" "$TRESOLUTION" "0.44x0.44x0.44" "1348x642x472" "$score2018" ""
 
 
 ########################################################################################################
@@ -490,7 +511,7 @@ writeProperties "$RAWOUT" "$RAWOUT_NEURON" "JRC2018_${genderT}_${TRESOLUTION}" "
 if [[ $TRESOLUTION != "20x_gen1" ]]; then
 
     banner "JRC2018 unisex alignment"
-    RAWOUT_NEURON=""
+    FLIP_NEURON=""
     DEFFIELD="$reformat_JRC2018_to_Uni $registered_warp_xform"
     fn="REG_UNISEX_"$TRESOLUTION
     sig=$OUTPUT"/"$fn
@@ -501,13 +522,16 @@ if [[ $TRESOLUTION != "20x_gen1" ]]; then
     if [[ -e $Global_Aligned_Separator_Result ]]; then
         prefix=$sig"_ConsolidatedLabel"
         sig=$prefix".nrrd"
-        RAWOUT_NEURON=$prefix".v3draw"
+        RAWOUT_NEURON=$prefix"_flipped.v3draw"
         gsig=$Global_Aligned_Separator_Result
         reformat "$gsig" "$TEMP" "$DEFFIELD" "$sig" "" "ignore"
         nrrd2Raw "$RAWOUT_NEURON,$sig"
+        FLIP_NEURON=$prefix".v3draw"
+        # flip neurons back to Neuron Annotator format
+        flip "$RAWOUT_NEURON" "$FLIP_NEURON" "yflip"
     fi
 
-    writeProperties "$RAWOUT" "$RAWOUT_NEURON" "JRC2018_Unisex_${TRESOLUTION}" "$TRESOLUTION" "0.44x0.44x0.44" "1427x668x394" "" "$main_aligned_file"
+    writeProperties "$RAWOUT" "$FLIP_NEURON" "JRC2018_Unisex_${TRESOLUTION}" "$TRESOLUTION" "0.44x0.44x0.44" "1427x668x394" "" "$main_aligned_file"
 fi
 
 
