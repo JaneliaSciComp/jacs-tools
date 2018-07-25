@@ -12,18 +12,18 @@ Creating a new tool in the Workstation is simple:
 
 1. Create a subdirectory in this repository with your tool name. Follow the naming conventions: all lower case, separated by underscores, the first word should be either "imgproc" for image processing or "aligner" for image alignment. 
 
-2. Add all of your code Inside the subdirectory. Whenever possible, include source code to build, instead of binaries.
+2. Add all of your code inside the subdirectory. Whenever possible, include source code to build, instead of binaries. Any source code should be built inside the container, during the container build.
 
-3. Create a file called `Singularity` which describes how to build your tool into a container. You can use the other tools as examples for this. You must define one or more "apps" in your Singularity file, which will serve as entry points.
+3. Create a file called `Singularity` recipe file which describes how to build your tool into a container. Singularity has [good documentation](http://singularity.lbl.gov/docs-recipes), and you can use the other existing tools in this repo as examples. You must define a VERSION in your Singularity, as well as one or more "apps", which will serve as entry points into your container.
 
 4. Create a ContainerizedService within the JACS database (i.e. in the "containerizedService" collection) with the following properties:
-  * **name** - name of the tools, must match the name of your tool subdirectory
-  * **version** - current version number, must match the version number in your Singularity file
-  * **description** - a text description of what the service does
-  * **harnessClass** - the fully qualified name of the Java Class that will call your tool
-  * **apps** - a list of ContainerizedApp objects listing all the possible apps in your container. Each app consists of a name and a description.
+    * **name** - Name of the tools, must match the name of your tool subdirectory.
+    * **version** - Current version number, must match the version number in your Singularity file.
+    * **description** - A text description of what the service does.
+    * **harnessClass** - The fully qualified name of the Java Class that will call your tool. See [Harness Classes](#harness-classes) below.
+    * **apps** - A list of ContainerizedApp objects listing all the possible apps in your container. Each app consists of a name and a description.
 
-*Note: in the future, the 4th step will be a user-friendly web page, but for now it's a manual step which can be accomplished directly with MongoDB, or with the Java API.*
+*Note: in the future, it will be possible to register your service using e a user-friendly web page, but for now it's a manual step which can be accomplished directly with MongoDB, or with the Java API.*
 
 ## Interface
 
@@ -41,9 +41,9 @@ Any final outputs should be created within the working directory, under a subdir
 Before your container is run, an XVFB session is started just in case some of your tools cannot be run headlessly. A working directory is created on NFS.
 
 When your container is run, the following environment variables are guaranteed to be set:
-1. NSLOTS - number of CPU cores which can be utilized
-2. XVFB_PORT - port on which an XVFB (virtual framebuffer) session is running
-3. XVFB_PID - PID of the XVFB process
+1. `NSLOTS` - number of CPU cores which can be utilized
+2. `XVFB_PORT` - port on which an XVFB (virtual framebuffer) session is running
+3. `XVFB_PID` - PID of the XVFB process
 
 ## Harness Classes
 
