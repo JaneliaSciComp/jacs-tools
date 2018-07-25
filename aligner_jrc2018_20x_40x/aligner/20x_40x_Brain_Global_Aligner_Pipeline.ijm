@@ -1643,6 +1643,10 @@ if(SizeM!=0){
 				startNeuronNum=0;
 				AdjustingNum=0;
 			}
+			if(channels==2){
+				startNeuronNum=2;
+				AdjustingNum=0;
+			}
 			
 			Neuron_SepEXT = File.exists(PathConsolidatedLabel);
 			if(Neuron_SepEXT==1){
