@@ -4,6 +4,8 @@ This repository contains tools which JACS runs on the cluster to process data.
 
 Each sub directory contains a single tool which can be built into a Singularity container.
 
+For information on how to create a new tool, read about [Contributing](CONTRIBUTING.md).
+
 ## Build
 To build one or more tools:
 ```
