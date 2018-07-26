@@ -115,15 +115,16 @@ function reformat() {
     local _sig="$4"
     local _channel="$5"
     local _result_var="$6"
+    local _opts="$7"
 
     if [[ -e $_sig ]]; then
         echo "Already exists: $_sig"
     else
         echo "--------------"
         echo "Running CMTK reformatting on channel $_channel"
-        echo "$CMTK/reformatx -o $_sig --floating $_gsig $_TEMP $_DEFFIELD"
+        echo "$CMTK/reformatx -o $_sig $opts --floating $_gsig $_TEMP $_DEFFIELD"
         START=`date '+%F %T'`
-        $CMTK/reformatx -o "$_sig" --floating $_gsig $_TEMP $_DEFFIELD
+        $CMTK/reformatx -o "$_sig" $opts --floating $_gsig $_TEMP $_DEFFIELD
         STOP=`date '+%F %T'`
 
         if [[ ! -e $_sig ]]; then
@@ -146,6 +147,7 @@ function reformatAll() {
     local _DEFFIELD="$3"
     local _sig="$4"
     local _result_var="$5"
+    local _opts="$6"
 
     RAWOUT="${_sig}.v3draw" # Raw output file combining all the aligned channels
     RAWCONVPARAM=$RAWOUT
@@ -155,7 +157,7 @@ function reformatAll() {
     for ((i=1; i<=$INPUT1_CHANNELS; i++)); do
         GLOBAL_NRRD="${_gsig}_0${i}.nrrd"
         OUTPUT_NRRD="${_sig}_0${i}.nrrd"
-        reformat "$GLOBAL_NRRD" "$_TEMP" "$_DEFFIELD" "$OUTPUT_NRRD" "$i" "ignore"
+        reformat "$GLOBAL_NRRD" "$_TEMP" "$_DEFFIELD" "$OUTPUT_NRRD" "$i" "ignore" "$opts"
         if (( i>1 )); then
             # Add all signal channels to the final RAW file
             RAWCONVPARAM="$RAWCONVPARAM,$OUTPUT_NRRD"
@@ -495,7 +497,7 @@ if [[ -e $Global_Aligned_Separator_Result ]]; then
     sig=$prefix".nrrd"
     RAWOUT_NEURON=$prefix"_flipped.v3draw"
     gsig=$Global_Aligned_Separator_Result
-    reformat "$gsig" "$TEMP" "$DEFFIELD" "$sig" "" "ignore"
+    reformat "$gsig" "$TEMP" "$DEFFIELD" "$sig" "" "ignore" "-nn"
     nrrd2Raw "$RAWOUT_NEURON,$sig"
     FLIP_NEURON=$prefix".v3draw"
     # flip neurons back to Neuron Annotator format
@@ -524,7 +526,7 @@ if [[ $TRESOLUTION != "20x_gen1" ]]; then
         sig=$prefix".nrrd"
         RAWOUT_NEURON=$prefix"_flipped.v3draw"
         gsig=$Global_Aligned_Separator_Result
-        reformat "$gsig" "$TEMP" "$DEFFIELD" "$sig" "" "ignore"
+        reformat "$gsig" "$TEMP" "$DEFFIELD" "$sig" "" "ignore" "-nn"
         nrrd2Raw "$RAWOUT_NEURON,$sig"
         FLIP_NEURON=$prefix".v3draw"
         # flip neurons back to Neuron Annotator format
