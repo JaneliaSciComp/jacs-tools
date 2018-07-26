@@ -44,7 +44,7 @@ testArg=0;
 //testArg= "/test/20x_brain_alignment/pre_Align_Test_Vol,BJD_103A02_AE_01_40x.h5j,/test/20x_brain_alignment/Pipeline_Test_Sample/BJD_103A02_AE_01_40x.h5j,/Users/otsunah/Documents/otsunah/20x_brain_aligner/,0.44,0.44,7,40x"
 
 //for 20x
-//testArg= "/test/20x_brain_alignment/Pipeline/,tile-2559915496522645525.v3dpbd,/test/20x_brain_alignment/Pipeline/tile-2559915496522645525.v3dpbd,/Users/otsunah/Documents/otsunah/20x_brain_aligner/,0.62,1,7,20x,JRC2018,Unknown,/test/20x_brain_alignment/Pipeline/ConsolidatedLabel.v3dpbd"
+//testArg= "/test/20x_brain_alignment/TwoChannel/,tile-2562429413983518741.v3dpbd,/test/20x_brain_alignment/TwoChannel/tile-2562429413983518741.v3dpbd,/Users/otsunah/Documents/otsunah/20x_brain_aligner/,0.62,1,7,20x,JRC2018,Unknown,/test/20x_brain_alignment/TwoChannel/ConsolidatedLabel.v3dpbd"
 
 if(testArg!=0)
 args = split(testArg,",");
@@ -164,7 +164,7 @@ noext2=0;
 
 filepathcolor=0; 
 NRRD_02_ext=0; 
-Nrrdnumber=0;
+
 
 
 List.clear();
@@ -1657,6 +1657,9 @@ if(SizeM!=0){
 			print("nImages 1939; "+nImages+"   startNeuronNum; "+startNeuronNum+"   AdjustingNum; "+AdjustingNum+"  channels; "+channels);
 			
 			for(neuronNum=startNeuronNum; neuronNum<channels+startNeuronNum+AdjustingNum; neuronNum++){
+				
+				ThisNeuronSep = 0;
+				
 				if(neuronNum==startNeuronNum){
 					selectImage(neuron);
 				}else if (neuronNum==startNeuronNum+1){
@@ -1665,7 +1668,7 @@ if(SizeM!=0){
 					}else if(Neuron_SepEXT==1){
 						open(PathConsolidatedLabel);
 						run("Flip Vertically", "stack");
-						
+						ThisNeuronSep = 1;
 						if(nSlices!=NC82SliceNum){
 							print("Neuron separator result has different slice number; "+nSlices+"  nc82; "+NC82SliceNum);
 							
@@ -1682,6 +1685,7 @@ if(SizeM!=0){
 						selectImage(neuron3);
 					}else if(Neuron_SepEXT==1){
 						open(PathConsolidatedLabel);
+						ThisNeuronSep = 1;
 						run("Flip Vertically", "stack");
 						
 						if(nSlices!=NC82SliceNum){
@@ -1696,6 +1700,7 @@ if(SizeM!=0){
 					
 				}else if (neuronNum==startNeuronNum+3){
 					open(PathConsolidatedLabel);
+					ThisNeuronSep = 1;
 					run("Flip Vertically", "stack");
 					
 					if(nSlices!=NC82SliceNum){
@@ -1715,13 +1720,14 @@ if(SizeM!=0){
 					VoxSizeADJ(VoxSizeADJArray,DesireX,objective);
 				}
 				
-				if(neuronNum==startNeuronNum)
-				neuron = getImageID();
-				else if (neuronNum==startNeuronNum+1)
-				neuron2 = getImageID();
-				else if (neuronNum==startNeuronNum+2)
-				neuron3 = getImageID();
-				
+				if(	ThisNeuronSep == 0){
+					if(neuronNum==startNeuronNum)
+					neuron = getImageID();
+					else if (neuronNum==startNeuronNum+1)
+					neuron2 = getImageID();
+					else if (neuronNum==startNeuronNum+2)
+					neuron3 = getImageID();
+				}
 				rotateshift3D (resliceLongLength,finalshiftX,Zoomratio,finalshiftY,elipsoidAngle,shrinkTo2010,cropWidth,cropHeight,Ori_widthVx,Ori_heightVx,incredepth);			
 				
 				rename("signalCH.tif");
@@ -1761,19 +1767,15 @@ if(SizeM!=0){
 				else
 				run("Properties...", "channels=1 slices="+NC82SliceNum+" frames=1 unit=microns pixel_width="+widthVx+" pixel_height="+heightVx+" voxel_depth="+incredepth+"");
 				
-				if(Nrrdnumber==0){
-					
-					if (neuronNum<4){
-						if(sizediff2>OpticLobeSizeGap || sizediff1>OpticLobeSizeGap|| y1_opl==cropHeight*2)
-						run("Nrrd Writer", "compressed nrrd="+myDir0+noext+"_0"+neuronNum+1+".nrrd");
-						else
-						run("Nrrd Writer", "compressed nrrd="+savedir+noext+"_0"+neuronNum+1+".nrrd");
-					}
-					if (neuronNum==4){
-						run("Nrrd Writer", "compressed nrrd="+savedir+"GLOBAL_ConsolidatedLabel.nrrd");					
-					}
-				}else
-				run("Nrrd Writer", "compressed nrrd="+savedir+noext+"_0"+neuronNum+".nrrd");					
+				
+				if(	ThisNeuronSep == 0){
+					if(sizediff2>OpticLobeSizeGap || sizediff1>OpticLobeSizeGap|| y1_opl==cropHeight*2)
+					run("Nrrd Writer", "compressed nrrd="+myDir0+noext+"_0"+neuronNum+1+".nrrd");
+					else
+					run("Nrrd Writer", "compressed nrrd="+savedir+noext+"_0"+neuronNum+1+".nrrd");
+				}else{
+					run("Nrrd Writer", "compressed nrrd="+savedir+"GLOBAL_ConsolidatedLabel.nrrd");					
+				}
 				
 				
 				if(ChannelInfo!="Both formats"){
