@@ -122,9 +122,9 @@ function reformat() {
     else
         echo "--------------"
         echo "Running CMTK reformatting on channel $_channel"
-        echo "$CMTK/reformatx -o $_sig $opts --floating $_gsig $_TEMP $_DEFFIELD"
+        echo "$CMTK/reformatx -o $_sig $_opts --floating $_gsig $_TEMP $_DEFFIELD"
         START=`date '+%F %T'`
-        $CMTK/reformatx -o "$_sig" $opts --floating $_gsig $_TEMP $_DEFFIELD
+        $CMTK/reformatx -o "$_sig" $_opts --floating $_gsig $_TEMP $_DEFFIELD
         STOP=`date '+%F %T'`
 
         if [[ ! -e $_sig ]]; then
@@ -378,7 +378,6 @@ else
     # check for prealigner errors
     LOGFILE="${OUTPUT}/20x_brain_pre_aligner_log.txt"
     PreAlignerError=`grep "PreAlignerError: " $LOGFILE | head -n1 | sed "s/PreAlignerError: //"`
-    echo "PreAlignerError: $PreAlignerError"
     if [[ ! -z "$PreAlignerError" ]]; then
         writeErrorProperties "PreAlignerError" "JRC2018_${genderT}" "$objective" "$PreAlignerError"
         exit 0
@@ -502,6 +501,7 @@ if [[ -e $Global_Aligned_Separator_Result ]]; then
     FLIP_NEURON=$prefix".v3draw"
     # flip neurons back to Neuron Annotator format
     flip "$RAWOUT_NEURON" "$FLIP_NEURON" "yflip"
+    rm $RAWOUT_NEURON
 fi
 
 writeProperties "$RAWOUT" "$FLIP_NEURON" "JRC2018_${genderT}_${TRESOLUTION}" "$TRESOLUTION" "0.44x0.44x0.44" "1348x642x472" "$score2018" ""
@@ -531,6 +531,7 @@ if [[ $TRESOLUTION != "20x_gen1" ]]; then
         FLIP_NEURON=$prefix".v3draw"
         # flip neurons back to Neuron Annotator format
         flip "$RAWOUT_NEURON" "$FLIP_NEURON" "yflip"
+        rm $RAWOUT_NEURON
     fi
 
     writeProperties "$RAWOUT" "$FLIP_NEURON" "JRC2018_Unisex_${TRESOLUTION}" "$TRESOLUTION" "0.44x0.44x0.44" "1427x668x394" "" "$main_aligned_file"
