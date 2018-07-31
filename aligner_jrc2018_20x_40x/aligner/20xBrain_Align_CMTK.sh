@@ -496,7 +496,7 @@ if [[ -e $Global_Aligned_Separator_Result ]]; then
     sig=$prefix".nrrd"
     RAWOUT_NEURON=$prefix"_flipped.v3draw"
     gsig=$Global_Aligned_Separator_Result
-    reformat "$gsig" "$TEMP" "$DEFFIELD" "$sig" "" "ignore" "-nn"
+    reformat "$gsig" "$TEMP" "$DEFFIELD" "$sig" "" "ignore" "--nn"
     nrrd2Raw "$RAWOUT_NEURON,$sig"
     FLIP_NEURON=$prefix".v3draw"
     # flip neurons back to Neuron Annotator format
@@ -526,7 +526,7 @@ if [[ $TRESOLUTION != "20x_gen1" ]]; then
         sig=$prefix".nrrd"
         RAWOUT_NEURON=$prefix"_flipped.v3draw"
         gsig=$Global_Aligned_Separator_Result
-        reformat "$gsig" "$TEMP" "$DEFFIELD" "$sig" "" "ignore" "-nn"
+        reformat "$gsig" "$TEMP" "$DEFFIELD" "$sig" "" "ignore" "--nn"
         nrrd2Raw "$RAWOUT_NEURON,$sig"
         FLIP_NEURON=$prefix".v3draw"
         # flip neurons back to Neuron Annotator format
