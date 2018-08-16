@@ -1,0 +1,54 @@
+Bootstrap: docker
+From: scientificlinux/sl:7
+
+% help
+Recipe for a Singularity container for dealing with H5J files
+
+%labels
+AUTHOR Konrad Rokicki
+VERSION 1.0
+
+%files
+./scripts /opt/scripts
+
+%post
+cd /opt # Install all software in /opt
+
+#echo "Installing Vaa3d"
+## Prereqs for Vaa3d
+#yum install -y mesa-libGLU qt qt-x11 libXv numactl-libs
+## Install Vaa3d
+#VAA3D_FILE=vaa3d-redhat-mark10.tgz
+#curl -s http://workstation.int.janelia.org/files/tools/{$VAA3D_FILE} -o '#1'
+#tar xvf $VAA3D_FILE && /bin/rm -f $VAA3D_FILE
+#ln -s /opt/vaa3d-redhat-mark10 Vaa3D
+
+echo "Install Python dependencies"
+# install anaconda
+if [ ! -d /usr/local/anaconda ]; then
+     curl https://repo.continuum.io/miniconda/Miniconda3-4.3.14-Linux-x86_64.sh -o ~/anaconda.sh && \
+     bash ~/anaconda.sh -b -p /usr/local/anaconda && \
+     rm ~/anaconda.sh
+fi
+# set anaconda path
+PATH="/usr/local/anaconda/bin:$PATH"
+conda update conda -y
+conda create -n py3 python=3 h5py=2.8.0 PyYAML=3.13 -y
+conda clean --tarballs
+
+echo "Fixing permissions"
+chown -R root:root /opt/*
+chmod -R g+r /opt/*
+
+#%apprun convert
+#/opt/Vaa3D/vaa3d "$@"
+#%apphelp convert
+#Convert an image to/from H5J format
+
+%apprun metadata
+export PATH="/usr/local/anaconda/bin:$PATH"
+source activate py3
+/opt/scripts/h5j_metadata.py "$@"
+%apphelp metadata
+Read or write H5J metadata on an existing H5J file
+
