@@ -48,7 +48,7 @@ do
 
     elif [ "$COMMAND" == "shell" ]; then
 
-        ALIGNER=${2%/}
+        ALIGNER=${1%/}
         VERSION=`grep VERSION $ALIGNER/Singularity | sed "s/VERSION //"`
         FILENAME=${ALIGNER}-${VERSION}.img
         IMGFILE=$BUILD_DIR/$FILENAME
@@ -81,6 +81,33 @@ do
             else
                 echo "Copying $FILENAME to $JACS_SINGULARITY_DIR"
                 cp $IMGFILE $JACS_SINGULARITY_DIR
+            fi
+
+        done
+
+     elif [ "$COMMAND" == "push" ]; then
+
+        LOCAL_REGISTRY=`grep int.janelia.org ~/.sregistry`
+        if [ -z "$LOCAL_REGISTRY" ]; then
+            echo "Before using this script, ensure that your ~/.sregistry file points to a local repository in the int.janelia.org domain"
+            exit 1
+        fi
+
+        echo "Will push these images: $@"
+
+        for ALIGNER in "$@"
+        do
+            ALIGNER=${ALIGNER%/}
+            VERSION=`grep VERSION $ALIGNER/Singularity | sed "s/VERSION //"`
+            FILENAME=${ALIGNER}-${VERSION}.img
+            IMGFILE=$BUILD_DIR/$FILENAME
+
+            if [ ! -f $IMGFILE ]; then
+                echo "Container $IMGFILE not found. You must first build the container with build.sh"
+            else
+                echo "Pushing $FILENAME to remote repository"
+                echo "sregistry push --name jacs-tools/$ALIGNER --tag $VERSION $IMGFILE"
+                sregistry push --name jacs-tools/$ALIGNER --tag $VERSION $IMGFILE
             fi
 
         done
