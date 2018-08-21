@@ -25,7 +25,7 @@ argstr=0;
 //argstr="/nrs/scicompsoft/otsuna/VNC_pipeline_error/,Out_PUT,/nrs/scicompsoft/otsuna/VNC_Lateral_F.tif,/groups/jacs/jacsDev/devstore/flylight/Sample/012/200/2386405464612012200/stitch/stitched-2377239301013373026.v3draw,ssr,0.44,0.44,f,/groups/jacs/jacsDev/devstore/flylight/Separation/122/600/2379727076623122600/separate/ConsolidatedLabel.v3dpbd,4"//for test
 //argstr="/test/VNC_pipeline/,tempsubjectsx.v3dpbd,/Users/otsunah/Dropbox (HHMI)/VNC_project/,/test/VNC_Test/tempsubjectsx.v3dpbd,sssr,0.45,0.45,f,/test/VNC_Test/ConsolidatedLabel.v3dpbd,4"//for test
 
-//argstr="/test/VNC_Test/PreAligned/,GMR_38A05_AE_01_01-fA01v_C081220_20081227121104665.zip,/Users/otsunah/Dropbox (HHMI)/VNC_project/,/test/VNC_Test/GMR_38A05_AE_01_01-fA01v_C081220_20081227121104665.zip,sr,0.62,0.62,f,???,6"//for test
+//argstr="/test/VNC_Test/PreAligned/,stitched-2469965973508063377.v3dpbd,/Users/otsunah/Dropbox (HHMI)/VNC_project/,/test/VNC_Test/Sample/stitched-2469965973508063377.v3dpbd,sr,0.44,0.44,f,/test/VNC_Test/Sample/ConsolidatedLabel.v3dpbd,8"//for test
 
 if(argstr!=0)
 args = split(argstr,",");
@@ -2129,6 +2129,7 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 							addingslice(slicePosition);
 							previousnSlice=slicePosition[5];
 							
+							print("2132 Rendslice; "+Rendslice+"  nSlices; "+nSlices);
 							if(Rendslice>nSlices)
 							Rendslice=nSlices;
 							
@@ -2232,6 +2233,7 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 							slicePosition=newArray(startslice,endslice,slices,0,0,previousnSlice);
 							addingslice(slicePosition);
 							
+							print("2235 Rendslice; "+Rendslice+"  nSlices; "+nSlices);
 							if(Rendslice>nSlices)
 							Rendslice=nSlices;
 							
@@ -2254,7 +2256,12 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 							selectImage(realNeuron);
 							run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=microns pixel_width="+vxwidth+" pixel_height="+vxheight+" voxel_depth="+depth+"");
 							
-							if(AdvanceDepth){
+					//		setBatchMode(false);
+					//		updateDisplay();
+					//		"do"
+					//		exit();
+							
+							if(AdvanceDepth==true){
 								print("2252 AdvanceDepth ON; sampleLongLength; "+sampleLongLength+"  maxrotation; "+maxrotation+"  sampWidth; "+sampWidth+"  sampHeight; "+sampHeight);
 								print("widthVXsmall; "+widthVXsmall+"   heightVXsmall; "+heightVXsmall+"   realdepthVal; "+realdepthVal);
 								run("Reslice [/]...", "output=1 start=Left rotate avoid");
@@ -2270,7 +2277,8 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 								run("Translate...", "x="+XlateralTrans+" y="+YlateralTrans+" interpolation=None stack");
 								run("Canvas Size...", "width="+sampWidth+" height="+sampHeight+" position=Center zero");
 								run("Reslice [/]...", "output=1 start=Left rotate avoid");
-								setVoxelSize(widthVXsmall, heightVXsmall, realdepthVal, unitVX);
+								run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=microns pixel_width="+realHeightVal+" pixel_height="+realHeightVal+" voxel_depth="+realdepthVal+"");
+
 								realNeuron2=getImageID();
 							}//if(AdvanceDepth){
 							
