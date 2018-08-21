@@ -62,23 +62,25 @@ def write_attrs(obj, data, level=0):
     indent = '  '*level
 
     if DEBUG: print("%s%s (%s)"%(indent, obj.name, type(obj).__name__))
-    attrs = data[ATTRS]
 
-    # Walk through user-provided attributes and ensure
-    # that they all exist in the HDF5 object
-    for k in attrs:
-        cv = obj.attrs[k] if k in obj.attrs else None
-        v = attrs[k]
-        dt = get_datatype(v)
+    if ATTRS in data:
+        attrs = data[ATTRS]
+        # Walk through user-provided attributes and ensure
+        # that they all exist in the HDF5 object
+        for k in attrs:
+            cv = obj.attrs[k] if k in obj.attrs else None
+            v = attrs[k]
+            if v is None: continue
+            dt = get_datatype(v)
 
-        if DEBUG: 
-            print("  %s%s = %s (data type=%s, current value: %s)"%(indent, k, v, dt, cv))
-        else:
-            # Actually update the metadata. It would be better to use modify if possible,
-            # but string lengths may change so we just recreate the attr each time.
-            if cv is not None:
-                del obj.attrs[k]
-            obj.attrs.create(k, v, None, dt)
+            if DEBUG: 
+                print("  %s%s = %s (data type=%s, current value: %s)"%(indent, k, v, dt, cv))
+            else:
+                # Actually update the metadata. It would be better to use modify if possible,
+                # but string lengths may change so we just recreate the attr each time.
+                if cv is not None:
+                    del obj.attrs[k]
+                obj.attrs.create(k, v, None, dt)
 
     if GROUPS in data:
         for gc in data[GROUPS]:
@@ -93,9 +95,18 @@ def get_datatype(value):
     """
 
     if isinstance(value,str):
-        return 'S%d'%len(value)
+        strlen = len(value)
+        if strlen==0: strlen=1
+        return 'S%d'%strlen
 
-    if isinstance(value,list):
+    elif isinstance(value,int):
+        return 'int64'
+
+    elif isinstance(value,float):
+        return 'float64'
+
+    elif isinstance(value,list):
+        # only lists of numbers are supported
         if len(value)>0:
             first = value[0]
             if isinstance(first,int):
@@ -105,7 +116,7 @@ def get_datatype(value):
         else:
             return 'int64'
 
-    raise Exception("Value has unsupported data type: "+type(value))
+    raise Exception("Value has unsupported data type: "+str(type(value)))
 
 
 def read_metadata(filename, output=sys.stdout):
@@ -127,14 +138,19 @@ def read_attrs(g):
         h[ATTRS] = {}
         for k in g.attrs:
             v = g.attrs[k]
+            value = None
             if isinstance(v,numpy.ndarray):
-                h['attrs'][k] = v.tolist()
+                value = v.tolist()
+            elif str(v.dtype)=='float64':
+                value = float(v)
+            elif str(v.dtype)=='int64':
+                value = int(v)
             elif str(v.dtype).startswith('|S'):
                 # Strings are stored as byte strings in HDF5 and must be decoded for storage in YAML
-                h['attrs'][k] = v.decode("utf-8")
+                value = v.decode("utf-8")
             else:
                 raise Exception("Unrecognized data type: "+str(v.dtype))
-
+            h['attrs'][k] = value
 
     if type(g) in (Group,):
         h[GROUPS] = {}
