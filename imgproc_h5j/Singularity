@@ -10,6 +10,8 @@ VERSION 1.0
 
 %files
 ./scripts /opt/scripts
+./macros /opt/macros
+./plugins /opt/plugins
 
 %post
 cd /opt # Install all software in /opt
@@ -22,6 +24,30 @@ cd /opt # Install all software in /opt
 #curl -s http://workstation.int.janelia.org/files/tools/{$VAA3D_FILE} -o '#1'
 #tar xvf $VAA3D_FILE && /bin/rm -f $VAA3D_FILE
 #ln -s /opt/vaa3d-redhat-mark10 Vaa3D
+
+echo "Installing Fiji"
+# Prereqs for Fiji
+yum install -y libXtst-devel libXrender
+#libXv alsa-lib libsndio
+# Install Fiji
+FIJI_FILE=fiji-1.52c.tgz
+curl -s http://workstation.int.janelia.org/files/fiji/{$FIJI_FILE} -o '#1'
+tar xvfz $FIJI_FILE && /bin/rm -rf $FIJI_FILE
+rm -rf Fiji
+mv Fiji.app Fiji
+
+echo "Installing Fiji plugins"
+PLUGINS_SOURCE=/opt/plugins
+FIJI_DIR=/opt/Fiji
+rm $FIJI_DIR/jars/ffmpeg-*.jar \
+    && rm $FIJI_DIR/jars/javacpp-*.jar \
+    && rm $FIJI_DIR/jars/linux64/ffmpeg-* \
+    && rm $FIJI_DIR/plugins/H5J*
+mv $PLUGINS_SOURCE/ffmpeg-*-linux-x86_64.jar $FIJI_DIR/jars/linux64
+mv $PLUGINS_SOURCE/ffmpeg-*.jar $FIJI_DIR/jars
+mv $PLUGINS_SOURCE/javacpp-*.jar $FIJI_DIR/jars
+mv $PLUGINS_SOURCE/H5* $FIJI_DIR/plugins
+mv $PLUGINS_SOURCE/ffmpeg $FIJI_DIR/plugins
 
 echo "Install Python dependencies"
 # install anaconda
@@ -50,5 +76,15 @@ export PATH="/usr/local/anaconda/bin:$PATH"
 source activate py3
 /opt/scripts/h5j_metadata.py "$@"
 %apphelp metadata
-Read or write H5J metadata on an existing H5J file
+Read or write H5J metadata on an existing H5J file.
+
+%apprun convert
+/opt/Fiji/ImageJ-linux64 --headless -macro /opt/macros/convert_to_h5j.ijm "$1,$2"
+%apphelp convert
+Convert the input file given by the first parameter into an H5J file specified by the second parameter.
+
+%apprun fiji
+/opt/Fiji/ImageJ-linux64
+%apphelp fiji
+Run the Fiji application in interactive mode
 
