@@ -33,16 +33,24 @@ do
             ALIGNER=${ALIGNER%/}
             VERSION=`grep VERSION $ALIGNER/Singularity | sed "s/VERSION //"`
             FILENAME=${ALIGNER}-${VERSION}.img
-            sudo rm /tmp/$FILENAME && true
+            sudo rm -f /tmp/$FILENAME && true
             echo "---------------------------------------------------------------------------------"
             echo " Building image for $ALIGNER"
             echo "---------------------------------------------------------------------------------"
             pushd $ALIGNER
+            if [[ -e ./setup.sh ]]; then
+                echo "Running setup.sh"
+                bash ./setup.sh
+            fi
             sudo singularity build /tmp/$FILENAME Singularity
+            if [[ -e ./cleanup.sh ]]; then
+                echo "Running cleanup.sh"
+                bash ./cleanup.sh
+            fi
             popd
             FINAL=$BUILD_DIR/$FILENAME
             cp /tmp/$FILENAME $FINAL
-            sudo rm /tmp/$FILENAME
+            sudo rm -f /tmp/$FILENAME
             echo "Created container $FINAL"
         done
 
