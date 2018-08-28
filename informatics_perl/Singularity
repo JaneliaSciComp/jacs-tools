@@ -1,0 +1,59 @@
+Bootstrap: docker
+From: scientificlinux/sl:7
+
+% help
+Recipe for a Singularity container containing Perl scripts for informatics
+
+%labels
+AUTHOR Konrad Rokicki
+VERSION 1.0
+
+%files
+./scripts /opt/scripts
+./rpm /opt/rpm
+/tmp/Zeiss-LSM /opt/Zeiss-LSM
+
+%post
+cd /opt # Install all software in /opt
+
+# Install EPEL, necessary for perl-Class-Accessor
+EPEL_FILE=epel-release-latest-7.noarch.rpm
+curl -s http://dl.fedoraproject.org/pub/epel/{$EPEL_FILE} -o '#1'
+rpm -ivh $EPEL_FILE && /bin/rm -f $EPEL_FILE
+
+# Install Perl dependencies for build+run
+yum install -y perl \
+    perl-devel make \
+    perl-IO-Compress-Zlib \
+    perl-Switch \
+    perl-Class-Accessor \
+    perl-Data-Dumper \
+    perl-JSON
+
+# nodeps is needed because otherwise it complains about missing JSON.pm
+rpm -Uvh --nodeps /opt/rpm/perl-JSYNC-0.25-alt1.noarch.rpm && rm -rf /opt/rpm
+
+# Build and install Zeiss-LSM
+cd /opt/Zeiss-LSM
+perl Makefile.PL
+make ; make install
+cd /opt
+rm -rf Zeiss-LSM
+
+# Clean up
+yum remove -y perl-devel make
+
+echo "Fixing permissions"
+chown -R root:root /opt/*
+chmod -R g+r /opt/*
+
+%apprun dump_perl
+/opt/scripts/lsm_metadata_dump.pl "$@"
+%apphelp dump_perl
+Dump LSM metadata in Perl object format. Arguments are: <inputFile> <outputFile>
+
+%apprun dump_json
+/opt/scripts/lsm_json_dump.pl "$@"
+%apphelp dump_json
+Dump LSM metadata in JSON format to STDOUT. Arguments are: <inputFile>
+
