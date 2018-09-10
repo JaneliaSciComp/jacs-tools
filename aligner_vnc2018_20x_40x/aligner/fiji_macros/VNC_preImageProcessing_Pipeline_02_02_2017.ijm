@@ -90,7 +90,8 @@ n3 = lengthOf(savedir);
 for (si=0; si<n3; si++) {
 	c = charCodeAt(savedir, si);
 	if(c==32){// if there is a space
-		print("There is a space, please eliminate the space from saving directory.");
+		
+		print("PreAlignerError: There is a space, please eliminate the space from saving directory.");
 		logsum=getInfo("log");
 		File.saveString(logsum, filepath);
 		print("line 57; log file saved");
@@ -120,7 +121,7 @@ if(filesize>1000000){// if more than 1MB
 	File.saveString(logsum, filepath);
 	
 }else{
-	print("file size is too small, "+filesize/1000000+" MB, less than 1MB.");
+	print("PreAlignerError: file size is too small, "+filesize/1000000+" MB, less than 1MB.");
 	logsum=getInfo("log");
 	File.saveString(logsum, filepath);
 	print("line 80; log file saved");
@@ -1769,7 +1770,7 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 							if(LateralDirEXI==1){
 								open(VNC_Lateral_small);
 							}else{
-								print(""+tempimg+" is not existing within; "+VNC_Lateral_small);
+								print("PreAlignerError: "+tempimg+" is not existing within; "+VNC_Lateral_small);
 								logsum=getInfo("log");
 								File.saveString(logsum, filepath);
 								run("Quit");
