@@ -12,8 +12,8 @@ ForceUSE=false;
 nrrdEx=true;
 revstack=false;
 
-cropWidth=1200;
-cropHeight=750;
+cropWidth=1400;
+cropHeight=850;
 ChannelInfo = "01 02 nrrd files";
 blockposition=1;
 totalblock=1;
@@ -44,7 +44,11 @@ testArg=0;
 //testArg= "/test/20x_brain_alignment/pre_Align_Test_Vol,BJD_103A02_AE_01_40x.h5j,/test/20x_brain_alignment/Pipeline_Test_Sample/BJD_103A02_AE_01_40x.h5j,/Users/otsunah/Documents/otsunah/20x_brain_aligner/,0.44,0.44,7,40x"
 
 //for 20x
+<<<<<<< HEAD
+//testArg= "/test/20x_brain_alignment/,tile-2577638743003365397.v3draw,/test/20x_brain_alignment/tile-2577638743003365397.v3draw,/Users/otsunah/Documents/otsunah/20x_brain_aligner/,0.62,1,7,20x,JRC2018,Unknown,??"
+=======
 //testArg= "/test/20x_brain_alignment/TwoChannel/,tile-2562429413983518741.v3dpbd,/test/20x_brain_alignment/TwoChannel/tile-2562429413983518741.v3dpbd,/Users/otsunah/Documents/otsunah/20x_brain_aligner/,0.62,1,7,20x,JRC2018,Unknown,/test/20x_brain_alignment/TwoChannel/ConsolidatedLabel.v3dpbd"
+>>>>>>> origin/master
 
 if(testArg!=0)
 args = split(testArg,",");
@@ -389,7 +393,7 @@ if(BrainShape=="Intact" || BrainShape=="Unknown"){
 	maxX=OriginalXshift/2;
 	maxY=OriginalYshift/2;
 	
-	print("772 BrainShape; "+BrainShape+"   OBJScore; "+OBJScoreOri+"  OriginalRot; "+OriginalRot);
+	print("772 BrainShape; "+BrainShape+"   OBJScore; "+OBJScoreOri+"  OriginalRot; "+OriginalRot+"   OriginalXshift; "+OriginalXshift+"   OriginalYshift; "+OriginalYshift);
 	
 	logsum=getInfo("log");
 	File.saveString(logsum, filepath);
@@ -796,6 +800,7 @@ if(BrainShape=="Intact"){
 					ShiftY=ImageCarray[2];
 					ShiftX=ImageCarray[3];
 					
+					print("Line 799, Rot; "+Rot+"   ShiftX; "+ShiftX+"   ShiftY; "+ShiftY+"   OBJScore; "+OBJScore);
 					//		print("OBJScore from Image2; "+OBJScore+"   ARshape; "+ARshape +"   Circ; "+Circ);
 					
 					if(OBJScore>MaxOBJScore){
@@ -1670,7 +1675,7 @@ if(SizeM!=0){
 						run("Flip Vertically", "stack");
 						ThisNeuronSep = 1;
 						if(nSlices!=NC82SliceNum){
-							print("Neuron separator result has different slice number; "+nSlices+"  nc82; "+NC82SliceNum);
+							print("PreAlignerError: Neuron separator result has different slice number; "+nSlices+"  nc82; "+NC82SliceNum);
 							
 							logsum=getInfo("log");
 							File.saveString(logsum, filepath);
@@ -1689,7 +1694,7 @@ if(SizeM!=0){
 						run("Flip Vertically", "stack");
 						
 						if(nSlices!=NC82SliceNum){
-							print("Neuron separator result has different slice number; "+nSlices+"  nc82; "+NC82SliceNum);
+							print("PreAlignerError: Neuron separator result has different slice number; "+nSlices+"  nc82; "+NC82SliceNum);
 							
 							logsum=getInfo("log");
 							File.saveString(logsum, filepath);
@@ -1704,7 +1709,7 @@ if(SizeM!=0){
 					run("Flip Vertically", "stack");
 					
 					if(nSlices!=NC82SliceNum){
-						print("Neuron separator result has different slice number; "+nSlices+"  nc82; "+NC82SliceNum);
+						print("PreAlignerError: Neuron separator result has different slice number; "+nSlices+"  nc82; "+NC82SliceNum);
 						
 						logsum=getInfo("log");
 						File.saveString(logsum, filepath);
@@ -2122,7 +2127,7 @@ function ImageCorrelation(ImageCorrelationArray,widthVx,NumCPU){
 	OBJScore=round(OBJScore);
 	MaxZoom=1;
 	MaxinSlice=0;
-	if(OBJScore<630){
+	if(OBJScore<635){
 		selectImage(nc82);
 		run("Duplicate...", "title=Samp.tif, duplicate");
 		run("16-bit");
@@ -2173,8 +2178,8 @@ function ImageCorrelation(ImageCorrelationArray,widthVx,NumCPU){
 		selectWindow("Samp.tif");
 		close();
 		
-		if(OBJScore<630){
-			print("2D Zoom adjustment, due to low obj score; <630");
+		if(OBJScore<635){
+			print("2D Zoom adjustment, due to low obj score; <635");
 			PreMaxOBJ=OBJScore; PreOBJ=OBJScore;
 			for(iZoom=0.85; iZoom<1.4; iZoom+=0.05){
 				selectWindow("SampMIP.tif");
@@ -2206,6 +2211,12 @@ function ImageCorrelation(ImageCorrelationArray,widthVx,NumCPU){
 					MaxZoom=iZoom;
 				}
 				selectWindow("ZOOM.tif");
+				
+			//	setBatchMode(false);
+			//	updateDisplay();
+			//	"do"
+			///	exit();
+				
 				close();
 			}
 			print("PreOBJ; "+PreOBJ+" NewOBJ; "+PreMaxOBJ+"   elipsoidAngle; "+elipsoidAngle+"   maxY; "+maxY+"   maxX; "+maxX+"   MaxZoom; "+MaxZoom);
