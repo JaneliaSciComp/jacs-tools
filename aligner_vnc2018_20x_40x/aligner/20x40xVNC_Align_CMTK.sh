@@ -62,7 +62,7 @@ else
     POSTSCOREMASK=$VNCScripts"/For_Score/flyVNCtemplate20xA_CLAHE_MASK2nd.nrrd"
 fi
 
-POSTSCORE=$VNCScripts"/VNC_preImageProcessing_Plugins_pipeline/For_Score/Score_For_VNC_pipeline.ijm"
+POSTSCORE=$VNCScripts"/Score_For_VNC_pipeline.ijm"
 
 echo "$testmode; "$testmode
 # For TEST ############################################
@@ -149,7 +149,7 @@ function nrrd2Raw() {
         echo "| $FIJI --headless -macro $NRRDCONV $_PARAMS >$LOGFILE"
         echo "+----------------------------------------------------------------------+"
         START=`date '+%F %T'`
-$FIJI -macro $NRRDCONV $_PARAMS >$LOGFILE 2>&1 #--headless 
+        $FIJI --headless -macro $NRRDCONV $_PARAMS >$LOGFILE 2>&1
         STOP=`date '+%F %T'`
         if [[ ! -e $OUTPUTRAW ]]; then
             echo -e "Error: NRRD -> raw conversion failed"
@@ -239,7 +239,7 @@ function reformatAll() {
     done
 
     # Create raw file
-  #  nrrd2Raw "${RAWCONVPARAM},${RAWCONVSUFFIX}"
+    nrrd2Raw "${RAWCONVPARAM},${RAWCONVSUFFIX}"
     eval $_result_var="'$RAWOUT'"
 }
 
@@ -284,7 +284,8 @@ function writeProperties() {
     local _voxel_size="$5"
     local _image_size="$6"
     local _ncc_score="$7"
-    local _bridged_from="$8"
+    local _pearson_coeff="$8"
+    local _bridged_from="$9"
 
     raw_filename=`basename ${_raw_aligned}`
     prefix=${raw_filename%%.*}
@@ -292,7 +293,7 @@ function writeProperties() {
     if [[ -f "$_raw_aligned" ]]; then
         META="${OUTPUT}/${prefix}.properties"
         echo "alignment.stack.filename="${raw_filename} > $META
-        echo "alignment.image.area=Brain" >> $META
+        echo "alignment.image.area=VNC" >> $META
         echo "alignment.image.channels=$INPUT1_CHANNELS" >> $META
         echo "alignment.image.refchan=$INPUT1_REF" >> $META
         echo "alignment.space.name=$_alignment_space" >> $META
@@ -302,6 +303,9 @@ function writeProperties() {
         if [[ ! -z "$_ncc_score" ]]; then
             echo "alignment.quality.score.ncc=$_ncc_score" >> $META
         fi
+        if [[ ! -z "$_pearson_coeff" ]]; then
+            echo "alignment.object.pearson.coefficient=$_pearson_coeff" >> $META
+        fi
         if [[ -e $_raw_aligned_neurons ]]; then
             raw_neurons_filename=`basename ${_raw_aligned_neurons}`
             echo "neuron.masks.filename=$raw_neurons_filename" >> $META
@@ -309,6 +313,9 @@ function writeProperties() {
         if [[ ! -z "$_bridged_from" ]]; then
             echo "alignment.bridged.from=$_bridged_from" >> $META
         fi
+    else
+        echo "Output file does not exist: $_raw_aligned"
+        exit 1
     fi
 }
 
@@ -366,6 +373,7 @@ if [[ $INPUT1_GENDER == "f" ]]; then
     oldVNC=$TempDir"/FemaleVNCSymmetric2017.nrrd"
     reformat_JRC2018_to_oldVNC=$TempDir"/Deformation_Fields/oldFemale_JRC2018_VNC_FEMALE"
     TEMPNAME="JRC2018_VNC_Female"
+    OLDSPACE="FemaleVNCSymmetric2017_20x"
     iniT=$JRC2018_VNC_Female
 
 elif [[ $INPUT1_GENDER == "m" ]]; then
@@ -373,7 +381,12 @@ elif [[ $INPUT1_GENDER == "m" ]]; then
     oldVNC=$TempDir"/MaleVNC2017.nrrd"
     reformat_JRC2018_to_oldVNC=$TempDir"/Deformation_Fields/oldMale_JRC2018_VNC_MALE"
     TEMPNAME="JRC2018_VNC_Male"
+    OLDSPACE="MaleVNC2016_20x"
     iniT=$JRC2018_VNC_Male
+
+else
+    echo "ERROR: invalid gender: $INPUT1_GENDER"
+    exit 1
 fi
 
 filename="PRE_PROCESSED_"$genderT
@@ -381,6 +394,7 @@ filename="PRE_PROCESSED_"$genderT
 echo "INPUT1_GENDER; "$INPUT1_GENDER
 echo "genderT; "$genderT
 echo "oldVNC; "$oldVNC
+echo "OLDSPACE; "$OLDSPACE
 echo "reformat_JRC2018_to_oldVNC; "$reformat_JRC2018_to_oldVNC
 
 
@@ -397,32 +411,27 @@ registered_warp_xform=$OUTPUT"/warp.xform"
 
 reformat_JRC2018_to_Uni=$TempDir"/Deformation_Fields/JRC2018_VNC_Unisex_JRC2018_"$genderT
 
-
-# -------------------------------------------------------------------------------------------
-
-# -------------------------------------------------------------------------------------------
-echo "+---------------------------------------------------------------------------------------+"
-echo "| Running Otsuna preprocessing step                                                     |"
-echo "| $FIJI -macro $PREPROCIMG \"$OUTPUT/,filename,$TempDir,$Path,ssr,$RESX,$RESY,$INPUT1_GENDER,$Unaligned_Neuron_Separator_Result_V3DPBD,$NSLOTS\" |"
-echo "+---------------------------------------------------------------------------------------+"
-START=`date '+%F %T'`
-# Expect to take far less than 1 hour
-if [ ! -e $Unaligned_Neuron_Separator_Result_V3DPBD ]
-then
-    echo "Warning: $PREPROCIMG will be given a nonexistent $Unaligned_Neuron_Separator_Result_V3DPBD"
-fi
-$FIJI -macro $PREPROCIMG "$OUTPUT/,$filename,$TempDir/,$Path,ssr,$RESX,$RESY,$INPUT1_GENDER,$Unaligned_Neuron_Separator_Result_V3DPBD,$NSLOTS" >$OUTPUT/preproc.log 2>&1
-STOP=`date '+%F %T'`
-echo "Otsuna preprocessing start: $START"
-echo "Otsuna preprocessing stop: $STOP"
-# check for prealigner errors
 LOGFILE="${OUTPUT}/VNC_pre_aligner_log.txt"
-PreAlignerError=`grep "PreAlignerError: " $LOGFILE | head -n1 | sed "s/PreAlignerError: //"`
-if [[ ! -z "$PreAlignerError" ]]; then
-    writeErrorProperties "PreAlignerError" "JRC2018_${genderT}" "$objective" "$PreAlignerError"
-    exit 0
+if [[ -e $LOGFILE ]]; then
+    echo "Already exists: $LOGFILE"
+else
+    echo "+---------------------------------------------------------------------------------------+"
+    echo "| Running Otsuna preprocessing step                                                     |"
+    echo "| $FIJI -macro $PREPROCIMG \"$OUTPUT/,filename,$TempDir,$Path,ssr,$RESX,$RESY,$INPUT1_GENDER,$Unaligned_Neuron_Separator_Result_V3DPBD,$NSLOTS\" |"
+    echo "+---------------------------------------------------------------------------------------+"
+    START=`date '+%F %T'`
+    # Expect to take far less than 1 hour
+    $FIJI -macro $PREPROCIMG "$OUTPUT/,$filename,$TempDir/,$Path,ssr,$RESX,$RESY,$INPUT1_GENDER,$Unaligned_Neuron_Separator_Result_V3DPBD,$NSLOTS" >$OUTPUT/preproc.log 2>&1
+    STOP=`date '+%F %T'`
+    echo "Otsuna preprocessing start: $START"
+    echo "Otsuna preprocessing stop: $STOP"
+    # check for prealigner errors
+    PreAlignerError=`grep "PreAlignerError: " $LOGFILE | head -n1 | sed "s/PreAlignerError: //"`
+    if [[ ! -z "$PreAlignerError" ]]; then
+        writeErrorProperties "PreAlignerError" "JRC2018_${genderT}" "$objective" "$PreAlignerError"
+        exit 0
+    fi
 fi
-
 
 # For TEST ############################################
 #if [[ $testmode == 1 ]]; then
@@ -505,20 +514,20 @@ gsig=$OUTPUT"/"$filename
 reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
 scoreGen $sig"_01.nrrd" $iniT "score2018"
 
-if [[ -e $Global_Aligned_Separator_Result ]]; then
-    prefix="${OUTPUT}/${fn}_ConsolidatedLabel"
-    sig=$prefix".nrrd"
-    RAWOUT_NEURON=$prefix"_flipped.v3draw"
-    gsig=$Global_Aligned_Separator_Result
-    reformat "$gsig" "$TEMP" "$DEFFIELD" "$sig" "" "ignore" "--nn"
-    nrrd2Raw "$RAWOUT_NEURON,$sig"
-    FLIP_NEURON=$prefix".v3draw"
-    # flip neurons back to Neuron Annotator format
-    flip "$RAWOUT_NEURON" "$FLIP_NEURON" "yflip"
-    rm $RAWOUT_NEURON
-fi
+#if [[ -e $Global_Aligned_Separator_Result ]]; then
+#    prefix="${OUTPUT}/${fn}_ConsolidatedLabel"
+#    sig=$prefix".nrrd"
+#    RAWOUT_NEURON=$prefix"_flipped.v3draw"
+#    gsig=$Global_Aligned_Separator_Result
+#    reformat "$gsig" "$TEMP" "$DEFFIELD" "$sig" "" "ignore" "--nn"
+#    nrrd2Raw "$RAWOUT_NEURON,$sig"
+#    FLIP_NEURON=$prefix".v3draw"
+#    # flip neurons back to Neuron Annotator format
+#    flip "$RAWOUT_NEURON" "$FLIP_NEURON" "yflip"
+#    rm $RAWOUT_NEURON
+#fi
 
-writeProperties "$RAWOUT" "$FLIP_NEURON" "JRC2018_${genderT}" "0.44x0.44x0.44" "1348x642x472" "$score2018" ""
+writeProperties "$RAWOUT" "" "JRC2018_VNC_${genderT}" "$objective" "0.46x0.46x0.70" "572x1164x229" "$score2018" "" ""
 
 
 ########################################################################################################
@@ -547,7 +556,7 @@ if [[ -e $Global_Aligned_Separator_Result ]]; then
     rm $RAWOUT_NEURON
 fi
 
-writeProperties "$RAWOUT" "$FLIP_NEURON" "JRC2018_Unisex" "0.44x0.44x0.44" "1427x668x394" "" "$main_aligned_file"
+writeProperties "$RAWOUT" "$FLIP_NEURON" "JRC2018_VNC_Unisex" "$objective" "0.46x0.46x0.70" "573x1119x219" "" "" "$main_aligned_file"
 
 
 ########################################################################################################
@@ -562,25 +571,30 @@ TEMP="$oldVNC"
 gsig=$OUTPUT"/"$filename
 reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
 
-SCORETEMP=$oldVNC
-scoreGen $sig"_01.nrrd" "$SCORETEMP" "oldVNC"
+scoreGen $sig"_01.nrrd" "$oldVNC" "oldVNC"
 
-
-echo "+--------------------------------------------------------------------------------------------------------+"
-echo "| Running Otsuna scoring step to old VNC"
-echo "| $FIJI -macro $POSTSCORE $sig"_01.nrrd,PostScore,$OUTPUT/,$Tfile,$POSTSCOREMASK,$INPUT1_GENDER,$NSLOTS
-echo "+--------------------------------------------------------------------------------------------------------+"
-START=`date '+%F %T'`
-$FIJI -macro $POSTSCORE $sig"_01.nrrd,PostScore,$OUTPUT/,$Tfile,$POSTSCOREMASK,$INPUT1_GENDER,$NSLOTS"
-STOP=`date '+%F %T'`
-if [ ! -e $registered_otsuna_qual ]
-then
-echo -e "Error: Otsuna ObjPearsonCoeff score failed"
-exit -1
+registered_otsuna_qual=$OUTPUT"/Hideo_OBJPearsonCoeff.txt"
+if [[ -e $registered_otsuna_qual ]]; then
+    echo "Already exists: $registered_otsuna_qual"
+else
+    echo "+--------------------------------------------------------------------------------------------------------+"
+    echo "| Running Otsuna scoring step to old VNC"
+    echo "| $FIJI -macro $POSTSCORE $sig"_01.nrrd,PostScore,$OUTPUT/,$Tfile,$POSTSCOREMASK,$INPUT1_GENDER,$NSLOTS
+    echo "+--------------------------------------------------------------------------------------------------------+"
+    START=`date '+%F %T'`
+    $FIJI -macro $POSTSCORE $sig"_01.nrrd,PostScore,$OUTPUT/,$Tfile,$POSTSCOREMASK,$INPUT1_GENDER,$NSLOTS"
+    STOP=`date '+%F %T'`
+    if [[ ! -e $registered_otsuna_qual ]]; then
+        echo -e "Error: Otsuna ObjPearsonCoeff score failed"
+        exit -1
+    fi
+    echo "Otsuna_scoring start: $START"
+    echo "Otsuna_scoring stop: $STOP"
 fi
-echo "Otsuna_scoring start: $START"
-echo "Otsuna_scoring stop: $STOP"
 
+oldscore=`cat $registered_otsuna_qual`
+
+writeProperties "$RAWOUT" "" "$OLDSPACE" "20x" "0.46x0.46x0.70" "512x1100x220" "$oldVNC" "$oldscore" "$main_aligned_file"
 
 if [[ $INPUT1_GENDER =~ "m" ]]; then
     ########################################################################################################
@@ -594,7 +608,7 @@ if [[ $INPUT1_GENDER =~ "m" ]]; then
     gsig=$OUTPUT"/"$filename
     reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
 
-    writeProperties "$RAWOUT" "" "$UNIFIED_SPACE" "20x" "0.62x0.62x1.00" "1024x512x218" "$score2010" "$main_aligned_file"
+    writeProperties "$RAWOUT" "" "FemaleVNCSymmetric2017_20x" "20x" "0.46x0.46x0.70" "512x1024x220" "$score2010" "" "$main_aligned_file"
 fi
 
 # -------------------------------------------------------------------------------------------
@@ -609,7 +623,7 @@ echo "+----------------------------------------------------------------------+"
 echo "| Copying files to final destination"
 echo "+----------------------------------------------------------------------+"
 mkdir -p $FINALOUTPUT/debug
-cp $OUTPUT/*.{png,jpg,log,txt} $FINALOUTPUT/debug
+cp $OUTPUT/*.{png,log,txt} $FINALOUTPUT/debug
 cp -R $OUTPUT/*.xform $FINALOUTPUT/debug
 cp $OUTPUT/REG*.v3dpbd $FINALOUTPUT
 cp $OUTPUT/REG*.properties $FINALOUTPUT
