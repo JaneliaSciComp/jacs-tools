@@ -44,7 +44,11 @@ testArg=0;
 //testArg= "/test/20x_brain_alignment/pre_Align_Test_Vol,BJD_103A02_AE_01_40x.h5j,/test/20x_brain_alignment/Pipeline_Test_Sample/BJD_103A02_AE_01_40x.h5j,/Users/otsunah/Documents/otsunah/20x_brain_aligner/,0.44,0.44,7,40x"
 
 //for 20x
+//<<<<<<< HEAD
+//testArg= "/test/20x_brain_alignment/,tile-2577640000216629269.v3draw,/test/20x_brain_alignment/tile-2577640000216629269.v3draw,/Users/otsunah/Documents/otsunah/20x_brain_aligner/,0.62,1,7,20x,JRC2018,Unknown,/test/20x_brain_alignment/ConsolidatedLabel.v3dpbd"
+//=======
 //testArg= "/test/20x_brain_alignment/TwoChannel/,tile-2562429413983518741.v3dpbd,/test/20x_brain_alignment/TwoChannel/tile-2562429413983518741.v3dpbd,/Users/otsunah/Documents/otsunah/20x_brain_aligner/,0.62,1,7,20x,JRC2018,Unknown,/test/20x_brain_alignment/TwoChannel/ConsolidatedLabel.v3dpbd"
+//>>>>>>> origin/master
 
 if(testArg!=0)
 args = split(testArg,",");
@@ -1663,6 +1667,7 @@ if(SizeM!=0){
 				
 				if(neuronNum==startNeuronNum){
 					selectImage(neuron);
+					print("line 1670, neuronNum; "+neuronNum+"   Neuron_SepEXT; "+Neuron_SepEXT);
 				}else if (neuronNum==startNeuronNum+1){
 					if(isOpen(neuron2)){
 						selectImage(neuron2);
@@ -1711,7 +1716,7 @@ if(SizeM!=0){
 						File.saveString(logsum, filepath);
 						run("Quit");
 					}
-				}
+				}//if(neuronNum==startNeuronNum){
 				
 				run("Properties...", "channels=1 slices="+NC82SliceNum+" frames=1 unit=microns pixel_width="+Ori_widthVx+" pixel_height="+Ori_heightVx+" voxel_depth="+incredepth+"");
 				//	getVoxelSize(widthVx, heightVx, depth, unit);
@@ -1771,9 +1776,9 @@ if(SizeM!=0){
 				
 				if(	ThisNeuronSep == 0){
 					if(sizediff2>OpticLobeSizeGap || sizediff1>OpticLobeSizeGap|| y1_opl==cropHeight*2)
-					run("Nrrd Writer", "compressed nrrd="+myDir0+noext+"_0"+neuronNum+1+".nrrd");
+					run("Nrrd Writer", "compressed nrrd="+myDir0+noext+"_0"+neuronNum+".nrrd");
 					else
-					run("Nrrd Writer", "compressed nrrd="+savedir+noext+"_0"+neuronNum+1+".nrrd");
+					run("Nrrd Writer", "compressed nrrd="+savedir+noext+"_0"+neuronNum+".nrrd");
 				}else{
 					run("Nrrd Writer", "compressed nrrd="+savedir+"GLOBAL_ConsolidatedLabel.nrrd");					
 				}
