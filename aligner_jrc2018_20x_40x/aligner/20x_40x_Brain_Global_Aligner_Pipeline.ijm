@@ -41,7 +41,7 @@ setBatchMode(true);
 testArg=0;
 
 // 40x
-//testArg= "/test/20x_brain_alignment/pre_Align_Test_Vol,BJD_103A02_AE_01_40x.h5j,/test/20x_brain_alignment/Pipeline_Test_Sample/BJD_103A02_AE_01_40x.h5j,/Users/otsunah/Documents/otsunah/20x_brain_aligner/,0.44,0.44,7,40x"
+//testArg= "/test/20x_brain_alignment/pre_Align_Test_Vol,tile-2579516868393959445.v3draw,/test/20x_brain_alignment/tile-2579516868393959445.v3draw,/Users/otsunah/Documents/otsunah/20x_brain_aligner/,0.44,0.44,11,40x,JRC2018,Both_OL_missing (40x),??"
 
 //for 20x
 //<<<<<<< HEAD
@@ -1633,8 +1633,8 @@ if(SizeM!=0){
 			}
 			
 			if(NRRD_02_ext==0){
-				startNeuronNum=1;
-				AdjustingNum=-1;
+				startNeuronNum=2;
+				AdjustingNum=0;
 				
 				if(MCFOYN==false)
 				maxvalue1=newArray(channels);
@@ -1705,17 +1705,19 @@ if(SizeM!=0){
 					break;
 					
 				}else if (neuronNum==startNeuronNum+3){
-					open(PathConsolidatedLabel);
-					ThisNeuronSep = 1;
-					run("Flip Vertically", "stack");
-					
-					if(nSlices!=NC82SliceNum){
-						print("PreAlignerError: Neuron separator result has different slice number; "+nSlices+"  nc82; "+NC82SliceNum);
+					if(Neuron_SepEXT==1){
+						open(PathConsolidatedLabel);
+						ThisNeuronSep = 1;
+						run("Flip Vertically", "stack");
 						
-						logsum=getInfo("log");
-						File.saveString(logsum, filepath);
-						run("Quit");
-					}
+						if(nSlices!=NC82SliceNum){
+							print("PreAlignerError: Neuron separator result has different slice number; "+nSlices+"  nc82; "+NC82SliceNum);
+							
+							logsum=getInfo("log");
+							File.saveString(logsum, filepath);
+							run("Quit");
+						}
+					}//if(Neuron_SepEXT==1){
 				}//if(neuronNum==startNeuronNum){
 				
 				run("Properties...", "channels=1 slices="+NC82SliceNum+" frames=1 unit=microns pixel_width="+Ori_widthVx+" pixel_height="+Ori_heightVx+" voxel_depth="+incredepth+"");
@@ -2213,10 +2215,10 @@ function ImageCorrelation(ImageCorrelationArray,widthVx,NumCPU){
 				}
 				selectWindow("ZOOM.tif");
 				
-			//	setBatchMode(false);
-			//	updateDisplay();
-			//	"do"
-			///	exit();
+				//	setBatchMode(false);
+				//	updateDisplay();
+				//	"do"
+				///	exit();
 				
 				close();
 			}
