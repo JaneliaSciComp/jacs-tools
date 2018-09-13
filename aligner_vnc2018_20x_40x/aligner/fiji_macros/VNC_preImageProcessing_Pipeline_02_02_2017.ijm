@@ -22,7 +22,7 @@ argstr=0;
 //argstr="D:"+File.separator+",I1_ZB49_T1,D:"+File.separator+"Dropbox (HHMI)"+File.separator+"VNC_project"+File.separator+"VNC_Lateral_F.tif,C:"+File.separator+"I2_ZB50_T1.v3draw,sr,0.2965237,0.2965237,f"//for test
 
 //argstr="/nrs/scicompsoft/otsuna/VNC_pipeline_error/,Out_PUT,/nrs/scicompsoft/otsuna/VNC_Lateral_F.tif,/nrs/jacs/jacsData/filestore/flylight/Sample/624/412/2389599578052624412/stitch/stitched-2377239301013373026.v3draw,ssr,0.44,0.44,f,/groups/jacs/jacsDev/devstore/flylight/Separation/122/600/2379727076623122600/separate/ConsolidatedLabel.v3dpbd,4"//for test
-//argstr="/nrs/scicompsoft/otsuna/VNC_pipeline_error/,Out_PUT,/nrs/scicompsoft/otsuna/VNC_Lateral_F.tif,/groups/jacs/jacsDev/devstore/flylight/Sample/012/200/2386405464612012200/stitch/stitched-2377239301013373026.v3draw,ssr,0.44,0.44,f,/groups/jacs/jacsDev/devstore/flylight/Separation/122/600/2379727076623122600/separate/ConsolidatedLabel.v3dpbd,4"//for test
+//argstr="/test/VNC_pipeline/,tile-2577638111085330453new.v3draw,/Users/otsunah/Dropbox (HHMI)/VNC_project/,/Volumes/otsuna/VNC_Aligner/tile-2577638111085330453new.v3draw,ssr,0.52,0.52,m,??,11"//for test
 //argstr="/test/VNC_pipeline/,tempsubjectsx.v3dpbd,/Users/otsunah/Dropbox (HHMI)/VNC_project/,/test/VNC_Test/tempsubjectsx.v3dpbd,sssr,0.45,0.45,f,/test/VNC_Test/ConsolidatedLabel.v3dpbd,4"//for test
 
 //argstr="/test/VNC_Test/PreAligned/,stitched-2469965973508063377.v3dpbd,/Users/otsunah/Dropbox (HHMI)/VNC_project/,/test/VNC_Test/Sample/stitched-2469965973508063377.v3dpbd,sr,0.44,0.44,f,/test/VNC_Test/Sample/ConsolidatedLabel.v3dpbd,8"//for test
@@ -179,7 +179,7 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 	donotOperate=0;
 	
 	getDimensions(width, height, channels, slices, frames);
-		
+	
 	if(channels>1){
 		run("Split Channels");//C2 is nc82
 		
@@ -191,7 +191,7 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 		zipIndex = lastIndexOf(noext, ".zip");
 		FLPOindex = lastIndexOf(noext, "FLPO");
 		lsmindex = lastIndexOf(noext, ".lsm");
-
+		
 		
 		if(zipIndex==-1){
 			nc82=0;
@@ -277,10 +277,10 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 		filepath=savedir+"VNC_pre_aligner_log.txt";
 		File.saveString(logsum, filepath);
 		
-	//	setBatchMode(false);
-	//	updateDisplay();
-	//	"do"
-	//	exit();
+		//	setBatchMode(false);
+		//	updateDisplay();
+		//	"do"
+		//	exit();
 		
 		if(donotOperate==0){
 			getVoxelSize(vxwidth, vxheight, depth, unit1);
@@ -373,7 +373,7 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 					sumlower=sumlower+lower;
 				}
 				avethreDef=round(sumlower/nSlices);
-			//	avethreDef=round(avethreDef-(avethreDef*0.1));
+				//	avethreDef=round(avethreDef-(avethreDef*0.1));
 				
 				// creating mask ////////////////////////
 				for(i=1; i<=nSlices; i++){
@@ -444,10 +444,10 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 			
 			CLEAR_MEMORY();
 			
-		//		setBatchMode(false);
-		//		updateDisplay();
-		//		"do"
-		//		exit();
+			//		setBatchMode(false);
+			//		updateDisplay();
+			//		"do"
+			//		exit();
 			
 			/// CLAHE, brightness equalization /////////////////////////////////////////////
 			for(ii=1; ii<=nSlices; ii++){
@@ -477,10 +477,10 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 			}
 			
 			
-		//	setBatchMode(false);
-		//	updateDisplay();
-		//	"do"
-		//	exit();
+			//	setBatchMode(false);
+			//	updateDisplay();
+			//	"do"
+			//	exit();
 			
 			////// VNC segmentatiom & rotation, Findout best threshold for better AR ////////////////////////////////////////////////
 			numberResults=0; mask1st=0; invertON=0;	maxARshape=0; ARshape=0; maxsizeData=0; maxsizeData=0;
@@ -884,8 +884,8 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 				selectImage(mask1st);
 				
 				run("Grays");
-		//		run("Maximum...", "radius=20");
-		//		run("Minimum...", "radius=20");
+				//		run("Maximum...", "radius=20");
+				//		run("Minimum...", "radius=20");
 				run("Make Binary");
 				
 				run("Fill Holes");
@@ -1023,10 +1023,10 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 					highthre=0;
 					highthreSum=0;
 					
-			//		setBatchMode(false);
-			//		updateDisplay();
-			//		"do"
-			//		exit();
+					//		setBatchMode(false);
+					//		updateDisplay();
+					//		"do"
+					//		exit();
 					
 					for(i=1; i<=nSlices; i++){
 						showStatus("Creating Mask");
@@ -1420,32 +1420,22 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 				CLEAR_MEMORY();
 				selectImage(DUP);
 				
-				if(Rstartslice<Rendslice)
-				run("Make Substack...", "  slices="+Rstartslice+"-"+Rendslice+"");
+				//			if(Rstartslice<Rendslice)
+				//			run("Make Substack...", "  slices="+Rstartslice+"-"+Rendslice+"");
 				
-			//			setBatchMode(false);
-			//		updateDisplay();
-			//			"do"
-			//			exit();
+				//				setBatchMode(false);
+				//			updateDisplay();
+				//				"do"
+				//				exit();
 				
 				realVNC=getImageID();
 				realVNCtitle=getTitle();
 				
-				if(Rstartslice<Rendslice){
-					selectImage(DUP);
-					close();
-					
-					while(isOpen(DUPst2)){
-						selectWindow(DUPst2);
-						close();
-					}
-					CLEAR_MEMORY();
-				}
 				
 				//	selectImage(realVNC);
 				//	rename(nc82);
 				
-		
+				
 				
 				if(FrontBackAnalysis==1){
 					if(aveCircR>aveCircF){//if rear is ventral slice
@@ -1681,10 +1671,10 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 					if(MIPsave==1){
 						selectImage(realVNC);
 						
-					//	setBatchMode(false);
-					//					updateDisplay();
-					//					"do"
-					//					exit();
+						//	setBatchMode(false);
+						//					updateDisplay();
+						//					"do"
+						//					exit();
 						
 						run("Z Project...", "start=1 stop="+nSlices+" projection=[Max Intensity]");
 						resetMinAndMax();
@@ -1712,10 +1702,10 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 							run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=pixels pixel_width="+widthVXsmall+" pixel_height="+heightVXsmall+" voxel_depth=1");//setting property, voxel size 1,1,1 for later translation.
 						}
 						
-				//		setBatchMode(false);
-				//		updateDisplay();
-				//		"do"
-				//		exit();
+						//		setBatchMode(false);
+						//		updateDisplay();
+						//		"do"
+						//		exit();
 						
 						
 						print("widthVXsmall; "+widthVXsmall+"   depthVXsmall; "+depthVXsmall+"   heightVXsmall; "+heightVXsmall);
@@ -1747,10 +1737,10 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 							//sampWidth; 153   sampHeight; 1024   nImages;158   defaultWidth; 17.4321
 							//defaultWidth; 17.4321
 							
-				//			setBatchMode(false);
-				//			updateDisplay();
-				//			"do"
-				//			exit();
+							//			setBatchMode(false);
+							//			updateDisplay();
+							//			"do"
+							//			exit();
 							
 							defaultWidth=(sampWidth*depthVXsmall)/(sampHeight/100);//309*0.2965/18  = 5
 							startWidth=defaultWidth;
@@ -1778,13 +1768,11 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 							
 							maxW=0; maxOBJ=0; nonmaxOBJtime=0; MinusRot=15; PlusRot=15; maxrotation=0; MaxShiftABS=10; NextRotation=0;
 							
-							print("  defaultWidth; "+defaultWidth);
+							print("  defaultWidth; "+defaultWidth+"  startWidth; "+startWidth);
 							heightSizeRatio=6.3828/heightVXsmall;//6.3828 is template's px hight size
 							
-							//ElongArray=newArray(0,0,2);
-							//Helongate (ElongArray,sampHeight,heightSizeRatio,lateralNC82stack,tempimg);
-							
-							maxH=round(sampHeight/heightSizeRatio);//ElongArray[0];
+							maxH=round((sampHeight/heightSizeRatio)*0.7);//ElongArray[0];
+							OBJScorePre=0;
 							
 							for(startW=round(startWidth-5); startW<round(startWidth)*4; startW++){
 								print("");
@@ -1804,14 +1792,16 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 								run("Minimum 3D...", "x=2 y=2 z=1");
 								run("Maximum 3D...", "x=2 y=2 z=1");
 								
-							//		if(startW==14){
-							//			setBatchMode(false);
-							//			updateDisplay();
-							//			"do"
-							//			exit();
-							//		}
-								
 								run("Subtract Background...", "rolling=10 disable");
+								
+								//		if(startW==14){
+								//			setBatchMode(false);
+								//			updateDisplay();
+								//			"do"
+								//			exit();
+								//		}
+								
+								
 								
 								//	setBatchMode(false);
 								//			updateDisplay();
@@ -1829,14 +1819,17 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 								
 								run("Canvas Size...", "width=60 height=100 position=Center zero");
 								
-						//		setBatchMode(false);
-						//		updateDisplay();
-						//		"do"
-						//		exit();
+								//		if(startW==12){
+								//			setBatchMode(false);
+								//			updateDisplay();
+								//			"do"
+								//			exit();
+								//		}
 								
 								if(isOpen("DUPnc82.tif")){
 									// for new jar version
 									run("Image Correlation Atomic", "samp=DUPnc82.tif temp="+tempimg+" +="+PlusRot+" -="+MinusRot+" overlap="+100-MaxShiftABS-10+" parallel=4 rotation=1 calculation=[OBJ peasonCoeff] weight=[Equal weight (temp and sample)]");
+									wait(10);
 									
 									totalLog=getInfo("log");
 									
@@ -1859,10 +1852,29 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 									ShiftX=substring(totalLog, XPosi+7, YPosi-2);
 									ShiftX=parseFloat(ShiftX);
 									
+									Zeroosi=lastIndexOf(totalLog, "value is");
+									if(Zeroosi!=-1){
+										OBJScore=0;
+									//	setBatchMode(false);
+								//		updateDisplay();
+								//		"do"
+								//		exit();
+									}
 									
-									if(maxOBJ<=OBJScore){
+									if(OBJScorePre==0){
+										OBJScorePre=OBJScore;
+										OBJScorePrePre=OBJScore;
+									}
+									
+									aveOBJScore=(OBJScore+OBJScorePre+OBJScorePrePre)/3;
+									print(" aveOBJScore; "+aveOBJScore);
+									
+									OBJScorePrePre=OBJScorePre;
+									OBJScorePre=OBJScore;
+									
+									if(maxOBJ<=aveOBJScore){
 										nonmaxOBJtime=0;
-										maxOBJ=OBJScore;
+										maxOBJ=aveOBJScore;
 										maxW=startW;
 										maxY=ShiftY;
 										maxX=ShiftX;
@@ -1930,13 +1942,16 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 							
 							selectImage(lateralNC82stack);
 							
-					//		setBatchMode(false);
-					//					updateDisplay();
-					//						"do"
-					//						exit();
+							//		setBatchMode(false);
+							//					updateDisplay();
+							//						"do"
+							//						exit();
 							
 							realdepthVal=6.4/Mvxwidth;//*depth
 							realHeightVal=(6.3828/Mvxheight)*vxheight;
+							
+							if(realHeightVal<vxheight*0.9 || realHeightVal>vxheight*1.2)
+							realHeightVal=vxheight;
 							
 							maxrotation=maxrotation/(realdepthVal/widthVXsmall);
 							
@@ -1952,25 +1967,25 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 								run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=microns pixel_width="+OriSampWidth+" pixel_height="+OriSampHeight+" voxel_depth="+OriSampDepth+"");
 							}//	if(rotationOriginal>0){
 							
-					//		setBatchMode(false);
-					//				updateDisplay();
-					//				"do"
-					//				exit();
+							//		setBatchMode(false);
+							//				updateDisplay();
+							//				"do"
+							//				exit();
 							
 							print(" 1703; nImages; "+nImages);
 							PrintWindows ();
 							selectImage(lateralNC82stack);
 							
 							XlateralTrans = round(maxX*(sampWidth/(BestWidth*(0.6214809/widthVXsmall))));
-							YlateralTrans = round(maxY*((getHeight*realHeightVal)/maxH));
+							YlateralTrans =0;// round(maxY*((getHeight*realHeightVal)/maxH));
 							
 							print("maxX lateral; "+maxX+"  X trans; "+XlateralTrans+"   maxY; "+maxY+"   maxH; "+maxH+"   Y trans; "+YlateralTrans);
 							run("Translate...", "x="+XlateralTrans+" y="+YlateralTrans+" interpolation=None stack");//round(maxX*(sampHeight/100)*(defaultWidth/maxW))
 							
-					//		setBatchMode(false);
-					//		updateDisplay();
-					//		"do"
-					//		exit();
+							//		setBatchMode(false);
+							//		updateDisplay();
+							//		"do"
+							//		exit();
 							
 							run("Canvas Size...", "width="+sampWidth+" height="+sampHeight+" position=Center zero");
 							
@@ -1990,10 +2005,10 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 							
 							lateralNC82MIP2=getImageID();
 							
-						//	setBatchMode(false);
-						//						updateDisplay();
-						//							"do"
-						//							exit();
+							//	setBatchMode(false);
+							//						updateDisplay();
+							//							"do"
+							//							exit();
 							
 							
 							selectImage(Dupstack);
@@ -2134,7 +2149,7 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 							if(Rendslice>nSlices)
 							Rendslice=nSlices;
 							
-							run("Make Substack...", "  slices="+Rstartslice+"-"+Rendslice+"");
+							//		run("Make Substack...", "  slices="+Rstartslice+"-"+Rendslice+"");
 							realNeuron=getImageID();//substack, duplicated
 							
 							run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=pixels pixel_width=1 pixel_height=1 voxel_depth=1");
@@ -2169,7 +2184,7 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 								realNeuron2=getImageID();
 							}//if(AdvanceDepth){
 							
-						
+							
 							
 							//	if(bitd==8)
 							run("16-bit");
@@ -2198,8 +2213,8 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 							selectImage(realNeuron);
 							close();
 							
-							selectImage(selectedNeuron);
-							close();
+							//			selectImage(selectedNeuron);
+							//			close();
 						}//for(exportchannel=1; exportchannel<=titlelist.length; exportchannel++){
 						
 						run("Close All");
@@ -2238,7 +2253,7 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 							if(Rendslice>nSlices)
 							Rendslice=nSlices;
 							
-							run("Make Substack...", "  slices="+Rstartslice+"-"+Rendslice+"");
+							//		run("Make Substack...", "  slices="+Rstartslice+"-"+Rendslice+"");
 							realNeuron=getImageID();//substack, duplicated
 							
 							if(FrontAndBack>0){
@@ -2257,10 +2272,10 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 							selectImage(realNeuron);
 							run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=microns pixel_width="+vxwidth+" pixel_height="+vxheight+" voxel_depth="+depth+"");
 							
-					//		setBatchMode(false);
-					//		updateDisplay();
-					//		"do"
-					//		exit();
+							//		setBatchMode(false);
+							//		updateDisplay();
+							//		"do"
+							//		exit();
 							
 							if(AdvanceDepth==true){
 								print("2252 AdvanceDepth ON; sampleLongLength; "+sampleLongLength+"  maxrotation; "+maxrotation+"  sampWidth; "+sampWidth+"  sampHeight; "+sampHeight);
@@ -2279,7 +2294,7 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 								run("Canvas Size...", "width="+sampWidth+" height="+sampHeight+" position=Center zero");
 								run("Reslice [/]...", "output=1 start=Left rotate avoid");
 								run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=microns pixel_width="+realHeightVal+" pixel_height="+realHeightVal+" voxel_depth="+realdepthVal+"");
-
+								
 								realNeuron2=getImageID();
 							}//if(AdvanceDepth){
 							
@@ -2299,8 +2314,8 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 							
 							selectImage(realNeuron);
 							close();
-							selectImage(selectedNeuron);
-							close();
+							//		selectImage(selectedNeuron);
+							//		close();
 							
 							print("ConsolidatedLabel save Done");
 							logsum=getInfo("log");
@@ -2454,10 +2469,10 @@ function Helongate (ElongArray,sampHeight,heightSizeRatio,lateralNC82stack,tempi
 		//	run("Size...", "width=18 height=80 depth=100 constrain average interpolation=Bilinear");
 		//run("Median...", "radius=10 stack");
 		
-	//	setBatchMode(false);
-	//	updateDisplay();
-	//	"do"
-	//	exit();
+		//		setBatchMode(false);
+		//		updateDisplay();
+		//		"do"
+		//		exit();
 		
 		Dupstack=getImageID();
 		DupstackST=getTitle();
@@ -2472,12 +2487,12 @@ function Helongate (ElongArray,sampHeight,heightSizeRatio,lateralNC82stack,tempi
 		
 		run("16-bit");
 		
-	//	if(startH==85){
-	//		setBatchMode(false);
-	//				updateDisplay();
-	//				"do"
-	//					exit();
-	//	}
+		//		if(startH==65){
+		//			setBatchMode(false);
+		//					updateDisplay();
+		//		"do"
+		//						exit();
+		//		}
 		
 		run("Canvas Size...", "width=60 height=100 position=Center zero");
 		rename("DUPnc82.tif");
@@ -2545,9 +2560,9 @@ function Helongate (ElongArray,sampHeight,heightSizeRatio,lateralNC82stack,tempi
 		tryN=tryN+1;
 	}//for(startH=round(startWidth); startH<round(startWidth)*4; startH++){
 	maxaveOBJ=0; maximax=0;
-	for(imax=0; imax<=OBJScoreA.length-3; imax++){
+	for(imax=1; imax<=OBJScoreA.length-3; imax++){
 		
-		aveOBJ=((OBJScoreA[imax]+OBJScoreA[imax+1]+OBJScoreA[imax+2])/3);
+		aveOBJ=((OBJScoreA[imax-1]+OBJScoreA[imax]+OBJScoreA[imax+1])/3);
 		
 		if(maxaveOBJ<=aveOBJ){
 			maxaveOBJ=aveOBJ;
@@ -2555,7 +2570,7 @@ function Helongate (ElongArray,sampHeight,heightSizeRatio,lateralNC82stack,tempi
 		}
 	}//for(imax=0; imax<=OBJScore.length-3; imax++){
 	
-	print("maxH+3; "+maxHA[maximax]+3);
+	print("maxH+3; "+maxHA[maximax]+3+"   maxaveOBJ; "+maxaveOBJ);
 	ElongArray[0]=maxHA[maximax]+3;
 	ElongArray[1]=MvxheightA[maximax];
 	
