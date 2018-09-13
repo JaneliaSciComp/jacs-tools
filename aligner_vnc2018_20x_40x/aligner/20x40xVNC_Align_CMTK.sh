@@ -375,6 +375,7 @@ if [[ $INPUT1_GENDER == "f" ]]; then
     TEMPNAME="JRC2018_VNC_Female"
     OLDSPACE="FemaleVNCSymmetric2017_20x"
     iniT=$JRC2018_VNC_Female
+    OLDVOXELS="0.4612588x0.4612588x0.7"
 
 elif [[ $INPUT1_GENDER == "m" ]]; then
     genderT="MALE"
@@ -383,6 +384,7 @@ elif [[ $INPUT1_GENDER == "m" ]]; then
     TEMPNAME="JRC2018_VNC_Male"
     OLDSPACE="MaleVNC2016_20x"
     iniT=$JRC2018_VNC_Male
+    OLDVOXELS="0.4611222x0.4611222x0.7"
 
 else
     echo "ERROR: invalid gender: $INPUT1_GENDER"
@@ -527,7 +529,7 @@ scoreGen $sig"_01.nrrd" $iniT "score2018"
 #    rm $RAWOUT_NEURON
 #fi
 
-writeProperties "$RAWOUT" "" "JRC2018_VNC_${genderT}" "$objective" "0.46x0.46x0.70" "572x1164x229" "$score2018" "" ""
+writeProperties "$RAWOUT" "" "JRC2018_VNC_${genderT}" "$objective" "0.461122x0.461122x0.70" "572x1164x229" "$score2018" "" ""
 
 
 ########################################################################################################
@@ -556,7 +558,7 @@ if [[ -e $Global_Aligned_Separator_Result ]]; then
     rm $RAWOUT_NEURON
 fi
 
-writeProperties "$RAWOUT" "$FLIP_NEURON" "JRC2018_VNC_Unisex" "$objective" "0.46x0.46x0.70" "573x1119x219" "" "" "$main_aligned_file"
+writeProperties "$RAWOUT" "$FLIP_NEURON" "JRC2018_VNC_Unisex" "$objective" "0.461122x0.461122x0.70" "573x1119x219" "" "" "$main_aligned_file"
 
 
 ########################################################################################################
@@ -594,7 +596,7 @@ fi
 
 oldscore=`cat $registered_otsuna_qual`
 
-writeProperties "$RAWOUT" "" "$OLDSPACE" "20x" "0.46x0.46x0.70" "512x1100x220" "$oldVNC" "$oldscore" "$main_aligned_file"
+writeProperties "$RAWOUT" "" "$OLDSPACE" "20x" "$OLDVOXELS" "512x1100x220" "$oldVNC" "$oldscore" "$main_aligned_file"
 
 if [[ $INPUT1_GENDER =~ "m" ]]; then
     ########################################################################################################
@@ -608,7 +610,7 @@ if [[ $INPUT1_GENDER =~ "m" ]]; then
     gsig=$OUTPUT"/"$filename
     reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
 
-    writeProperties "$RAWOUT" "" "FemaleVNCSymmetric2017_20x" "20x" "0.46x0.46x0.70" "512x1024x220" "$score2010" "" "$main_aligned_file"
+    writeProperties "$RAWOUT" "" "FemaleVNCSymmetric2017_20x" "20x" "0.4612588x0.4612588x0.7" "512x1024x220" "$score2010" "" "$main_aligned_file"
 fi
 
 # -------------------------------------------------------------------------------------------
