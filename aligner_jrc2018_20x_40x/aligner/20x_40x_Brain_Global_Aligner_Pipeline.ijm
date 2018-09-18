@@ -41,7 +41,7 @@ setBatchMode(true);
 testArg=0;
 
 // 40x
-//testArg= "/test/20x_brain_alignment/pre_Align_Test_Vol,tile-2579516868393959445.v3draw,/test/20x_brain_alignment/tile-2579516868393959445.v3draw,/Users/otsunah/Documents/otsunah/20x_brain_aligner/,0.44,0.44,11,40x,JRC2018,Both_OL_missing (40x),??"
+//testArg= "/test/20x_brain_alignment/fail/,tile-2580114806669312021.v3draw,/test/20x_brain_alignment/fail/tile-2580114806669312021.v3draw,/Users/otsunah/Documents/otsunah/20x_brain_aligner/,0.44,0.44,11,40x,JRC2018,Both_OL_missing (40x),/test/20x_brain_alignment/fail/ConsolidatedLabel.v3dpbd"
 
 //for 20x
 //<<<<<<< HEAD
@@ -1634,7 +1634,7 @@ if(SizeM!=0){
 			
 			if(NRRD_02_ext==0){
 				startNeuronNum=2;
-				AdjustingNum=0;
+				AdjustingNum=-1;
 				
 				if(MCFOYN==false)
 				maxvalue1=newArray(channels);
