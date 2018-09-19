@@ -33,6 +33,7 @@ Vaa3D=/opt/Vaa3D/vaa3d
 # Fiji macros
 NRRDCONV=$DIR"/nrrd2v3draw.ijm"
 PREPROCIMG=$DIR"/20x_40x_Brain_Global_Aligner_Pipeline.ijm"
+TWELVEBITCONV=$DIR"/12bit_Conversion.ijm"
 SCOREGENERATION=$DIR"/Score_Generator_Cluster.ijm"
 
 templateBr="JRC2018" #"JFRC2014", "JFRC2013", "JFRC2014", "JRC2018"
@@ -474,6 +475,7 @@ else
     echo "cmtk_warping stop: $STOP"
 fi
 
+$FIJI -macro $TWELVEBITCONV "$OUTPUT/,"$filename"_01.nrrd,$gloval_nc82_nrrd"
 
 
 ########################################################################################################
@@ -491,18 +493,18 @@ gsig=$OUTPUT"/"$filename
 reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
 scoreGen $sig"_01.nrrd" $iniT "score2018"
 
-#if [[ -e $Global_Aligned_Separator_Result ]]; then
-#    prefix="${OUTPUT}/${fn}_ConsolidatedLabel"
-#    sig=$prefix".nrrd"
-#    RAWOUT_NEURON=$prefix"_flipped.v3draw"
-#    gsig=$Global_Aligned_Separator_Result
-#    reformat "$gsig" "$TEMP" "$DEFFIELD" "$sig" "" "ignore" "--nn"
-#    nrrd2Raw "$RAWOUT_NEURON,$sig"
-#    FLIP_NEURON=$prefix".v3draw"
-#    # flip neurons back to Neuron Annotator format
-#    flip "$RAWOUT_NEURON" "$FLIP_NEURON" "yflip"
-#    rm $RAWOUT_NEURON
-#fi
+if [[ -e $Global_Aligned_Separator_Result ]]; then
+    prefix="${OUTPUT}/${fn}_ConsolidatedLabel"
+    sig=$prefix".nrrd"
+    RAWOUT_NEURON=$prefix"_flipped.v3draw"
+    gsig=$Global_Aligned_Separator_Result
+    reformat "$gsig" "$TEMP" "$DEFFIELD" "$sig" "" "ignore" "--nn"
+    nrrd2Raw "$RAWOUT_NEURON,$sig"
+    FLIP_NEURON=$prefix".v3draw"
+    # flip neurons back to Neuron Annotator format
+    flip "$RAWOUT_NEURON" "$FLIP_NEURON" "yflip"
+    rm $RAWOUT_NEURON
+fi
 
 writeProperties "$RAWOUT" "" "JRC2018_${genderT}_${TRESOLUTION}" "$TRESOLUTION" "0.44x0.44x0.44" "1348x642x472" "$score2018" ""
 
