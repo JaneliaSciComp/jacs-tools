@@ -36,6 +36,7 @@ VNCScripts=/opt/aligner/fiji_macros
 NRRDCONV=$VNCScripts"/nrrd2v3draw.ijm"
 PREPROCIMG=$VNCScripts"/VNC_preImageProcessing_Pipeline_02_02_2017.ijm"
 SCOREGENERATION=$VNCScripts"/Score_Generator_Cluster.ijm"
+TWELVEBITCONV=$VNCScripts"/12bit_Conversion.ijm"
 
 templateBr="JRC2018_VNC_FEMALE" #"VNC_FEMALE_symmetric", "VNC_MALE", "JRC2018_VNC_MALE"
 Path=$INPUT1_FILE
@@ -499,7 +500,7 @@ else
     echo "cmtk_warping stop: $STOP"
 fi
 
-
+$FIJI -macro $TWELVEBITCONV "$OUTPUT/,"$filename"_01.nrrd,$gloval_nc82_nrrd"
 
 ########################################################################################################
 # JRC2018 gender-specific reformat
