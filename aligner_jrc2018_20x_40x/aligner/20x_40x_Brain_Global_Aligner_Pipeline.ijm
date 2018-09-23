@@ -43,6 +43,9 @@ testArg=0;
 // 40x
 //testArg= "/test/20x_brain_alignment/fail/,tile-2580114806669312021.v3draw,/test/20x_brain_alignment/fail/tile-2580114806669312021.v3draw,/Users/otsunah/Documents/otsunah/20x_brain_aligner/,0.44,0.44,11,40x,JRC2018,Both_OL_missing (40x),/test/20x_brain_alignment/fail/ConsolidatedLabel.v3dpbd"
 
+//testArg= "/test/20x_brain_alignment/fail/,GMR_MB630B_20150925_44_B6_FLPO_20160826164626823_74053.lsm,/test/20x_brain_alignment/fail/GMR_MB630B_20150925_44_B6_FLPO_20160826164626823_74053.lsm,/Users/otsunah/Documents/otsunah/20x_brain_aligner/,0.52,0.52,11,20x,JRC2018,Unknown,??"
+
+
 //for 20x
 //<<<<<<< HEAD
 //testArg= "/test/20x_brain_alignment/,tile-2577640000216629269.v3draw,/test/20x_brain_alignment/tile-2577640000216629269.v3draw,/Users/otsunah/Documents/otsunah/20x_brain_aligner/,0.62,1,7,20x,JRC2018,Unknown,/test/20x_brain_alignment/ConsolidatedLabel.v3dpbd"
@@ -2111,7 +2114,9 @@ function ImageCorrelation(ImageCorrelationArray,widthVx,NumCPU){
 	//		exit();
 	
 	run("Image Correlation Atomic", "samp=SampMIP.tif temp=JFRC2010_50pxMIP.tif +=179 -=180 overlap=80 parallel="+NumCPU+" rotation=1 result calculation=[OBJ peasonCoeff] weight=[Equal weight (temp and sample)]");
-	
+
+	updateResults();
+	wait(5);
 	OBJ=getResult("OBJ score", 0);
 	OBJScore=parseFloat(OBJ);
 	
@@ -2153,6 +2158,8 @@ function ImageCorrelation(ImageCorrelationArray,widthVx,NumCPU){
 			
 			run("Image Correlation Atomic", "samp=SingleSamp.tif temp=JFRC2010_50pxSlice.tif +=55 -=55 overlap=90 parallel="+NumCPU+" rotation=1 result calculation=[OBJ peasonCoeff] weight=[Equal weight (temp and sample)]");
 			
+			updateResults();
+			wait(5);
 			OBJ=getResult("OBJ score", 0);
 			OBJScore=parseFloat(OBJ);
 			
@@ -2192,6 +2199,8 @@ function ImageCorrelation(ImageCorrelationArray,widthVx,NumCPU){
 				
 				run("Image Correlation Atomic", "samp=ZOOM.tif temp=JFRC2010_50pxMIP.tif +=180 -=179 overlap=70 parallel="+NumCPU+" rotation=1 result calculation=[OBJ peasonCoeff] weight=[Equal weight (temp and sample)]");
 				
+				updateResults();
+				wait(5);
 				OBJ=getResult("OBJ score", 0);
 				OBJScore=parseFloat(OBJ);
 				
@@ -2411,6 +2420,8 @@ function ImageCorrelation2 (sample, templateImg, rotSearch,ImageCarray,overlap,N
 	
 	run("Image Correlation Atomic", "samp="+sample+" temp="+templateImg+" +="+rotSearch+" -="+rotSearch+" overlap="+overlap+" parallel="+NumCPU+" rotation=1 result calculation=[OBJ peasonCoeff] weight=[Equal weight (temp and sample)]");
 	
+	updateResults();
+	wait(5);
 	OBJ=getResult("OBJ score", 0);
 	OBJScore=parseFloat(OBJ);
 	
@@ -2699,15 +2710,14 @@ function lateralDepthAdjustment(op1center,op2center,lateralArray,nc82,templateBr
 		
 		run("Canvas Size...", "width=65 height=110 position=Center zero");
 		
-		//		setBatchMode(false);
-		//				updateDisplay();
-		//			"do"
-		//			exit();
-		
 		run("Image Correlation Atomic", "samp=smallMIP.tif temp=Lateral_JFRC2010_5time_smallerMIP.tif +=10 -=10 overlap=90 parallel="+NumCPU+" rotation=1 result calculation=[OBJ peasonCoeff] weight=[Equal weight (temp and sample)]");
+	//	run("Image Correlation Atomic", "samp=smallMIP.tif temp=Lateral_JFRC2010_5time_smallerMIP.tif +=10 -=10 overlap=90 parallel=11 rotation=1 result calculation=[OBJ peasonCoeff] weight=[Equal weight (temp and sample)]");
 		
+		updateResults();
+		wait(5);
 		OBJ=getResult("OBJ score", 0);
 		OBJScoreL=parseFloat(OBJ);
+		print(OBJScoreL+"  "+iWidth);
 		
 		if(OBJScoreL>MaxOBJL){
 			//		print(OBJScoreL);
