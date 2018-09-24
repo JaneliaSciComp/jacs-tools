@@ -503,9 +503,9 @@ fi
 echo " "
 echo "+----------------------------------------------------------------------+"
 echo "| 12-bit conversion"
-echo "| $FIJI -macro $TWELVEBITCONV \"$OUTPUT/,\"$filename\"_01.nrrd,$gloval_nc82_nrrd\""
+echo "| $FIJI -macro $TWELVEBITCONV \"${OUTPUT}/,${filename}_01.nrrd,${gloval_nc82_nrrd}\""
 echo "+----------------------------------------------------------------------+"
-$FIJI -headless -macro $TWELVEBITCONV "$OUTPUT/,"$filename"_01.nrrd,$gloval_nc82_nrrd" > $OUTPUT/conv12bit.log 2>&1
+$FIJI --headless -macro $TWELVEBITCONV "${OUTPUT}/,${filename}_01.nrrd,${gloval_nc82_nrrd}" > $OUTPUT/conv12bit.log 2>&1
 
 ########################################################################################################
 # JRC2018 gender-specific reformat
