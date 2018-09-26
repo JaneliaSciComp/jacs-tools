@@ -31,7 +31,7 @@ do
         for ALIGNER in "$@"
         do
             ALIGNER=${ALIGNER%/}
-            VERSION=`grep VERSION $ALIGNER/Singularity | sed "s/VERSION //"`
+            VERSION=`grep VERSION $ALIGNER/Singularity | sed "s/VERSION //" | head -n 1`
             FILENAME=${ALIGNER}-${VERSION}.img
             sudo rm -f /tmp/$FILENAME && true
             echo "---------------------------------------------------------------------------------"
@@ -57,7 +57,7 @@ do
     elif [ "$COMMAND" == "shell" ]; then
 
         ALIGNER=${1%/}
-        VERSION=`grep VERSION $ALIGNER/Singularity | sed "s/VERSION //"`
+        VERSION=`grep VERSION $ALIGNER/Singularity | sed "s/VERSION //" | head -n 1`
         FILENAME=${ALIGNER}-${VERSION}.img
         IMGFILE=$BUILD_DIR/$FILENAME
 
@@ -80,7 +80,7 @@ do
         for ALIGNER in "$@"
         do
             ALIGNER=${ALIGNER%/}
-            VERSION=`grep VERSION $ALIGNER/Singularity | sed "s/VERSION //"`
+            VERSION=`grep VERSION $ALIGNER/Singularity | sed "s/VERSION //" | head -n 1`
             FILENAME=${ALIGNER}-${VERSION}.img
             IMGFILE=$BUILD_DIR/$FILENAME
 
@@ -106,7 +106,7 @@ do
         for ALIGNER in "$@"
         do
             ALIGNER=${ALIGNER%/}
-            VERSION=`grep VERSION $ALIGNER/Singularity | sed "s/VERSION //"`
+            VERSION=`grep VERSION $ALIGNER/Singularity | sed "s/VERSION //" | head -n 1`
             FILENAME=${ALIGNER}-${VERSION}.img
             IMGFILE=$BUILD_DIR/$FILENAME
 
