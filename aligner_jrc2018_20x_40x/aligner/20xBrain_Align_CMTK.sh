@@ -412,17 +412,6 @@ elif [[ "$OL" == "Both_OL_missing (40x)" ]]; then
     iniT=$JRC2018_20x_noOL
 fi
 
-if [[ $INPUT1_GENDER == "f" ]]; then
-    if [[ $RESX == "0.621481" ]]; then
-        reformat_JRC2018_to_U=$reformat_JRC2018F_gen1_to_U
-    elif [[ $RESX == "0.5189161" ]]; then
-        reformat_JRC2018_to_U=$reformat_JRC2018F_HR_to_U
-    elif [[ $RESX == "0.4413373" ]]; then
-        reformat_JRC2018_to_U=$reformat_JRC2018F_40x_to_U
-        iniT=$JRC2018_40x_NOOL
-    fi
-fi
-
 # For TEST ############################################
 if [[ $testmode == 1 ]]; then
     gloval_nc82_nrrd=$OUTPUT"/JRC2018MALE_JFRC2014_63x_DistCorrected_01_warp.nrrd"
