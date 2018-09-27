@@ -310,9 +310,21 @@ elif [[ $RESX == "0.5189161" ]]; then
 elif [[ $RESX == "0.4413373" ]]; then
     TRESOLUTION="40x"
 else
-    echo "Error: Input resolution $RESX is not supported"
-    writeErrorProperties "AlignerError" "JRC2018_${genderT}" "$objective" "Input resolution $RESX is not supported"
-    exit 0;
+
+    gapGen1=$(($RESX-0.621481))
+    gapMCFO=$(($RESX-0.5189161))
+    gap40x=$(($RESX-0.4413373))
+
+    if [[ ${gapGen1#-} < ${gapMCFO#-} ]]; then
+        TRESOLUTION="20x_gen1"
+    fi
+
+    if [[ ${gapMCFO#-} < ${gapGen1#-} ]]; then
+        TRESOLUTION="20x_HR"
+        if [[ ${gap40x#-} < ${gapMCFO#-} ]]; then
+            TRESOLUTION="40x"
+        fi
+    fi
 fi
 
 echo "TRESOLUTION: "$TRESOLUTION
@@ -475,13 +487,8 @@ else
     echo "cmtk_warping stop: $STOP"
 fi
 
-
-echo " "
-echo "+----------------------------------------------------------------------+"
-echo "| 12-bit conversion"
-echo "| $FIJI -macro $TWELVEBITCONV \"${OUTPUT}/,${filename}_01.nrrd,${gloval_nc82_nrrd}\""
-echo "+----------------------------------------------------------------------+"
-$FIJI --headless -macro $TWELVEBITCONV "${OUTPUT}/,${filename}_01.nrrd,${gloval_nc82_nrrd}" > $OUTPUT/conv12bit.log 2>&1
+# Normalize intensity range to 12-bit
+$FIJI -macro $TWELVEBITCONV "$OUTPUT/,"$filename"_01.nrrd,$gloval_nc82_nrrd"
 
 ########################################################################################################
 # JRC2018 gender-specific alignment
