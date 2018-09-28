@@ -311,17 +311,17 @@ elif [[ $RESX == "0.4413373" ]]; then
     TRESOLUTION="40x"
 else
 
-    gapGen1=$(($RESX-0.621481))
-    gapMCFO=$(($RESX-0.5189161))
-    gap40x=$(($RESX-0.4413373))
+    gapGen1=$(echo "$RESX-0.621481" | bc -l)
+    gapMCFO=$(echo "$RESX-0.5189161" | bc -l)
+    gap40x=$(echo "$RESX-0.4413373" | bc -l)
 
-    if [[ ${gapGen1#-} < ${gapMCFO#-} ]]; then
+    if [[ 0${gapGen1#-} < 0${gapMCFO#-} ]]; then
         TRESOLUTION="20x_gen1"
     fi
 
-    if [[ ${gapMCFO#-} < ${gapGen1#-} ]]; then
+    if [[ 0${gapMCFO#-} < 0${gapGen1#-} ]]; then
         TRESOLUTION="20x_HR"
-        if [[ ${gap40x#-} < ${gapMCFO#-} ]]; then
+        if [[ 0${gap40x#-} < 0${gapMCFO#-} ]]; then
             TRESOLUTION="40x"
         fi
     fi
