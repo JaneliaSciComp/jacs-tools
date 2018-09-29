@@ -51,7 +51,7 @@ echo "Installing dependencies"
 EPEL_FILE=epel-release-latest-7.noarch.rpm
 curl -s http://dl.fedoraproject.org/pub/epel/{$EPEL_FILE} -o '#1'
 rpm -ivh $EPEL_FILE && /bin/rm -f $EPEL_FILE
-yum install -y python-pip jq
+yum install -y python-pip jq bc
 pip install yq
 
 echo "Fixing permissions"
