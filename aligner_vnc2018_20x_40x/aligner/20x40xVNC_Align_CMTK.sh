@@ -194,9 +194,9 @@ function reformat() {
     else
         echo "--------------"
         echo "Running CMTK reformatting on channel $_channel"
-        echo "$CMTK/reformatx -o $_sig $_opts --floating $_gsig $_TEMP $_DEFFIELD"
+        echo "$CMTK/reformatx --threads $NSLOTS -o $_sig $_opts --floating $_gsig $_TEMP $_DEFFIELD"
         START=`date '+%F %T'`
-        $CMTK/reformatx -o "$_sig" $_opts --floating $_gsig $_TEMP $_DEFFIELD
+        $CMTK/reformatx --threads $NSLOTS -o "$_sig" $_opts --floating $_gsig $_TEMP $_DEFFIELD
         STOP=`date '+%F %T'`
 
         if [[ ! -e $_sig ]]; then
@@ -452,10 +452,10 @@ if [[ -e $registered_initial_xform ]]; then
 else
     echo "+---------------------------------------------------------------------------------------+"
     echo "| Running CMTK/make_initial_affine"
-    echo "| $iniT $gloval_nc82_nrrd $registered_initial_xform"
+    echo "| $CMTK/make_initial_affine --threads $NSLOTS --principal_axes $iniT $gloval_nc82_nrrd $registered_initial_xform"
     echo "+---------------------------------------------------------------------------------------+"
     START=`date '+%F %T'`
-    $CMTK/make_initial_affine --principal_axes $iniT $gloval_nc82_nrrd $registered_initial_xform
+    $CMTK/make_initial_affine --threads $NSLOTS --principal_axes $iniT $gloval_nc82_nrrd $registered_initial_xform
     STOP=`date '+%F %T'`
     if [[ ! -e $registered_initial_xform ]]; then
         echo -e "Error: CMTK make initial affine failed"
