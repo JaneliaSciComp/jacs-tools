@@ -2077,6 +2077,10 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 						
 						if(FrontAndBack>0)
 						run("Nrrd Writer", "compressed nrrd="+myDir0+noext+"_Rev_01.nrrd");
+						
+						print("PreAlignerError: Shape Problem.");
+						logsum=getInfo("log");
+						File.saveString(logsum, filepath);
 					}
 					
 					close();
