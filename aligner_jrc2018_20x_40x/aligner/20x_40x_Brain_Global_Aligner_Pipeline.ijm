@@ -13,7 +13,7 @@ nrrdEx=true;
 revstack=false;
 
 cropWidth=1400;
-cropHeight=850;
+cropHeight=800;
 ChannelInfo = "01 02 nrrd files";
 blockposition=1;
 totalblock=1;
@@ -48,9 +48,9 @@ testArg=0;
 
 //for 20x
 //<<<<<<< HEAD
-//testArg= "/test/20x_brain_alignment/,tile-2577640000216629269.v3draw,/test/20x_brain_alignment/tile-2577640000216629269.v3draw,/Users/otsunah/Documents/otsunah/20x_brain_aligner/,0.62,1,7,20x,JRC2018,Unknown,/test/20x_brain_alignment/ConsolidatedLabel.v3dpbd"
+//testArg= "/test/20x_brain_alignment/,JRC_SS04948_20150828_31_F1_tile-2586750767218032674.h5j,/Users/otsunah/Downloads/Workstation/JRC_SS04948/JRC_SS04948_20150828_31_F1_tile-2586750767218032674.h5j,/Users/otsunah/Documents/otsunah/20x_brain_aligner/,0.52,1,7,20x,JRC2018,Unknown,??"
 //=======
-//testArg= "/test/20x_brain_alignment/TwoChannel/,tile-2562429413983518741.v3dpbd,/test/20x_brain_alignment/TwoChannel/tile-2562429413983518741.v3dpbd,/Users/otsunah/Documents/otsunah/20x_brain_aligner/,0.62,1,7,20x,JRC2018,Unknown,/test/20x_brain_alignment/TwoChannel/ConsolidatedLabel.v3dpbd"
+//testArg= "/test/20x_brain_alignment/TwoChannel/,GMR_MB433B_20121003_31_A1_tile-2586697527118004258.v3draw,/Users/otsunah/Downloads/Workstation/GMR_MB433B/GMR_MB433B_20121003_31_A1_tile-2586697527118004258.v3draw,/Users/otsunah/Documents/otsunah/20x_brain_aligner/,0.56,1,7,20x,JRC2018,Unknown,??"
 //>>>>>>> origin/master
 
 if(testArg!=0)
@@ -132,7 +132,7 @@ String.resetBuffer;
 myDir0 = savedir+"Shape_problem"+File.separator;
 File.makeDirectory(myDir0);
 
-myDir4 = savedir+"High_background_cannot_segment_VNC"+File.separator;
+myDir4 = savedir+"High_background_cannot_segment"+File.separator;
 File.makeDirectory(myDir4);
 
 logsum=getInfo("log");
@@ -1525,7 +1525,7 @@ if(SizeM!=0){
 				run("Properties...", "channels=1 slices="+NC82SliceNum+" frames=1 unit=microns pixel_width=1 pixel_height=1 voxel_depth=1");
 				run("Reslice [/]...", "output=1.000 start=Left rotate avoid");
 				rename("resliceN.tif");
-				print("Reslice nc82 Done 1967");
+				print("Reslice nc82 Done 1967, Not translated lateral, LateralYtrans; "+LateralYtrans+"   LateralXtrans; "+LateralXtrans);
 				if(bitDepth==8)
 				run("16-bit");
 				
@@ -2113,24 +2113,40 @@ function ImageCorrelation(ImageCorrelationArray,widthVx,NumCPU){
 	//			"do"
 	//		exit();
 	
-	run("Image Correlation Atomic", "samp=SampMIP.tif temp=JFRC2010_50pxMIP.tif +=179 -=180 overlap=80 parallel="+NumCPU+" rotation=1 result calculation=[OBJ peasonCoeff] weight=[Equal weight (temp and sample)]");
-
-	updateResults();
-	wait(5);
-	OBJ=getResult("OBJ score", 0);
-	OBJScore=parseFloat(OBJ);
+	run("Image Correlation Atomic EQ", "samp=SampMIP.tif temp=JFRC2010_50pxMIP.tif +=179 -=180 overlap=80 parallel="+NumCPU+" rotation=1 show calculation=OBJPeasonCoeff");
 	
-	Rot=getResult("rotation", 0);
-	Rot=parseFloat(Rot);
+	run("Merge Channels...", "c1=JFRC2010_50pxMIP.tif c2=DUP_SampMIP.tif  c3=JFRC2010_50pxMIP.tif keep");
+	saveAs("PNG", savedir+noext+"_JFRC2010_50pxMIP.png");
+	close();
+	
+	selectWindow("DUP_SampMIP.tif");
+	close();
+	
+	selectWindow("SampMIP.tif");
+	
+	totalLog=getInfo("log");
+	OBJindex = lastIndexOf(totalLog, "score;");
+	xindex = lastIndexOf(totalLog,"shiftx");
+	yindex = lastIndexOf(totalLog,"shifty");
+	rotindex = lastIndexOf(totalLog,"rotation");
+	
+	OBJScore=substring(totalLog,OBJindex+6, lengthOf(totalLog));//getResult("OBJ score", 0);
+	OBJScore=parseFloat(OBJScore);//Chaneg string to number
+	
+	Rot= substring(totalLog,rotindex+9, OBJindex-6);//getResult("rotation", 0);
+	Rot=parseFloat(Rot);//Chaneg string to number
+	
+	maxX= substring(totalLog,xindex+7, yindex-2);//getResult("shiftx", 0);
+	maxX=parseFloat(maxX);//Chaneg string to number
+	
+	maxY=substring(totalLog,yindex+7, rotindex-2);//getResult("shifty", 0);
+	maxY=parseFloat(maxY);//Chaneg string to number
+	
+
 	elipsoidAngle=parseFloat(Rot);
 	if (elipsoidAngle>90) 
 	elipsoidAngle = -(180 - elipsoidAngle);
 	
-	ShiftY=getResult("shifty", 0);
-	maxY=parseFloat(ShiftY);
-	
-	ShiftX=getResult("shiftx", 0);
-	maxX=parseFloat(ShiftX);
 	print("initial objectscore; "+OBJScore);
 	OBJScore=round(OBJScore);
 	MaxZoom=1;
@@ -2156,12 +2172,24 @@ function ImageCorrelation(ImageCorrelationArray,widthVx,NumCPU){
 			setSlice(inSlice);
 			run("Duplicate...", "title=SingleSamp.tif");
 			
-			run("Image Correlation Atomic", "samp=SingleSamp.tif temp=JFRC2010_50pxSlice.tif +=55 -=55 overlap=90 parallel="+NumCPU+" rotation=1 result calculation=[OBJ peasonCoeff] weight=[Equal weight (temp and sample)]");
+			run("Image Correlation Atomic EQ", "samp=SingleSamp.tif temp=JFRC2010_50pxSlice.tif +=55 -=55 overlap=90 parallel="+NumCPU+" rotation=1 show calculation=OBJPeasonCoeff");
 			
-			updateResults();
-			wait(5);
-			OBJ=getResult("OBJ score", 0);
-			OBJScore=parseFloat(OBJ);
+			run("Merge Channels...", "c1=JFRC2010_50pxSlice.tif c2=DUP_SingleSamp.tif  c3=JFRC2010_50pxSlice.tif keep");
+			saveAs("PNG", savedir+noext+"_JFRC2010_50pxSlice.png");
+			close();
+			
+			selectWindow("DUP_SingleSamp");
+			close();
+			
+			totalLog=getInfo("log");
+			OBJindex = lastIndexOf(totalLog, "score;");
+			xindex = lastIndexOf(totalLog,"shiftx");
+			yindex = lastIndexOf(totalLog,"shifty");
+			rotindex = lastIndexOf(totalLog,"rotation");
+			
+			OBJScore=substring(totalLog,OBJindex+6, lengthOf(totalLog));//getResult("OBJ score", 0);
+			OBJScore=parseFloat(OBJScore);//Chaneg string to number
+			
 			
 			selectWindow("SingleSamp.tif");
 			close();
@@ -2170,17 +2198,18 @@ function ImageCorrelation(ImageCorrelationArray,widthVx,NumCPU){
 				
 				MaxinSlice=inSlice;
 				MaxOBJ3Dscan=OBJScore;
-				Rot=getResult("rotation", 0);
-				Rot=parseFloat(Rot);
+				Rot= substring(totalLog,rotindex+9, OBJindex-6);//getResult("rotation", 0);
+				Rot=parseFloat(Rot);//Chaneg string to number
+				
 				elipsoidAngle=parseFloat(Rot);
 				if (elipsoidAngle>90) 
 				elipsoidAngle = -(180 - elipsoidAngle);
 				
-				ShiftY=getResult("shifty", 0);
-				maxY=parseFloat(ShiftY);
+				maxX= substring(totalLog,xindex+7, yindex-2);//getResult("shiftx", 0);
+				maxX=parseFloat(maxX);//Chaneg string to number
 				
-				ShiftX=getResult("shiftx", 0);
-				maxX=parseFloat(ShiftX);
+				maxY=substring(totalLog,yindex+7, rotindex-2);//getResult("shifty", 0);
+				maxY=parseFloat(maxY);//Chaneg string to number
 			}
 		}
 		print("MaxinSlice; "+MaxinSlice+"   MaxOBJ3Dscan; "+MaxOBJ3Dscan+"  elipsoidAngle; "+elipsoidAngle);
@@ -2197,28 +2226,43 @@ function ImageCorrelation(ImageCorrelationArray,widthVx,NumCPU){
 				run("Size...", "width="+round(getWidth*iZoom)+" height="+round(getHeight*iZoom)+" depth=1 constrain interpolation=None");
 				run("Canvas Size...", "width=60 height=60 position=Center zero");
 				
-				run("Image Correlation Atomic", "samp=ZOOM.tif temp=JFRC2010_50pxMIP.tif +=180 -=179 overlap=70 parallel="+NumCPU+" rotation=1 result calculation=[OBJ peasonCoeff] weight=[Equal weight (temp and sample)]");
+				run("Image Correlation Atomic EQ", "samp=ZOOM.tif temp=JFRC2010_50pxMIP.tif +=180 -=179 overlap=70 parallel="+NumCPU+" rotation=1 show calculation=OBJPeasonCoeff");
 				
-				updateResults();
-				wait(5);
-				OBJ=getResult("OBJ score", 0);
-				OBJScore=parseFloat(OBJ);
+				run("Merge Channels...", "c1=JFRC2010_50pxMIP.tif c2=DUP_ZOOM.tif  c3=JFRC2010_50pxMIP.tif keep");
+				saveAs("PNG", savedir+noext+"_"+iZoom+"_Zoom_JFRC2010_50pxMIP.png");
+				close();
+				
+				selectWindow("DUP_ZOOM.tif");
+				close();
+				
+				selectWindow("SampMIP.tif");
+				
+				totalLog=getInfo("log");
+				OBJindex = lastIndexOf(totalLog, "score;");
+				xindex = lastIndexOf(totalLog,"shiftx");
+				yindex = lastIndexOf(totalLog,"shifty");
+				rotindex = lastIndexOf(totalLog,"rotation");
+				
+				OBJScore=substring(totalLog,OBJindex+6, lengthOf(totalLog));//getResult("OBJ score", 0);
+				OBJScore=parseFloat(OBJScore);//Chaneg string to number
+				
+				
 				
 				print("iZoom; "+iZoom+"   OBJScore; "+OBJScore);
 				
 				if(OBJScore>PreMaxOBJ){
 					PreMaxOBJ=OBJScore;
-					Rot=getResult("rotation", 0);
-					Rot=parseFloat(Rot);
+					Rot= substring(totalLog,rotindex+9, OBJindex-6);//getResult("rotation", 0);
+					Rot=parseFloat(Rot);//Chaneg string to number
 					elipsoidAngle=parseFloat(Rot);
 					if (elipsoidAngle>90) 
 					elipsoidAngle = -(180 - elipsoidAngle);
 					
-					ShiftY=getResult("shifty", 0);
-					maxY=parseFloat(ShiftY);
+					maxX= substring(totalLog,xindex+7, yindex-2);//getResult("shiftx", 0);
+					maxX=parseFloat(maxX);//Chaneg string to number
 					
-					ShiftX=getResult("shiftx", 0);
-					maxX=parseFloat(ShiftX);
+					maxY=substring(totalLog,yindex+7, rotindex-2);//getResult("shifty", 0);
+					maxY=parseFloat(maxY);//Chaneg string to number
 					
 					MaxZoom=iZoom;
 				}
@@ -2417,27 +2461,49 @@ function rotationF(rotation,unit,vxwidth,vxheight,depth,xTrue,yTrue){
 
 
 function ImageCorrelation2 (sample, templateImg, rotSearch,ImageCarray,overlap,NumCPU){
+	selectWindow(sample);
+	rename("SampMIP.tif");
 	
-	run("Image Correlation Atomic", "samp="+sample+" temp="+templateImg+" +="+rotSearch+" -="+rotSearch+" overlap="+overlap+" parallel="+NumCPU+" rotation=1 result calculation=[OBJ peasonCoeff] weight=[Equal weight (temp and sample)]");
+	selectWindow(templateImg);
+	rename("Temp22.tif");
 	
-	updateResults();
-	wait(5);
-	OBJ=getResult("OBJ score", 0);
-	OBJScore=parseFloat(OBJ);
+	run("Image Correlation Atomic EQ", "samp=SampMIP.tif temp=Temp22.tif +="+rotSearch+" -="+rotSearch+" overlap="+overlap+" parallel="+NumCPU+" rotation=1 show calculation=OBJPeasonCoeff");
 	
-	Rot=getResult("rotation", 0);
-	Rot=parseFloat(Rot);
+	run("Merge Channels...", "c1=Temp22.tif c2=DUP_SampMIP.tif  c3=Temp22.tif keep");
+	saveAs("PNG", savedir+noext+"_"+templateImg+".png");
+	close();
 	
-	ShiftY=getResult("shifty", 0);
-	ShiftY=parseFloat(ShiftY);
+	selectWindow("DUP_SampMIP.tif");
+	close();
 	
-	ShiftX=getResult("shiftx", 0);
-	ShiftX=parseFloat(ShiftX);
+	selectWindow("Temp22.tif");
+	rename(templateImg);
+	
+	selectWindow("SampMIP.tif");
+	rename(sample);
+	
+	totalLog=getInfo("log");
+	OBJindex = lastIndexOf(totalLog, "score;");
+	xindex = lastIndexOf(totalLog,"shiftx");
+	yindex = lastIndexOf(totalLog,"shifty");
+	rotindex = lastIndexOf(totalLog,"rotation");
+	
+	OBJScore=substring(totalLog,OBJindex+6, lengthOf(totalLog));//getResult("OBJ score", 0);
+	OBJScore=parseFloat(OBJScore);//Chaneg string to number
+	
+	Rot= substring(totalLog,rotindex+9, OBJindex-6);//getResult("rotation", 0);
+	Rot=parseFloat(Rot);//Chaneg string to number
+	
+	maxX= substring(totalLog,xindex+7, yindex-2);//getResult("shiftx", 0);
+	maxX=parseFloat(maxX);//Chaneg string to number
+	
+	maxY=substring(totalLog,yindex+7, rotindex-2);//getResult("shifty", 0);
+	maxY=parseFloat(maxY);//Chaneg string to number
 	
 	ImageCarray[0]=OBJScore;
 	ImageCarray[1]=Rot;
-	ImageCarray[2]=ShiftY;
-	ImageCarray[3]=ShiftX;
+	ImageCarray[2]=maxY;
+	ImageCarray[3]=maxX;
 }
 
 function C1C20102Takeout(takeout){// using
@@ -2674,7 +2740,7 @@ function lateralDepthAdjustment(op1center,op2center,lateralArray,nc82,templateBr
 	//	exit();
 	
 	startiWidth=40;
-	endiWidth=180;
+	endiWidth=200;
 	
 	if(VxDepthF<0.3){
 		startiWidth=15;
@@ -2709,40 +2775,57 @@ function lateralDepthAdjustment(op1center,op2center,lateralArray,nc82,templateBr
 		run("Fill Holes");
 		
 		run("Canvas Size...", "width=65 height=110 position=Center zero");
+			
+		run("Image Correlation Atomic EQ", "samp=smallMIP.tif temp=Lateral_JFRC2010_5time_smallerMIP.tif +=10 -=10 overlap=90 parallel="+NumCPU+" rotation=1 show calculation=OBJPeasonCoeff");
 		
-		run("Image Correlation Atomic", "samp=smallMIP.tif temp=Lateral_JFRC2010_5time_smallerMIP.tif +=10 -=10 overlap=90 parallel="+NumCPU+" rotation=1 result calculation=[OBJ peasonCoeff] weight=[Equal weight (temp and sample)]");
-	//	run("Image Correlation Atomic", "samp=smallMIP.tif temp=Lateral_JFRC2010_5time_smallerMIP.tif +=10 -=10 overlap=90 parallel=11 rotation=1 result calculation=[OBJ peasonCoeff] weight=[Equal weight (temp and sample)]");
+
 		
-		updateResults();
-		wait(5);
-		OBJ=getResult("OBJ score", 0);
-		OBJScoreL=parseFloat(OBJ);
+		
+		
+		
+		totalLog=getInfo("log");
+		OBJindex = lastIndexOf(totalLog, "score;");
+		xindex = lastIndexOf(totalLog,"shiftx");
+		yindex = lastIndexOf(totalLog,"shifty");
+		rotindex = lastIndexOf(totalLog,"rotation");
+		
+		OBJScore=substring(totalLog,OBJindex+6, lengthOf(totalLog));//getResult("OBJ score", 0);
+		OBJScoreL=parseFloat(OBJScore);//Chaneg string to number
 		print(OBJScoreL+"  "+iWidth);
 		
 		if(OBJScoreL>MaxOBJL){
+			
+			run("Merge Channels...", "c1=Lateral_JFRC2010_5time_smallerMIP.tif c2=DUP_smallMIP.tif  c3=Lateral_JFRC2010_5time_smallerMIP.tif keep");
+			saveAs("PNG", savedir+noext+"_JFRC2010_50pxMIP.png");
+			close();
+			
 			//		print(OBJScoreL);
 			MaxOBJL=OBJScoreL;
-			Rot=getResult("rotation", 0);
-			Rot=parseFloat(Rot);
+			Rot= substring(totalLog,rotindex+9, OBJindex-6);//getResult("rotation", 0);
+			Rot=parseFloat(Rot);//Chaneg string to number
+
 			elipsoidAngle=parseFloat(Rot);
 			if (elipsoidAngle>90) 
 			elipsoidAngle = -(180 - elipsoidAngle);
 			
-			ShiftY=getResult("shifty", 0);
-			maxY=parseFloat(ShiftY);
+			maxX= substring(totalLog,xindex+7, yindex-2);//getResult("shiftx", 0);
+			maxX=parseFloat(maxX);//Chaneg string to number
 			
-			ShiftX=getResult("shiftx", 0);
-			maxX=parseFloat(ShiftX);
+			maxY=substring(totalLog,yindex+7, rotindex-2);//getResult("shifty", 0);
+			maxY=parseFloat(maxY);//Chaneg string to number
 			
 			MaxWidth=iWidth;
 			negativeOBJ=0;
 		}else{
 			negativeOBJ=negativeOBJ+1;
 		}
+		selectWindow("DUP_smallMIP.tif");
+		close();
+		
 		
 		//	if(negativeOBJ==20)
 		//	iWidth=350;
-		
+		selectWindow("smallMIP.tif");
 		run("Paste");
 	}
 	
