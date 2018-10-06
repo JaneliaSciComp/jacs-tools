@@ -2339,7 +2339,7 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 			
 			if(isOpen(DUP))
 			selectImage(DUP);
-			print("PreAlignerError: Cannot_segment_AR_short; maxARshape; "+maxARshape);
+			print("PreAlignerError: Cannot_segment_AR_short; maxARshape; "+maxARshape+" Check data, no signals? VNC is too short or hitting edge of data");
 			run("Nrrd Writer", "compressed nrrd="+myDir4+noext+"_Cannot_segment_AR_short"+maxARshape+".nrrd");
 			donotOperate=0;
 		}
