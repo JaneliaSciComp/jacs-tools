@@ -25,7 +25,7 @@ argstr=0;
 //argstr="/test/VNC_pipeline/,tile-2577638111085330453new.v3draw,/Users/otsunah/Dropbox (HHMI)/VNC_project/,/Volumes/otsuna/VNC_Aligner/tile-2577638111085330453new.v3draw,ssr,0.52,0.52,m,??,11"//for test
 //argstr="/test/VNC_pipeline/,tempsubjectsx.v3dpbd,/Users/otsunah/Dropbox (HHMI)/VNC_project/,/test/VNC_Test/tempsubjectsx.v3dpbd,sssr,0.45,0.45,f,/test/VNC_Test/ConsolidatedLabel.v3dpbd,4"//for test
 
-//argstr="/test/VNC_Test/PreAligned/,stitched-2469965973508063377.v3dpbd,/Users/otsunah/Dropbox (HHMI)/VNC_project/,/test/VNC_Test/Sample/stitched-2469965973508063377.v3dpbd,sr,0.44,0.44,f,/test/VNC_Test/Sample/ConsolidatedLabel.v3dpbd,8"//for test
+//argstr="/test/VNC_Test/PreAligned/,stitched-2579034279317078114.v3draw,/Users/otsunah/Dropbox (HHMI)/VNC_project/,/Users/otsunah/Dropbox\ \(HHMI\)/VNC_project/stitched-2579034279317078114.v3draw,sr,0.44,0.44,f,/test/VNC_Test/Sample/ConsolidatedLabel.v3dpbd,8"//for test
 
 if(argstr!=0)
 args = split(argstr,",");
@@ -883,19 +883,53 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 				
 				selectImage(mask1st);
 				
+			//	setBatchMode(false);
+			//	updateDisplay();
+			//	"do"
+			//	exit();
+				
 				run("Grays");
 				//		run("Maximum...", "radius=20");
 				//		run("Minimum...", "radius=20");
 				run("Make Binary");
 				
-				run("Fill Holes");
+				run("Select All");
+				run("Copy");
 				
-				if(invertON==1){
+				run("Fill Holes");
+				sumv=0; 
+				totalvalue= getWidth()*getHeight();
+				
+				for(ixx=0; ixx<getWidth; ixx++){
+					for(iyy=0; iyy<getHeight; iyy++){
+						pixi = getPixel(ixx, iyy);
+						
+						sumv=sumv+pixi;
+					}
+				}
+				
+				if(sumv==0 || sumv==totalvalue*255){
+					run("Paste");
 					run("Invert LUT");
+					run("Fill Holes");
+					
 					run("RGB Color");
 					run("8-bit");
-					print("invert 870");
+					print("invert 918");
 				}
+				
+			//	setBatchMode(false);
+			//	updateDisplay();
+			//	"do"
+			//	exit();
+			
+				
+			//	if(invertON==1){
+			//		run("Invert LUT");
+			//		run("RGB Color");
+			//		run("8-bit");
+			//		print("invert 870");
+			//	}
 				
 				rotation=270+angle;
 				print("angle; "+angle);
@@ -933,7 +967,6 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 				sampleLongLength=round(sqrt(height*height+width*width));
 				run("Canvas Size...", "width="+sampleLongLength+" height="+sampleLongLength+" position=Center zero");
 				
-				if(bitd==8)
 				run("16-bit");
 				run("Rotation Hideo", "rotate="+rotation+" in=InMacro");// gap will be 0 after rotation 
 				
@@ -951,14 +984,19 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 				if(setSize<10000)
 				setSize=10000;
 				
+		//		setBatchMode(false);
+		//		updateDisplay();
+		//		"do"
+		//		exit();
+				
 				run("Analyze Particles...", "size="+setSize+"-Infinity show=Nothing display exclude clear");//exclude object on the edge
 				updateResults();
 				
 				
-				//	setBatchMode(false);
-				//		updateDisplay();
-				//		"do"
-				//		exit();
+			//		setBatchMode(false);
+			//			updateDisplay();
+			//			"do"
+			//			exit();
 				
 				///// BW analysis ////////////////////////////////////////////////////////
 				if(nResults==0){
@@ -980,6 +1018,9 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 					
 					donotOperate=1;
 				}
+				
+				startslice=0; endsliceDeside=0;
+				postskelton=0;
 				
 				print("donotOperate; "+donotOperate+"   nResults; "+nResults);
 				xTrue=0; yTrue=0;
@@ -1319,8 +1360,16 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 				
 				print("startslice; "+startslice+"  endslice; "+endslice+"  slices; "+slices);
 				
-				selectWindow(postskelton);
-				close();
+				if(isOpen(postskelton)){
+					selectWindow(postskelton);
+					close();
+				}else{
+					
+					print("PreAlignerError: no shape mask at line 1368, segmentation error");
+					logsum=getInfo("log");
+					File.saveString(logsum, filepath);
+					run("Quit");
+				}
 				
 				selectImage(DUP);
 				
@@ -1855,10 +1904,10 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 									Zeroosi=lastIndexOf(totalLog, "value is");
 									if(Zeroosi!=-1){
 										OBJScore=0;
-									//	setBatchMode(false);
-								//		updateDisplay();
-								//		"do"
-								//		exit();
+										//	setBatchMode(false);
+										//		updateDisplay();
+										//		"do"
+										//		exit();
 									}
 									
 									if(OBJScorePre==0){
