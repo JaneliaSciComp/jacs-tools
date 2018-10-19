@@ -30,13 +30,13 @@ export CMTK_WRITE_UNCOMPRESSED=1
 CMTK=/opt/CMTK/bin
 FIJI=/opt/Fiji/ImageJ-linux64
 Vaa3D=/opt/Vaa3D/vaa3d
-VNCScripts=/opt/aligner/fiji_macros
+MACRO_DIR=/opt/aligner/fiji_macros
 
 # Fiji macros
-NRRDCONV=$VNCScripts"/nrrd2v3draw.ijm"
-PREPROCIMG=$VNCScripts"/VNC_preImageProcessing_Pipeline_02_02_2017.ijm"
-SCOREGENERATION=$VNCScripts"/Score_Generator_Cluster.ijm"
-TWELVEBITCONV=$VNCScripts"/12bit_Conversion.ijm"
+NRRDCONV=$MACRO_DIR"/nrrd2v3draw.ijm"
+PREPROCIMG=$MACRO_DIR"/VNC_preImageProcessing_Pipeline_02_02_2017.ijm"
+SCOREGENERATION=$MACRO_DIR"/Score_Generator_Cluster.ijm"
+TWELVEBITCONV=$MACRO_DIR"/12bit_Conversion.ijm"
 
 templateBr="JRC2018_VNC_FEMALE" #"VNC_FEMALE_symmetric", "VNC_MALE", "JRC2018_VNC_MALE"
 Path=$INPUT1_FILE
@@ -45,6 +45,8 @@ OUTPUT=$WORK_DIR"/Output"
 FINALOUTPUT=$WORK_DIR"/FinalOutputs"
 TempDir=$TEMPLATE_DIR/vnc2018_20x_40x_templates
 
+DEBUG_DIR=$FINALOUTPUT"/debug"
+mkdir -p $DEBUG_DIR
 
 # "-------------------Template----------------------"
 JRC2018_VNC_Unisex=$TempDir"/JRC2018_VNC_UNISEX_447_G15.nrrd"
@@ -56,14 +58,14 @@ if [[ $INPUT1_GENDER =~ "m" ]]
 then
 # male fly vnc
     Tfile=${TempDir}"/MaleVNC2017.nrrd"
-    POSTSCOREMASK=$VNCScripts"/For_Score/Mask_Male_VNC.nrrd"
+    POSTSCOREMASK=$MACRO_DIR"/For_Score/Mask_Male_VNC.nrrd"
 else
 # female fly vnc
     Tfile=${TempDir}"/FemaleVNCSymmetric2017.nrrd"
-    POSTSCOREMASK=$VNCScripts"/For_Score/flyVNCtemplate20xA_CLAHE_MASK2nd.nrrd"
+    POSTSCOREMASK=$MACRO_DIR"/For_Score/flyVNCtemplate20xA_CLAHE_MASK2nd.nrrd"
 fi
 
-POSTSCORE=$VNCScripts"/Score_For_VNC_pipeline.ijm"
+POSTSCORE=$MACRO_DIR"/Score_For_VNC_pipeline.ijm"
 
 echo "$testmode; "$testmode
 # For TEST ############################################
@@ -144,7 +146,7 @@ function nrrd2Raw() {
         echo "Already exists: $OUTPUTRAW"
     else
         TS=`date +%Y%m%d-%H%M%S`
-        LOGFILE="$OUTPUT/raw-${TS}.log"
+        LOGFILE="$DEBUG_DIR/raw-${TS}.log"
         echo "+----------------------------------------------------------------------+"
         echo "| Running NRRD -> v3draw conversion"
         echo "| $FIJI --headless -macro $NRRDCONV $_PARAMS >$LOGFILE"
@@ -265,7 +267,7 @@ function scoreGen() {
         START=`date '+%F %T'`
         # Expect to take far less than 1 hour
         # Alignment Score generation:ZNCC, does not need Xvfb
-        $FIJI --headless -macro $SCOREGENERATION $OUTPUT/,$_outname,$NSLOTS,$_scoretemp >$OUTPUT/scoregen.log 2>&1
+        $FIJI --headless -macro $SCOREGENERATION $OUTPUT/,$_outname,$NSLOTS,$_scoretemp >$DEBUG_DIR/scoregen.log 2>&1
         STOP=`date '+%F %T'`
 
         echo "ZNCC JRC2018 score generation start: $START"
@@ -414,7 +416,7 @@ registered_warp_xform=$OUTPUT"/warp.xform"
 
 reformat_JRC2018_to_Uni=$TempDir"/Deformation_Fields/JRC2018_VNC_Unisex_JRC2018_"$genderT
 
-LOGFILE="${OUTPUT}/VNC_pre_aligner_log.txt"
+LOGFILE="${DEBUG_DIR}/VNC_pre_aligner_log.txt"
 if [[ -e $LOGFILE ]]; then
     echo "Already exists: $LOGFILE"
 else
@@ -424,7 +426,7 @@ else
     echo "+---------------------------------------------------------------------------------------+"
     START=`date '+%F %T'`
     # Expect to take far less than 1 hour
-    $FIJI -macro $PREPROCIMG "$OUTPUT/,$filename,$TempDir/,$Path,ssr,$RESX,$RESY,$INPUT1_GENDER,$Unaligned_Neuron_Separator_Result_V3DPBD,$NSLOTS" >$OUTPUT/preproc.log 2>&1
+    $FIJI -macro $PREPROCIMG "$OUTPUT/,$filename,$TempDir/,$Path,ssr,$RESX,$RESY,$INPUT1_GENDER,$Unaligned_Neuron_Separator_Result_V3DPBD,$NSLOTS" >$DEBUG_DIR/preproc.log 2>&1
     STOP=`date '+%F %T'`
     echo "Otsuna preprocessing start: $START"
     echo "Otsuna preprocessing stop: $STOP"
@@ -505,7 +507,7 @@ echo "+----------------------------------------------------------------------+"
 echo "| 12-bit conversion"
 echo "| $FIJI -macro $TWELVEBITCONV \"${OUTPUT}/,${filename}_01.nrrd,${gloval_nc82_nrrd}\""
 echo "+----------------------------------------------------------------------+"
-$FIJI --headless -macro $TWELVEBITCONV "${OUTPUT}/,${filename}_01.nrrd,${gloval_nc82_nrrd}" > $OUTPUT/conv12bit.log 2>&1
+$FIJI --headless -macro $TWELVEBITCONV "${OUTPUT}/,${filename}_01.nrrd,${gloval_nc82_nrrd}" > $DEBUG_DIR/conv12bit.log 2>&1
 
 ########################################################################################################
 # JRC2018 gender-specific reformat
@@ -630,7 +632,6 @@ compressAllRaw "$Vaa3D" "$OUTPUT"
 echo "+----------------------------------------------------------------------+"
 echo "| Copying files to final destination"
 echo "+----------------------------------------------------------------------+"
-mkdir -p $FINALOUTPUT/debug
 cp $OUTPUT/*.{png,log,txt} $FINALOUTPUT/debug
 cp -R $OUTPUT/*.xform $FINALOUTPUT/debug
 cp $OUTPUT/REG*.v3dpbd $FINALOUTPUT

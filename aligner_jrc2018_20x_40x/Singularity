@@ -34,7 +34,7 @@ rm -rf Fiji
 mv Fiji.app Fiji
 
 echo "Installing Fiji plugins"
-PLUGINS_SOURCE=/opt/aligner/Brain_Aligner_Fiji_Plugins
+PLUGINS_SOURCE=/opt/aligner/fiji_plugins
 PLUGINS_TARGET=/opt/Fiji/plugins
 cp -R $PLUGINS_SOURCE/* $PLUGINS_TARGET && /bin/rm -rf $PLUGINS_SOURCE
 

@@ -29,12 +29,13 @@ export CMTK_WRITE_UNCOMPRESSED=1
 CMTK=/opt/CMTK/bin
 FIJI=/opt/Fiji/ImageJ-linux64
 Vaa3D=/opt/Vaa3D/vaa3d
+MACRO_DIR=/opt/aligner/fiji_macros
 
 # Fiji macros
-NRRDCONV=$DIR"/nrrd2v3draw.ijm"
-PREPROCIMG=$DIR"/20x_40x_Brain_Global_Aligner_Pipeline.ijm"
-TWELVEBITCONV=$DIR"/12bit_Conversion.ijm"
-SCOREGENERATION=$DIR"/Score_Generator_Cluster.ijm"
+NRRDCONV=$MACRO_DIR"/nrrd2v3draw.ijm"
+PREPROCIMG=$MACRO_DIR"/20x_40x_Brain_Global_Aligner_Pipeline.ijm"
+TWELVEBITCONV=$MACRO_DIR"/12bit_Conversion.ijm"
+SCOREGENERATION=$MACRO_DIR"/Score_Generator_Cluster.ijm"
 
 templateBr="JRC2018" #"JFRC2014", "JFRC2013", "JFRC2014", "JRC2018"
 filename="PRE_PROCESSED"
@@ -44,6 +45,9 @@ OUTPUT=$WORK_DIR"/Output"
 FINALOUTPUT=$WORK_DIR"/FinalOutputs"
 TempDir=$TEMPLATE_DIR/jrc2018_20x_40x_templates
 testmode=0
+
+DEBUG_DIR=$FINALOUTPUT"/debug"
+mkdir -p $DEBUG_DIR
 
 #
 # Expand resolutions from TMOG
@@ -73,7 +77,7 @@ function nrrd2Raw() {
         echo "Already exists: $OUTPUTRAW"
     else
         TS=`date +%Y%m%d-%H%M%S`
-        LOGFILE="$OUTPUT/raw-${TS}.log"
+        LOGFILE="$DEBUG_DIR/raw-${TS}.log"
         echo "+----------------------------------------------------------------------+"
         echo "| Running NRRD -> v3draw conversion"
         echo "| $FIJI --headless -macro $NRRDCONV $_PARAMS >$LOGFILE"
@@ -194,7 +198,7 @@ function scoreGen() {
         START=`date '+%F %T'`
         # Expect to take far less than 1 hour
         # Alignment Score generation:ZNCC, does not need Xvfb
-        $FIJI --headless -macro $SCOREGENERATION $OUTPUT/,$_outname,$NSLOTS,$_scoretemp >$OUTPUT/scoregen.log 2>&1
+        $FIJI --headless -macro $SCOREGENERATION $OUTPUT/,$_outname,$NSLOTS,$_scoretemp >$DEBUG_DIR/scoregen.log 2>&1
         STOP=`date '+%F %T'`
 
         echo "ZNCC JRC2018 score generation start: $START"
@@ -383,13 +387,13 @@ else
     # Expect to take far less than 1 hour
     #timeout --preserve-status 6000m 
     # Note that this macro does not seem to work in --headless mode
-    $FIJI -macro $PREPROCIMG "$OUTPUT/,$filename.,$Path,$TempDir/,$RESX,$RESZ,$NSLOTS,$objective,$templateBr,$BrainShape,$Unaligned_Neuron_Separator_Result_V3DPBD" >$OUTPUT/preproc.log 2>&1
+    $FIJI -macro $PREPROCIMG "$OUTPUT/,$filename.,$Path,$TempDir/,$RESX,$RESZ,$NSLOTS,$objective,$templateBr,$BrainShape,$Unaligned_Neuron_Separator_Result_V3DPBD" >$DEBUG_DIR/preproc.log 2>&1
 
     STOP=`date '+%F %T'`
     echo "Otsuna_Brain preprocessing start: $START"
     echo "Otsuna_Brain preprocessing stop: $STOP"
     # check for prealigner errors
-    LOGFILE="${OUTPUT}/20x_brain_pre_aligner_log.txt"
+    LOGFILE="${DEBUG_DIR}/20x_brain_pre_aligner_log.txt"
     PreAlignerError=`grep "PreAlignerError: " $LOGFILE | head -n1 | sed "s/PreAlignerError: //"`
     if [[ ! -z "$PreAlignerError" ]]; then
         writeErrorProperties "PreAlignerError" "JRC2018_${genderT}" "$objective" "$PreAlignerError"
@@ -481,7 +485,7 @@ echo "+----------------------------------------------------------------------+"
 echo "| 12-bit conversion"
 echo "| $FIJI -macro $TWELVEBITCONV \"${OUTPUT}/,${filename}_01.nrrd,${gloval_nc82_nrrd}\""
 echo "+----------------------------------------------------------------------+"
-$FIJI --headless -macro $TWELVEBITCONV "${OUTPUT}/,${filename}_01.nrrd,${gloval_nc82_nrrd}" > $OUTPUT/conv12bit.log 2>&1
+$FIJI --headless -macro $TWELVEBITCONV "${OUTPUT}/,${filename}_01.nrrd,${gloval_nc82_nrrd}" > $DEBUG_DIR/conv12bit.log 2>&1
 
 ########################################################################################################
 # JRC2018 gender-specific alignment
@@ -616,7 +620,6 @@ compressAllRaw "$Vaa3D" "$OUTPUT"
 echo "+----------------------------------------------------------------------+"
 echo "| Copying files to final destination"
 echo "+----------------------------------------------------------------------+"
-mkdir -p $FINALOUTPUT/debug
 cp $OUTPUT/*.{png,jpg,log,txt} $FINALOUTPUT/debug
 cp -R $OUTPUT/*.xform $FINALOUTPUT/debug
 cp $OUTPUT/REG*.v3dpbd $FINALOUTPUT
