@@ -25,7 +25,7 @@ argstr=0;
 //argstr="/test/VNC_pipeline/,tile-2577638111085330453new.v3draw,/Users/otsunah/Dropbox (HHMI)/VNC_project/,/Volumes/otsuna/VNC_Aligner/tile-2577638111085330453new.v3draw,ssr,0.52,0.52,m,??,11"//for test
 //argstr="/test/VNC_pipeline/,tempsubjectsx.v3dpbd,/Users/otsunah/Dropbox (HHMI)/VNC_project/,/test/VNC_Test/tempsubjectsx.v3dpbd,sssr,0.45,0.45,f,/test/VNC_Test/ConsolidatedLabel.v3dpbd,4"//for test
 
-//argstr="/test/VNC_Test/PreAligned/,stitched-2579034279317078114.v3draw,/Users/otsunah/Dropbox (HHMI)/VNC_project/,/Users/otsunah/Dropbox\ \(HHMI\)/VNC_project/stitched-2579034279317078114.v3draw,sr,0.44,0.44,f,/test/VNC_Test/Sample/ConsolidatedLabel.v3dpbd,8"//for test
+//argstr="/test/VNC_Test/PreAligned/,BJD_101E10_AE_01_20180824_61_B1.v3draw,/Users/otsunah/Dropbox (HHMI)/VNC_project/,/Users/otsunah/Downloads/Workstation/BJD_101E10_AE_01/BJD_101E10_AE_01_20180824_61_B1.v3draw,sr,0.44,0.44,f,/test/VNC_Test/Sample/ConsolidatedLabel.v3dpbd,8"//for test
 
 if(argstr!=0)
 args = split(argstr,",");
@@ -539,8 +539,12 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 					getThreshold(lower, upper);
 					setThreshold(lower, maxV);
 					
-					print("lower threshold; "+lower+"maxV thredhold; "+maxV+"   ThreTry; "+ThreTry+"   MIPstep; "+MIPstep);
+					print("lower threshold; "+lower+"   maxV thredhold; "+maxV+"   ThreTry; "+ThreTry+"   MIPstep; "+MIPstep);
 					run("Make Binary");
+					
+					run("Maximum...", "radius=2");
+					run("Minimum...", "radius=2");
+					
 					
 					beforeAnalysis=nImages();
 					run("Analyze Particles...", "size=20000.00-Infinity show=Masks display exclude clear");
@@ -592,6 +596,14 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 									SizeMT=maxsize0;
 								}
 							}//for(inn=0; inn<nResults; inn++){
+							print("Line 595 ARshape; "+ARshape+"  ThreTry; "+ThreTry);
+							
+						//	if(ThreTry==1 && MIPstep==1){
+						//		setBatchMode(false);
+						//		updateDisplay();
+						//		"do"
+						//		exit();
+						//	}
 							
 							if(ARshape>1.8){
 								if(maxsizeData<maxsizeOri){
@@ -616,6 +628,11 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 										run("Duplicate...", "title=mask1st.tif");
 										mask1st=getImageID();//このマスクを元にしてローテーション、中心座標を得る
 										mask1stST=getTitle();
+										
+								//		setBatchMode(false);
+								//					updateDisplay();
+								//					"do"
+								//					exit();
 										
 										selectImage(maskTest);
 										close();
@@ -753,7 +770,7 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 				DUP_AVEP=getImageID();
 				DUP_AVEPst=getTitle();
 				
-				lower=lower+2;
+		//		lower=lower+2;
 				
 				if(lower>3000){
 					if(step1==1){
@@ -781,6 +798,14 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 				setThreshold(lower, maxV);
 				
 				run("Make Binary");
+				
+				run("Maximum...", "radius=2");
+				run("Minimum...", "radius=2");
+				
+			//	setBatchMode(false);
+			//			updateDisplay();
+			//			"do"
+			//				exit();
 				
 				if(invertON==1){
 					run("Invert LUT");
@@ -1124,7 +1149,7 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 					//		run("Maximum...", "radius=2 stack");
 					
 					//		setBatchMode(false);
-					//		updateDisplay();
+				//			updateDisplay();
 					//		"do"
 					//		exit();
 					
