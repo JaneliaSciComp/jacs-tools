@@ -23,7 +23,7 @@ TwentyMore=false;
 nc82decision="Color base";
 DecidedColor="Red";
 ShapeMatchingMaskPath=0;
-JFRC2010MedProPath=0;
+JFRC2010AveProPath=0;
 Slice50pxPath=0;
 LateralMIPPath=0;
 dir=0;
@@ -40,8 +40,6 @@ DesireX=512;
 setBatchMode(true);
 testArg=0;
 
-
-
 // 40x
 //testArg= "/test/20x_brain_alignment/fail/,tile-2580114806669312021.v3draw,/test/20x_brain_alignment/fail/tile-2580114806669312021.v3draw,/Users/otsunah/Documents/otsunah/20x_brain_aligner/,0.44,0.44,11,40x,JRC2018,Both_OL_missing (40x),/test/20x_brain_alignment/fail/ConsolidatedLabel.v3dpbd"
 
@@ -49,10 +47,6 @@ testArg=0;
 
 
 //for 20x
-//<<<<<<< HEAD
-//testArg= "/test/20x_brain_alignment/,JRC_SS04948_20150828_31_F1_tile-2586750767218032674.h5j,/Users/otsunah/Downloads/Workstation/JRC_SS04948/JRC_SS04948_20150828_31_F1_tile-2586750767218032674.h5j,/Users/otsunah/Documents/otsunah/20x_brain_aligner/,0.52,1,7,20x,JRC2018,Unknown,??"
-//=======
-<<<<<<< Updated upstream:aligner_jrc2018_20x_40x/aligner/fiji_macros/20x_40x_Brain_Global_Aligner_Pipeline.ijm
 //testArg= "/test/20x_brain_alignment/TwoChannel/,GMR_MB433B_20121003_31_A1_tile-2586697527118004258.v3draw,/Users/otsunah/Downloads/Workstation/GMR_MB433B/GMR_MB433B_20121003_31_A1_tile-2586697527118004258.v3draw,/Users/otsunah/Documents/otsunah/20x_brain_aligner/,0.56,1,7,20x,JRC2018,Unknown,??"
 
 //0.46
@@ -64,10 +58,7 @@ testArg=0;
 flipchannel=0;
 PNGsave=0;
 //-Rop
-=======
 //testArg= "/test/20x_brain_alignment/TwoChannel/,tile-2595111898559021090.v3draw,/test/20x_brain_alignment/fail/tile-2595111898559021090.v3draw,/Users/otsunah/Documents/otsunah/20x_brain_aligner/,0.5189,1,7,20x,JRC2018,Unknown,/test/20x_brain_alignment/TwoChannel/ConsolidatedLabel.v3dpbd"
-//>>>>>>> origin/master
->>>>>>> Stashed changes:aligner_jrc2018_20x_40x/aligner/20x_40x_Brain_Global_Aligner_Pipeline.ijm
 
 if(testArg!=0)
 args = split(testArg,",");
@@ -86,11 +77,11 @@ templateBr = args [8];//"JFRC2014", JFRC2013, JFRC2014, JRC2018
 BrainShape = args [9];//"Both_OL_missing (40x)";//"Intact", "Both_OL_missing (40x)", "Unknown"
 PathConsolidatedLabel=args[10];// full file path for ConsolidatedLabel.v3dpbd
 
-Frontal50pxPath = MatchingFilesDir+"JFRC2010_60pxMedP.tif";// full file path for "JFRC2010_60pxMedP.tif"
+Frontal50pxPath = MatchingFilesDir+"JFRC2010_50pxMIP.tif";// full file path for "JFRC2010_50pxMIP.tif"
 LateralMIPPath = MatchingFilesDir+"Lateral_JFRC2010_5time_smallerMIP.tif";//  full file path for "Lateral_JFRC2010_5time_smallerMIP.tif"
 Slice50pxPath = MatchingFilesDir+"JFRC2010_50pxSlice.tif";//  full file path for "JFRC2010_50pxSlice.tif"
 ShapeMatchingMaskPath = MatchingFilesDir+"JFRC2010_ShapeMatchingMask.tif";//"JFRC2010_ShapeMatchingMask.tif";
-
+JFRC2010AveProPath = MatchingFilesDir+"JFRC2010_AvePro.png"; //"JFRC2010_AvePro.png"
 
 widthVx=parseFloat(widthVx);//Chaneg string to number
 depth=parseFloat(depth);//Chaneg string to number
@@ -107,13 +98,12 @@ if(objective=="40x"){
 
 print("path;"+path);
 print("savedir; "+savedir);
-print("MatchingFilesDir; "+MatchingFilesDir);
 print("X resolution; "+widthVx+" micron");
 print("Frontal50pxPath; "+Frontal50pxPath);
 print("LateralMIPPath; "+LateralMIPPath);
 print("Slice50pxPath; "+Slice50pxPath);
 print("ShapeMatchingMaskPath; "+ShapeMatchingMaskPath);
-
+print("JFRC2010AveProPath; "+JFRC2010AveProPath);
 print("NumCPU; "+NumCPU);
 print("objective; "+objective);
 print("PathConsolidatedLabel; "+PathConsolidatedLabel);
@@ -125,16 +115,8 @@ savedirext=File.exists(savedir);
 if(savedirext!=1)
 File.makeDirectory(savedir);
 
-DotIndex = lastIndexOf(filename, ".");
-noext = substring(filename, 0, DotIndex);
-
 logsum=getInfo("log");
-
-if(PNGsave==1)
-filepath=savedir+"20x_brain_pre_aligner_log_"+noext+"_.txt";
-else
 filepath=savedir+"20x_brain_pre_aligner_log.txt";
-
 File.saveString(logsum, filepath);
 
 String.resetBuffer;
@@ -145,6 +127,7 @@ for (si=0; si<n3; si++) {
 		print("There is a space, please eliminate the space from saving directory.");
 		
 		logsum=getInfo("log");
+		filepath=savedir+"20x_brain_pre_aligner_log.txt";
 		File.saveString(logsum, filepath);
 		exit();
 	}
@@ -160,6 +143,7 @@ myDir4 = savedir+"High_background_cannot_segment"+File.separator;
 File.makeDirectory(myDir4);
 
 logsum=getInfo("log");
+filepath=savedir+"20x_brain_pre_aligner_log.txt";
 File.saveString(logsum, filepath);
 
 mask=savedir+"Mask"+File.separator;
@@ -167,7 +151,7 @@ File.makeDirectory(mask);
 
 ID20xMIP=0;
 
-FilePathArray=newArray(Frontal50pxPath, "JFRC2010_60pxMedP.tif");
+FilePathArray=newArray(Frontal50pxPath, "JFRC2010_50pxMIP.tif");
 fileOpen(FilePathArray);
 Frontal50pxPath=FilePathArray[0];
 
@@ -183,30 +167,12 @@ FilePathArray=newArray(ShapeMatchingMaskPath, "JFRC2010_ShapeMatchingMask.tif");
 fileOpen(FilePathArray);
 ShapeMatchingMaskPath=FilePathArray[0];
 
-comparisonP="Max";//"Median"
-
-if(comparisonP=="Average"){// average is not good 13D08
-	JFRC2010MedProPath = MatchingFilesDir+"JFRC2010_AvePro.png"; //"JFRC2010_AvePro.png"
-	FilePathArray=newArray(JFRC2010MedProPath, "JFRC2010_AvePro.png");
-	projectionSt="JFRC2010_AvePro.png";
-}
-if(comparisonP=="Median"){// good for izoom adjustment, but not good for optic lobe detection
-	JFRC2010MedProPath = MatchingFilesDir+"JFRC2010_MedPro.tif"; //"JFRC2010_AvePro.png"
-	FilePathArray=newArray(JFRC2010MedProPath, "JFRC2010_MedPro.tif");
-	projectionSt="JFRC2010_MedPro.tif";
-}
-
-if(comparisonP=="Max"){
-	JFRC2010MedProPath = MatchingFilesDir+"JFRC2010_MIP.tif"; //"JFRC2010_AvePro.png"
-	FilePathArray=newArray(JFRC2010MedProPath, "JFRC2010_MIP.tif");
-	projectionSt="JFRC2010_MIP.tif";
-}
-
+FilePathArray=newArray(JFRC2010AveProPath, "JFRC2010_AvePro.png");
 fileOpen(FilePathArray);
-JFRC2010MedProPath=FilePathArray[0];
+JFRC2010AveProPath=FilePathArray[0];
 
 noext2=0;
-print("JFRC2010MedProPath; "+JFRC2010MedProPath);
+
 
 ///// Duplication check //////////////////////////////////////////////////////////////
 
@@ -225,19 +191,12 @@ fileopentime=(afteropen-beforeopen)/1000;
 print("file open time; "+fileopentime+" sec");
 
 logsum=getInfo("log");
+filepath=savedir+"20x_brain_pre_aligner_log.txt";
 File.saveString(logsum, filepath);
 
 starta=getTime();
 getDimensions(width, height, channels, slices, frames);
-getVoxelSize(VxWidth, VxHeight, VxDepth, VxUnit);
-print("File vx size; VxWidth; "+VxWidth+"  VxHeight; "+VxHeight+"   VxDepth; "+VxDepth);
 
-if(VxWidth!=1 && VxHeight!=1){
-	Ori_widthVx=VxWidth;
-	Ori_heightVx=VxHeight;
-	depth=VxDepth;
-	print("Real voxel size; Ori_widthVx; "+Ori_widthVx+"  depth; "+depth);
-}
 
 if(Ori_widthVx>0.43 && objective=="40x" && Ori_widthVx<0.46){
 	print("40x vx size changed!! from "+Ori_widthVx+" to 0.4713");
@@ -253,7 +212,8 @@ run("Properties...", "channels="+channels+" slices="+nSlices/channels+" frames=1
 
 print(bitDepth+" bit");
 
-
+DotIndex = lastIndexOf(filename, ".");
+noext = substring(filename, 0, DotIndex);
 
 if(width<height)
 longlength=height;
@@ -295,6 +255,7 @@ if(channels==1 && nSlices<240){
 	print("PreAlignerError: There are no signal channels");
 	
 	logsum=getInfo("log");
+	filepath=savedir+"20x_brain_pre_aligner_log.txt";
 	File.saveString(logsum, filepath);
 	
 	run("Quit");
@@ -329,14 +290,6 @@ if(channels==2){
 	
 	selectImage(UnknownChannel[0]);//ch1
 	neuron=getImageID();
-	
-	if(flipchannel==1){
-		selectImage(UnknownChannel[0]);//ch2
-		nc82=getImageID();//White
-		
-		selectImage(UnknownChannel[1]);//ch1
-		neuron=getImageID();
-	}
 	
 }//if(channels==2){
 
@@ -399,12 +352,19 @@ run("Z Project...", "start=10 stop="+nSlices-10+" projection=[Max Intensity]");
 run("Enhance Contrast", "saturated=0.35");
 run("Apply LUT");
 run("8-bit");
-saveAs("PNG", ""+savedir+noext+"_Max01.png");
+saveAs("PNG", ""+myDir4+noext+"_Max01.png");
 close();
 selectWindow("nc82.tif");
 
 run("Duplicate...", "title=nc82_Ori.tif duplicate");
 selectWindow("nc82.tif");
+
+VoxSizeADJArray=newArray(widthVx,heightVx,depth);
+VoxSizeADJ(VoxSizeADJArray,DesireX,objective);
+
+widthVx = VoxSizeADJArray[0];
+heightVx = VoxSizeADJArray[1];
+depthVox = VoxSizeADJArray[2];
 
 ZoomratioSmall=Ori_widthVx/6.2243;
 Zoomratio=Ori_widthVx/0.62243;
@@ -413,35 +373,27 @@ Zoomratio=1;
 
 xcenter=round(getWidth/2); ycenter=round(getHeight/2);
 
-DupAvePprocessing (nc82,NumCPU,bitd,projectionSt);// DUPaveP.tif creation from nc82.tif
+DupAvePprocessing (nc82,NumCPU,bitd);// DUPaveP.tif creation from nc82.tif
 
 selectWindow("DUPaveP.tif");
-
-//setBatchMode(false);
-//	updateDisplay();
-//	"do"
-//	exit();
-
-print("412 ZoomratioSmall; "+ZoomratioSmall+"   widthVx; "+widthVx+"  round(getWidth*ZoomratioSmall); "+round(getWidth*ZoomratioSmall)+"   Zoomratio; "+Zoomratio);
+print("ZoomratioSmall; "+ZoomratioSmall+"   widthVx; "+widthVx+"  round(getWidth/ZoomratioSmall); "+round(getWidth/ZoomratioSmall)+"   Zoomratio; "+Zoomratio);
 run("Size...", "width="+round(getWidth*ZoomratioSmall)+" height="+round(getHeight*ZoomratioSmall)+" depth=1 constrain interpolation=None");
 run("Canvas Size...", "width=102 height=102 position=Center zero");
 
-if(isOpen(projectionSt)==0)
-open(JFRC2010MedProPath);
 
-//setBatchMode(false);
-//	updateDisplay();
-//	"do"
-//	exit();
+//	setBatchMode(false);
+//		updateDisplay();
+//		"do"
+//		exit();
 
-rotSearch=55; 	MaxZoom=1; 	setForegroundColor(0, 0, 0);
+rotSearch=60; 	MaxZoom=1; 	setForegroundColor(0, 0, 0);
 
 if(objective=="40x")
 BrainShape="Both_OL_missing (40x)";
 
 if(BrainShape=="Intact" || BrainShape=="Unknown"){
 	ImageCarray=newArray(0, 0, 0, 0);
-	ImageCorrelation2 ("DUPaveP.tif", projectionSt, rotSearch,ImageCarray,85,NumCPU,1,PNGsave);
+	ImageCorrelation2 ("DUPaveP.tif", "JFRC2010_AvePro.png", rotSearch,ImageCarray,90,NumCPU);
 	
 	OBJScoreOri=ImageCarray[0];
 	OriginalRot=ImageCarray[1];
@@ -458,140 +410,177 @@ if(BrainShape=="Intact" || BrainShape=="Unknown"){
 	
 	if(objective=="20x"){
 		ImageCorrelationArray=newArray(nc82, 0,0,0,0,0,0);
-		ImageCorrelation(ImageCorrelationArray,Ori_widthVx,NumCPU,projectionSt,PNGsave);// with zoom adjustment, it was widthVx
+		ImageCorrelation(ImageCorrelationArray,Ori_widthVx,NumCPU);// with zoom adjustment, it was widthVx
 		
 		//		OriginalRot=ImageCorrelationArray[4];
 		//		OBJScoreOri=ImageCorrelationArray[5];
 		MaxZoom=ImageCorrelationArray[6];
 		//		OriginalXshift = ImageCorrelationArray[2];
 		//		OriginalYshift = ImageCorrelationArray[3];
-		MaxZoom=parseFloat(MaxZoom);//Chaneg string to number
 		
 		if(MaxZoom!=1){
 			print("MaxZoom is not 1; "+MaxZoom);
-			nc82Ori=0;
-			DupPcreationAndbasicTransArray=newArray(widthVx, heightVx, Ori_widthVx, Ori_heightVx, ZoomratioSmall, Zoomratio, nc82, nc82Ori, OBJScoreOri,OriginalRot,OriginalYshift,OriginalXshift,maxX,maxY);
-			DupPcreationAndbasicTrans (MaxZoom,DupPcreationAndbasicTransArray, NumCPU, bitd, rotSearch,1);
 			
-			//	widthVx=DupPcreationAndbasicTransArray[0];
-			//	heightVx=DupPcreationAndbasicTransArray[1];
-			//	Ori_widthVx=DupPcreationAndbasicTransArray[2];
-			//	Ori_heightVx=DupPcreationAndbasicTransArray[3];
-			//	ZoomratioSmall=DupPcreationAndbasicTransArray[4];
-			//	Zoomratio=DupPcreationAndbasicTransArray[5];
-			nc82=DupPcreationAndbasicTransArray[6];
-			nc82Ori=DupPcreationAndbasicTransArray[7];
-			OBJScoreOri=DupPcreationAndbasicTransArray[8];
-			OriginalRot=DupPcreationAndbasicTransArray[9];
-			OriginalYshift=DupPcreationAndbasicTransArray[10];
-			OriginalXshift=DupPcreationAndbasicTransArray[11];
-			maxX=DupPcreationAndbasicTransArray[12];
-			maxY=DupPcreationAndbasicTransArray[13];
+			widthVx=widthVx*MaxZoom; heightVx=heightVx*MaxZoom;
+			
+			Ori_widthVx = Ori_widthVx*MaxZoom; Ori_heightVx = Ori_heightVx*MaxZoom;
+			ZoomratioSmall=ZoomratioSmall*MaxZoom; Zoomratio = Zoomratio*MaxZoom;
+			
+			selectWindow("OriginalProjection.tif");
+			close();
+			
+			selectWindow("DUPaveP.tif");
+			close();
+			
+			while(isOpen("nc82.tif")){
+				selectWindow("nc82.tif");
+				close();
+			}
+			if(isOpen("nc82.tif"))
+			exit("nc82 cannot close 897");
+			
+			wait(100);
+			call("java.lang.System.gc");
+			
+			selectWindow("nc82_Ori.tif");
+			rename("nc82.tif");
+			nc82=getImageID();
+			
+			run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=microns pixel_width="+Ori_widthVx+" pixel_height="+Ori_heightVx+" voxel_depth="+depth+"");
+			
+			run("Duplicate...", "title=nc82_Ori.tif duplicate");
+			nc82Ori=getImageID();
+			
+			selectWindow("nc82.tif");
+			
+			DupAvePprocessing (nc82,NumCPU,bitd);// DUPaveP.tif creation from nc82.tif
+			
+			selectWindow("DUPaveP.tif");
+			print("ZoomratioSmall; "+ZoomratioSmall+"   widthVx; "+widthVx+"  round(getWidth/ZoomratioSmall); "+round(getWidth/ZoomratioSmall));
+			run("Size...", "width="+round(getWidth*ZoomratioSmall)+" height="+round(getHeight*ZoomratioSmall)+" depth=1 constrain interpolation=None");
+			run("Canvas Size...", "width=102 height=102 position=Center zero");
+			
+			ImageCarray=newArray(0, 0, 0, 0);
+			ImageCorrelation2 ("DUPaveP.tif", "JFRC2010_AvePro.png", rotSearch,ImageCarray,90,NumCPU);
+			
+			OBJScoreOri=ImageCarray[0];
+			OriginalRot=ImageCarray[1];
+			OriginalYshift=ImageCarray[2];
+			OriginalXshift=ImageCarray[3];
+			
+			maxX=OriginalXshift/2;
+			maxY=OriginalYshift/2;
 			
 			print("   OBJScore after Zoom; "+OBJScoreOri+"  OriginalRot; "+OriginalRot);	
 		}//if(MaxZoom!=1){
 	}//if(objective=="20x"){
 	
-	finalshiftX=round((OriginalXshift/ZoomratioSmall)*MaxZoom);
-	finalshiftY=round((OriginalYshift/ZoomratioSmall)*MaxZoom);
+	finalshiftX=round((OriginalXshift/ZoomratioSmall)/2);
+	finalshiftY=round((OriginalYshift/ZoomratioSmall)/2);
 	print("MaxZoom; "+MaxZoom+"   widthVx; "+Ori_widthVx+"   heightVx; "+Ori_heightVx+"   Zoomratio; "+Zoomratio);
 }//	if(BrainShape=="Intact" || BrainShape=="Unknown"){
 
 if(BrainShape=="Unknown"){
+	//	if(OBJScoreOri<500){
+	print("  Optic lobe checking!!  OBJScoreOri; "+OBJScoreOri);
+	selectWindow("JFRC2010_AvePro.png");
+	run("Duplicate...", "title=JFRC2010_AvePro-Rop.png");
+	makePolygon(82,34,74,52,66,65,69,76,90,80,99,72,101,58,100,34);// elimination of the R-Op
 	
-	opticlobecheckArray = newArray(OBJScoreOri, BrainShape, OriginalXshift, OriginalYshift,finalshiftX,finalshiftY,0,0,0,0);
-	opticlobecheck (rotSearch,NumCPU,opticlobecheckArray,1,JFRC2010MedProPath);
+	run("Fill", "slice");
+	BrainShape="Intact";
 	
-	OBJScoreOri = opticlobecheckArray[0];
-	BrainShape = opticlobecheckArray[1];
-	OriginalXshift = opticlobecheckArray[2];
-	OriginalYshift = opticlobecheckArray[3];
-	finalshiftX = opticlobecheckArray[4];
-	finalshiftY = opticlobecheckArray[5];
-	SizeM = opticlobecheckArray[6];
-	finalMIP = opticlobecheckArray[7];
-	ID20xMIP = opticlobecheckArray[8];
-	OriginalRot = opticlobecheckArray[9];
+	ImageCarray=newArray(0, 0, 0, 0);
+	ImageCorrelation2 ("DUPaveP.tif", "JFRC2010_AvePro-Rop.png", rotSearch,ImageCarray,90,NumCPU);
 	
-	maxX=finalshiftX;
-	maxY=finalshiftY;
+	OBJScoreR=ImageCarray[0];
+	RotR=ImageCarray[1];
+	ShiftYR = ImageCarray[2];
+	ShiftXR = ImageCarray[3];
+	selectWindow("JFRC2010_AvePro-Rop.png");
+	close();//"JFRC2010_AvePro-Rop.png"
+	print("OBJScoreR; "+OBJScoreR);
 	
-	if(MaxZoom>=1.05)
-	MaxZoom=MaxZoom-0.03;
+	selectWindow("JFRC2010_AvePro.png");
+	makePolygon(17,31,22,42,31,51,37,65,31,79,14,79,2,74,2,54,1,38);//L-OL elimination
+	run("Fill", "slice");
+	ImageCarray=newArray(0, 0, 0, 0);
 	
-	if(MaxZoom<=0.95)
-	MaxZoom=MaxZoom+0.03;
-	
-	
-	finalshiftX=round((OriginalXshift/ZoomratioSmall)*MaxZoom);
-	finalshiftY=round((OriginalYshift/ZoomratioSmall)*MaxZoom);
+	//		setBatchMode(false);
+	//		updateDisplay();
+	//		"do"
+	//		exit();
 	
 	
+	ImageCorrelation2 ("DUPaveP.tif", "JFRC2010_AvePro.png", rotSearch,ImageCarray,90,NumCPU);
+	
+	OBJScoreL=ImageCarray[0];
+	RotL=ImageCarray[1];
+	ShiftYL = ImageCarray[2];
+	ShiftXL = ImageCarray[3];
+	print("OBJScoreL; "+OBJScoreL);
+	
+	selectWindow("JFRC2010_AvePro.png");
+	makePolygon(82,34,74,52,66,65,69,76,90,80,99,72,101,58,100,34);// elimination of the R-Op
+	run("Fill", "slice");
+	ImageCarray=newArray(0, 0, 0, 0);
+	ImageCorrelation2 ("DUPaveP.tif", "JFRC2010_AvePro.png", rotSearch,ImageCarray,90,NumCPU);
+	
+	OBJScoreBoth=ImageCarray[0];
+	RotBoth=ImageCarray[1];
+	ShiftYboth = ImageCarray[2];
+	ShiftXboth = ImageCarray[3];
+	print("OBJScoreBoth; "+OBJScoreBoth);
+	
+	if(OBJScoreL>OBJScoreR && OBJScoreL>OBJScoreOri && OBJScoreL>OBJScoreBoth){
+		OBJScoreOri = OBJScoreL;
+		BrainShape="Left_OL_missing";
+		OriginalRot=RotL;
+		OriginalXshift = ShiftXL;
+		OriginalYshift = ShiftYL;
+		ID20xMIP=1;
+		finalMIP="Max projection";
+		SizeM=1; 
+		
+	}
+	if(OBJScoreR>OBJScoreL && OBJScoreR>OBJScoreOri && OBJScoreR>OBJScoreBoth){
+		OBJScoreOri = OBJScoreR;
+		BrainShape="Right_OL_missing";
+		OriginalRot=RotR;
+		OriginalXshift = ShiftXR;
+		OriginalYshift = ShiftYR;
+		
+		ID20xMIP=1;
+		finalMIP="Max projection";
+		SizeM=1; 
+	}
+	if(OBJScoreBoth>OBJScoreR && OBJScoreBoth>OBJScoreL && OBJScoreBoth>OBJScoreOri){
+		OBJScoreOri = OBJScoreBoth;
+		BrainShape="Both_OL_missing";
+		OriginalRot=RotBoth;
+		OriginalXshift = ShiftXboth;
+		OriginalYshift = ShiftYboth;
+		
+		ID20xMIP=1;
+		finalMIP="Max projection";
+		SizeM=1; 
+	}
+	maxX=OriginalXshift;
+	maxY=OriginalYshift;
+	
+	finalshiftX=round((OriginalXshift/ZoomratioSmall)/2);
+	finalshiftY=round((OriginalYshift/ZoomratioSmall)/2);
 }//if(BrainShape=="Unknown"){
 
-heightVx=heightVx*MaxZoom;
-widthVx=widthVx*MaxZoom;
-
-Ori_widthVx=Ori_widthVx*MaxZoom;
-Ori_heightVx=Ori_heightVx*MaxZoom;
-
-reversetoOne=0;
-
-if(BrainShape!="Intact" && MaxZoom!=1 && reversetoOne==1){
-	
-	backzoom=1/MaxZoom;
-	MaxZoom=1;
-	
-	
-	selectWindow(projectionSt);
-	close();
-	open(JFRC2010MedProPath);
-	
-	
-	print("MaxZoom is change back to 1, due to "+BrainShape+" shape;   backzoom; "+backzoom);
-	DupPcreationAndbasicTransArray=newArray(widthVx, heightVx, Ori_widthVx, Ori_heightVx, ZoomratioSmall, Zoomratio, nc82, nc82Ori, OBJScoreOri,OriginalRot,OriginalYshift,OriginalXshift,maxX,maxY);
-	DupPcreationAndbasicTrans (backzoom,DupPcreationAndbasicTransArray, NumCPU, bitd, rotSearch,2);
-	
-	widthVx=DupPcreationAndbasicTransArray[0];
-	heightVx=DupPcreationAndbasicTransArray[1];
-	Ori_widthVx=DupPcreationAndbasicTransArray[2];
-	Ori_heightVx=DupPcreationAndbasicTransArray[3];
-	ZoomratioSmall=DupPcreationAndbasicTransArray[4];
-	Zoomratio=DupPcreationAndbasicTransArray[5];
-	nc82=DupPcreationAndbasicTransArray[6];
-	nc82Ori=DupPcreationAndbasicTransArray[7];
-	OBJScoreOri=DupPcreationAndbasicTransArray[8];
-	OriginalRot=DupPcreationAndbasicTransArray[9];
-	OriginalYshift=DupPcreationAndbasicTransArray[10];
-	OriginalXshift=DupPcreationAndbasicTransArray[11];
-	maxX=DupPcreationAndbasicTransArray[12];
-	maxY=DupPcreationAndbasicTransArray[13];
-	
-	
-	opticlobecheckArray = newArray(OBJScoreOri, 0, 0, 0,0,0,0,0,0,0);
-	opticlobecheck (rotSearch,NumCPU,opticlobecheckArray,2,JFRC2010MedProPath);
-	
-	OBJScoreOri = opticlobecheckArray[0];
-	BrainShape = opticlobecheckArray[1];
-	OriginalXshift = opticlobecheckArray[2];
-	OriginalYshift = opticlobecheckArray[3];
-	finalshiftX = opticlobecheckArray[4];
-	finalshiftY = opticlobecheckArray[5];
-	SizeM = opticlobecheckArray[6];
-	finalMIP = opticlobecheckArray[7];
-	ID20xMIP = opticlobecheckArray[8];
-	OriginalRot = opticlobecheckArray[9];
-}
-
 if(BrainShape=="Both_OL_missing (40x)"){
-	selectWindow(projectionSt);
+	selectWindow("JFRC2010_AvePro.png");
 	makePolygon(17,31,22,42,31,51,37,65,31,79,14,79,2,74,2,54,1,38);//L-OL elimination
 	run("Fill", "slice");
 	
 	makePolygon(82,34,74,52,66,65,69,76,90,80,99,72,101,58,100,34);// elimination of the R-Op
 	run("Fill", "slice");
 	ImageCarray=newArray(0, 0, 0, 0);
-	ImageCorrelation2 ("DUPaveP.tif", projectionSt, rotSearch,ImageCarray,80,NumCPU,6,PNGsave);
+	ImageCorrelation2 ("DUPaveP.tif", "JFRC2010_AvePro.png", rotSearch,ImageCarray,80,NumCPU);
 	
 	OBJScoreOri=ImageCarray[0];
 	OriginalRot=ImageCarray[1];
@@ -610,29 +599,22 @@ if(BrainShape=="Both_OL_missing (40x)"){
 	SizeM=1; 
 }
 
-//if missing OP, 15-20% bigger
 
-
-
-
-elipsoidAngle=OriginalRot;
-OBJScore=OBJScoreOri;
-print("");
-print("BrainShape; "+BrainShape+"   OBJScore; "+OBJScoreOri+"  OriginalRot; "+OriginalRot+"   maxX; "+maxX+"   maxY; "+maxY);
-
-//setBatchMode(false);
-//updateDisplay();
-//"do"
-//exit();
+while(isOpen("JFRC2010_AvePro.png")){
+	selectWindow("JFRC2010_AvePro.png");
+	close();//"JFRC2010_AvePro.png"
+}
 
 while(isOpen("DUPaveP.tif")){
 	selectWindow("DUPaveP.tif");
 	close();
 }
 
-if(PNGsave==1)
-File.saveString(BrainShape, savedir+"OL_shape_"+noext+"_.txt");
-else
+elipsoidAngle=OriginalRot;
+OBJScore=OBJScoreOri;
+print("");
+print("BrainShape; "+BrainShape+"   OBJScore; "+OBJScoreOri+"  OriginalRot; "+OriginalRot+"   maxX; "+maxX+"   maxY; "+maxY);
+
 File.saveString(BrainShape, savedir+"OL_shape.txt");
 
 while(isOpen("OriginalProjection.tif")){
@@ -673,12 +655,10 @@ if(BrainShape=="Intact"){
 				OriginalProjection=getImageID();
 			}
 			
-			
 			selectWindow("OriginalProjection.tif");
 			run("Duplicate...", "title=DUPprojection.tif");// for Masking
 			DUPprojection=getImageID();
 			
-			//	print("Line 700");
 			//			setBatchMode(false);
 			//			updateDisplay();
 			//			aa
@@ -754,8 +734,8 @@ if(BrainShape=="Intact"){
 			//		updateDisplay();
 			//		aa
 			
-			//	print("Line 781");
-			run("Analyze Particles...", "size="+round((100000*MaxZoom)*Zoomratio)+"-Infinity display exclude clear");
+			
+			run("Analyze Particles...", "size="+round((130000*MaxZoom)*Zoomratio)+"-Infinity display clear");
 			
 			updateResults();
 			maxsizeData=0;
@@ -765,7 +745,6 @@ if(BrainShape=="Intact"){
 				
 				for(inn=0; inn<getValue("results.count"); inn++){
 					maxsize0=getResult("Area", inn);
-					print("maxsize0; "+maxsize0);
 					
 					if(maxsize0>maxsizeData){
 						ARshape=getResult("AR", inn);// AR value from Triangle
@@ -774,7 +753,6 @@ if(BrainShape=="Intact"){
 						Circ=parseFloat(Circ);//Chaneg string to number
 						//		print(Circ+" Circ");
 						maxsizeData=maxsize0;
-						
 						
 						ixcenter=getResult("X", inn);
 						iycenter=getResult("Y", inn);
@@ -789,13 +767,8 @@ if(BrainShape=="Intact"){
 					ABSmaxSize=maxsizeData;
 					ABSmaxCirc=Circ;
 				}
-				print("maxsizeData; "+maxsizeData+"   (130000*MaxZoom)*Zoomratio; "+(100000*MaxZoom)*Zoomratio+"   MaxZoom; "+MaxZoom+"   Zoomratio; "+Zoomratio);
 				
-				if(PNGsave==1){
-					saveAs("PNG", ""+savedir+noext+"_Mask_ThreTry"+ThreTry+"_MIPstep_"+MIPstep+"_maxsizeData_"+maxsizeData+".png");
-					rename("DUPprojection.tif");
-				}
-				if(maxsizeData>(100000*MaxZoom)*Zoomratio && maxsizeData<(570000*MaxZoom)*Zoomratio && ARshape>1.3){
+				if(maxsizeData>(130000*MaxZoom)*Zoomratio && maxsizeData<(570000*MaxZoom)*Zoomratio && ARshape>1.3){
 					
 					selectWindow("DUPprojection.tif");// binary mask
 					
@@ -803,7 +776,7 @@ if(BrainShape=="Intact"){
 					//					updateDisplay();
 					//					aa
 					
-					run("Size...", "width="+round(getWidth*ZoomratioSmall*MaxZoom)+" height="+round(getHeight*ZoomratioSmall*MaxZoom)+" depth=1 constrain interpolation=None");
+					run("Size...", "width="+round(getWidth*ZoomratioSmall)+" height="+round(getHeight*ZoomratioSmall)+" depth=1 constrain interpolation=None");
 					
 					run("Canvas Size...", "width=102 height=102 position=Center zero");
 					
@@ -830,7 +803,7 @@ if(BrainShape=="Intact"){
 					
 					
 					ImageCarray=newArray(0, 0, 0, 0);
-					ImageCorrelation2 ("DUPprojection.tif", "JFRC2010_ShapeMatchingMask.tif", rotSearch,ImageCarray,90,NumCPU,7,PNGsave);
+					ImageCorrelation2 ("DUPprojection.tif", "JFRC2010_ShapeMatchingMask.tif", rotSearch,ImageCarray,90,NumCPU);
 					
 					OBJScore=ImageCarray[0];
 					Rot=ImageCarray[1];
@@ -969,7 +942,7 @@ if(ID20xMIP==0){
 	print("could not segment by normal method");
 	/// rescue code with Image correlation ////////////////////////////
 	ImageCorrelationArray=newArray(nc82, ImageAligned,0,0,0,0,0);
-	ImageCorrelation (ImageCorrelationArray,Ori_widthVx,NumCPU,projectionSt,PNGsave);
+	ImageCorrelation (ImageCorrelationArray,Ori_widthVx,NumCPU);
 	ImageAligned=ImageCorrelationArray[1];
 	//		maxX=ImageCorrelationArray[2];
 	//		maxY=ImageCorrelationArray[3];
@@ -1002,8 +975,6 @@ if(ID20xMIP==0){
 		saveAs("PNG", ""+mask+noext+"_MaxAR_"+ABSMaxARShape+"_Shape.png");//save 20x MIP mask
 		saveAs("PNG", ""+savedir+noext+"_MaxAR_Shape.png");
 		close();
-		
-		print("PreAlignerError: Shape problem of the brain");
 	}//if(ID20xMIP==0){
 }//if(NRRD_02_ext==0){
 logsum=getInfo("log");
@@ -1020,7 +991,7 @@ if(SizeM!=0){
 			
 			resliceLongLength=round(sqrt(height*height+width*width));
 			print("elipsoidAngle; "+elipsoidAngle);
-			OpticLobeSizeGap=60000*Zoomratio*MaxZoom; x1_opl=0; x2_opl=0; sizediff2=0; sizediff1=0; y1_opl=0;
+			OpticLobeSizeGap=60000*Zoomratio; x1_opl=0; x2_opl=0; sizediff2=0; sizediff1=0; y1_opl=0;
 			
 			if(BrainShape=="Intact"){
 				MIPstep=1;
@@ -1075,15 +1046,11 @@ if(SizeM!=0){
 					run("Paste");
 					
 					
-					run("Analyze Particles...", "size="+(100000*MaxZoom)*Zoomratio+"-Infinity show=Masks display clear");//run("Analyze Particles...", "size=200000-Infinity show=Masks display exclude clear");
+					run("Analyze Particles...", "size="+(130000*MaxZoom)*Zoomratio+"-Infinity show=Masks display clear");//run("Analyze Particles...", "size=200000-Infinity show=Masks display exclude clear");
 					ID20xMIP=getImageID();//このマスクを元にしてローテーション、中心座標を得る
 					ID20xMIPtitle=getTitle();
 					run("Grays");
 					
-					if(PNGsave==1){
-						saveAs("PNG", ""+savedir+noext+"_MIPstep_"+MIPstep+".png");
-						rename(ID20xMIPtitle);
-					}
 					//			setBatchMode(false);
 					//						updateDisplay();
 					//						"do"
@@ -1109,8 +1076,8 @@ if(SizeM!=0){
 					//			exit();
 					
 					if(getValue("results.count")==0){
-						print("PreAlignerError: Could not detect brain mask in line 1120");
-						run("Quit");
+						"Could not detect brain mask in line 1306";
+						exit();
 					}else{
 						
 						AnalyzeCArray=newArray(SizeM, 0, 0);
@@ -1132,15 +1099,15 @@ if(SizeM!=0){
 						if(xcenter<=cropWidth/2)
 						xgapleft=cropWidth/2-xcenter;
 						
-						print("finalshiftX; "+round(finalshiftX)+"   round(maxX*MaxZoom*Zoomratio); "+round(maxX*MaxZoom*Zoomratio)+"  finalshiftY; "+round(finalshiftY)+"   round(maxY*20/Zoomratio); "+round(maxY*20/Zoomratio)+"maxX; "+maxX+"   maxY; "+maxY+"  Zoomratio; "+Zoomratio);
-						print("1069 cropWidth*Zoomratio*MaxZoom; "+round(cropWidth*Zoomratio*MaxZoom)+"   cropHeight*Zoomratio*MaxZoom; "+round(cropHeight*Zoomratio*MaxZoom)+"   Zoomratio; "+Zoomratio);
+						print("finalshiftX; "+round(finalshiftX)+"   round(maxX*20*Zoomratio); "+round(maxX*20*Zoomratio)+"  finalshiftY; "+round(finalshiftY)+"   round(maxY*20/Zoomratio); "+round(maxY*20/Zoomratio)+"maxX; "+maxX+"   maxY; "+maxY+"  Zoomratio; "+Zoomratio);
+						print("1069 cropWidth; "+cropWidth+"   cropHeight; "+cropHeight+"   Zoomratio; "+Zoomratio);
 						
 						
 						selectImage(ID20xMIP);
 						selectWindow(ID20xMIPtitle);
 						
 						run("Translate...", "x="+finalshiftX+" y="+finalshiftY+" interpolation=None");
-						run("Canvas Size...", "width="+round(cropWidth*Zoomratio*MaxZoom)+" height="+round(cropHeight*Zoomratio*MaxZoom)+" position=Center zero");
+						run("Canvas Size...", "width="+cropWidth*Zoomratio+" height="+cropHeight*Zoomratio+" position=Center zero");
 						
 						//				setBatchMode(false);
 						//					updateDisplay();
@@ -1150,7 +1117,7 @@ if(SizeM!=0){
 						run("Duplicate...", "title=DupMask2D.tif");
 						DupMask=getImageID();
 						
-					}//if(getValue("results.count")!=0){
+					}//if(getValue("results.count")==0){
 					
 					//				setBatchMode(false);
 					//				updateDisplay();
@@ -1210,6 +1177,8 @@ if(SizeM!=0){
 				//// optic lobe detection //////////////////////////////////////////
 				run("Watershed");// clip optic lobe out
 				
+				
+				
 				run("Analyze Particles...", "size=4000-Infinity display clear");
 				
 				//		setBatchMode(false);
@@ -1235,14 +1204,14 @@ if(SizeM!=0){
 				
 				for(opticL1=0; opticL1<getValue("results.count"); opticL1++){
 					
-					opticlobe1Gap=abs(xdistancearray[opticL1]-((220/1200)*(cropWidth*Zoomratio*MaxZoom)));//  300 220 is average of left optic lobe central X
-					opticlobe2Gap=abs(xdistancearray[opticL1]-((950/1200)*(cropWidth*Zoomratio*MaxZoom)));// 920 981 is average of left optic lobe central X
+					opticlobe1Gap=abs(xdistancearray[opticL1]-((220/1200)*(cropWidth*Zoomratio)));//  300 220 is average of left optic lobe central X
+					opticlobe2Gap=abs(xdistancearray[opticL1]-((950/1200)*(cropWidth*Zoomratio)));// 920 981 is average of left optic lobe central X
 					
-					if(opticlobe1Gap<120*Zoomratio*MaxZoom)
+					if(opticlobe1Gap<120*Zoomratio)
 					optic1_Area_sum=optic1_Area_sum+AreaArray[opticL1];
 					
 					
-					if(opticlobe2Gap<120*Zoomratio*MaxZoom)
+					if(opticlobe2Gap<120*Zoomratio)
 					optic2_Area_sum=optic2_Area_sum+AreaArray[opticL1];
 				}
 				
@@ -1250,10 +1219,10 @@ if(SizeM!=0){
 				
 				for(opticL=0; opticL<getValue("results.count"); opticL++){
 					
-					opticlobe1Gap=abs(xdistancearray[opticL]-((220/1200)*(cropWidth*Zoomratio*MaxZoom)));//  300 220 is average of left optic lobe central X
-					opticlobe2Gap=abs(xdistancearray[opticL]-((950/1200)*(cropWidth*Zoomratio*MaxZoom)));// 920 981 is average of left optic lobe central X
+					opticlobe1Gap=abs(xdistancearray[opticL]-((220/1200)*(cropWidth*Zoomratio)));//  300 220 is average of left optic lobe central X
+					opticlobe2Gap=abs(xdistancearray[opticL]-((950/1200)*(cropWidth*Zoomratio)));// 920 981 is average of left optic lobe central X
 					
-					if(opticlobe1Gap<120*Zoomratio*MaxZoom){
+					if(opticlobe1Gap<120*Zoomratio){
 						print("opticlobe1Gap; "+opticlobe1Gap);
 						
 						optic1_Xposition_sum=optic1_Xposition_sum+(xdistancearray[opticL]*(AreaArray[opticL]/optic1_Area_sum));
@@ -1264,7 +1233,7 @@ if(SizeM!=0){
 						optic1_object=optic1_object+1;
 					}
 					
-					if(opticlobe2Gap<120*Zoomratio*MaxZoom){
+					if(opticlobe2Gap<120*Zoomratio){
 						print("opticlobe2Gap; "+opticlobe2Gap);
 						optic2_Xposition_sum=optic2_Xposition_sum+(xdistancearray[opticL]*(AreaArray[opticL]/optic2_Area_sum));
 						
@@ -1277,11 +1246,11 @@ if(SizeM!=0){
 				
 				x1_opl=optic1_Xposition_sum;
 				y1_opl=optic1_Yposition_sum;
-				sizediff1=abs(100000*Zoomratio*MaxZoom-optic1_Area_sum);
+				sizediff1=abs(80000*Zoomratio-optic1_Area_sum);
 				
 				x2_opl=optic2_Xposition_sum;
 				y2_opl=optic2_Yposition_sum;
-				sizediff2=abs(100000*Zoomratio*MaxZoom-optic2_Area_sum);
+				sizediff2=abs(80000*Zoomratio-optic2_Area_sum);
 				print("getValue(results.count); "+getValue("results.count"));
 				print("oticLobe1Area; "+optic1_Area_sum+"  OL1 is "+optic1_object+" peaces. "+"  oticLobe2Area; "+optic2_Area_sum+"  optic2_Area_sum; "+optic2_Area_sum+"  OL2 is "+optic2_object+" peaces. ");
 				ImageAligned2=0; 
@@ -1305,7 +1274,7 @@ if(SizeM!=0){
 						wait(100);
 						call("java.lang.System.gc");
 						ImageCorrelationArray=newArray(nc82, ImageAligned2,0,0,0,0,0);
-						ImageCorrelation (ImageCorrelationArray,Ori_widthVx,NumCPU,projectionSt,PNGsave);
+						ImageCorrelation (ImageCorrelationArray,Ori_widthVx,NumCPU);
 						ImageAligned2=ImageCorrelationArray[1];
 						
 						print("ImageAligned2; "+ImageAligned2);
@@ -1340,7 +1309,7 @@ if(SizeM!=0){
 							run("8-bit");
 							run("Grays");
 							saveAs("PNG", ""+myDir0+noext+"_OL_Shape.png");//save 20x MIP mask
-							print("PreAlignerError: optic lobe shape problem");
+							
 							while(isOpen(MIP2ID)){
 								selectImage(MIP2ID);
 								close();
@@ -1359,11 +1328,6 @@ if(SizeM!=0){
 					close();
 				}
 				
-				while(isOpen(projectionSt)){
-					selectWindow(projectionSt);
-					close();//projectionSt
-				}
-				
 				if(NewID20xMIPgeneration==0){
 					while(isOpen(MIP2nd)){
 						selectImage(MIP2nd);
@@ -1380,9 +1344,9 @@ if(SizeM!=0){
 				File.saveString(logsum, filepath);
 				
 				//	setBatchMode(false);
-				//	updateDisplay();
-				//	"do"
-				//	exit();
+				//			updateDisplay();
+				//			"do"
+				//			exit();
 				
 				wait(100);
 				call("java.lang.System.gc");
@@ -1403,7 +1367,7 @@ if(SizeM!=0){
 					if(shrinkTo2010==false)
 					Zoomratio=1;
 					
-					run("Canvas Size...", "width="+round(cropWidth*Zoomratio*MaxZoom)+" height="+round(cropHeight*Zoomratio*MaxZoom)+" position=Center zero");
+					run("Canvas Size...", "width="+round(cropWidth*Zoomratio)+" height="+round(cropHeight*Zoomratio)+" position=Center zero");
 					
 					Zoomratio=orizoomratio;
 				}//if(y1_opl<ycenterCrop && y2_opl<ycenterCrop){// if optic lobe is higer position, upside down
@@ -1413,7 +1377,7 @@ if(SizeM!=0){
 					OBJV="";
 					if(ImageAligned2==1){
 						
-						rotateshift3D (resliceLongLength,finalshiftX,Zoomratio*MaxZoom,finalshiftY,elipsoidAngle,shrinkTo2010,cropWidth,cropHeight,Ori_widthVx,Ori_heightVx,depth);
+						rotateshift3D (resliceLongLength,finalshiftX,Zoomratio,finalshiftY,elipsoidAngle,shrinkTo2010,cropWidth,cropHeight,Ori_widthVx,Ori_heightVx,depth);
 						
 						OBJV="_"+OBJScore;
 					}
@@ -1435,7 +1399,7 @@ if(SizeM!=0){
 					run("Grays");
 					saveAs("PNG", ""+path20xmask+OBJV+".png");//save 20x MIP mask
 					
-				}//if(y1_opl!=cropHeight*2){// if no shape problem
+				}
 				selectImage(ID20xMIP);
 				//		selectWindow(ID20xMIPtitle);
 				close();// MIP
@@ -1458,7 +1422,7 @@ if(SizeM!=0){
 			selectImage(nc82);
 			print("nc82 selected 1837; "+getTitle());
 			
-			rotateshift3D (resliceLongLength,finalshiftX,Zoomratio*MaxZoom,finalshiftY,elipsoidAngle,shrinkTo2010,cropWidth,cropHeight,Ori_widthVx,Ori_heightVx,depth);
+			rotateshift3D (resliceLongLength,finalshiftX,Zoomratio,finalshiftY,elipsoidAngle,shrinkTo2010,cropWidth,cropHeight,Ori_widthVx,Ori_heightVx,depth);
 			
 			if(ImageAligned==1){
 				sizediff2=OpticLobeSizeGap; sizediff1=OpticLobeSizeGap;
@@ -1476,7 +1440,7 @@ if(SizeM!=0){
 			
 			selectImage(nc82);
 			lateralArray=newArray(0, 0,0,0,0,0);
-			lateralDepthAdjustment(x1_opl,x2_opl,lateralArray,nc82,templateBr,NumCPU,shrinkTo2010,objective,PNGsave);
+			lateralDepthAdjustment(x1_opl,x2_opl,lateralArray,nc82,templateBr,NumCPU,shrinkTo2010,objective);
 			incredepth=lateralArray[0];
 			nc82=lateralArray[1];
 			maxrotation=lateralArray[2];
@@ -1563,7 +1527,7 @@ if(SizeM!=0){
 				
 				nc82=getImageID();
 				
-				rotateshift3D (resliceLongLength,finalshiftX,Zoomratio*MaxZoom,finalshiftY,elipsoidAngle,shrinkTo2010,cropWidth,cropHeight,Ori_widthVx,Ori_heightVx,incredepth);
+				rotateshift3D (resliceLongLength,finalshiftX,Zoomratio,finalshiftY,elipsoidAngle,shrinkTo2010,cropWidth,cropHeight,Ori_widthVx,Ori_heightVx,incredepth);
 				
 				run("Properties...", "channels=1 slices="+NC82SliceNum+" frames=1 unit=microns pixel_width=1 pixel_height=1 voxel_depth=1");
 				run("Reslice [/]...", "output=1.000 start=Left rotate avoid");
@@ -1647,18 +1611,10 @@ if(SizeM!=0){
 				run("8-bit");
 				rename("nc82Max.jpg");
 				
-				makeRectangle(getWidth/2-round((344/Ori_widthVx)/2), 60, round(344/Ori_widthVx), 9);
-				setForegroundColor(255, 255, 255);
-				run("Fill", "slice");
-				
 				if(ImageAligned==1)
-				run("Save", "save="+savedir+noext+"_obj"+OBJScore+".tif");
-				
-				//run("Nrrd Writer", "compressed nrrd="+savedir+noext+"_obj"+OBJScore+".nrrd");//save 20x MIP
-				//	saveAs("JPEG", ""+savedir+noext+"_obj"+OBJScore+".jpg");//save 20x MIP
+				saveAs("JPEG", ""+savedir+noext+"_obj"+OBJScore+".jpg");//save 20x MIP
 				else
-				run("Save", "save="+savedir+noext+"MIP.tif");
-				//saveAs("JPEG", ""+savedir+noext+".jpg");//save 20x MIP
+				saveAs("JPEG", ""+savedir+noext+".jpg");//save 20x MIP
 				
 				close();
 				
@@ -1790,7 +1746,7 @@ if(SizeM!=0){
 					else if (neuronNum==startNeuronNum+2)
 					neuron3 = getImageID();
 				}
-				rotateshift3D (resliceLongLength,finalshiftX,Zoomratio*MaxZoom,finalshiftY,elipsoidAngle,shrinkTo2010,cropWidth,cropHeight,Ori_widthVx,Ori_heightVx,incredepth);			
+				rotateshift3D (resliceLongLength,finalshiftX,Zoomratio,finalshiftY,elipsoidAngle,shrinkTo2010,cropWidth,cropHeight,Ori_widthVx,Ori_heightVx,incredepth);			
 				
 				rename("signalCH.tif");
 				signalCH=getImageID();
@@ -1916,7 +1872,7 @@ if(SizeM!=0){
 						//			run("Rotate... ", "angle=180 grid=1 interpolation=None stack");//Rotate mask to 180 degree
 						canvasenlarge(xcenter2,cropWidth);
 					}
-					makeRectangle(round(xcenter2+xgapleft-(cropWidth/2)*Zoomratio*MaxZoom), round(ycenter-(cropHeight/2)*Zoomratio*MaxZoom-shiftY), round(cropWidth*Zoomratio*MaxZoom), round(cropHeight*Zoomratio*MaxZoom));//cropping brain
+					makeRectangle(round(xcenter2+xgapleft-(cropWidth/2)*Zoomratio), round(ycenter-(cropHeight/2)*Zoomratio-shiftY), round(cropWidth*Zoomratio), round(cropHeight*Zoomratio));//cropping brain
 					run("Crop");
 				}else{
 					run("Canvas Size...", "width="+resliceLongLength+" height="+resliceLongLength+" position=Center zero");
@@ -1929,7 +1885,7 @@ if(SizeM!=0){
 					run("Translate...", "x="+finalshiftX+" y="+finalshiftY+" interpolation=None stack");
 					
 					setVoxelSize(LVxWidth*MaxZoom, LVxHeight*MaxZoom, LVxDepth, LVxUnit);//reslice
-					run("Canvas Size...", "width="+round(cropWidth*Zoomratio*MaxZoom)+" height="+round(cropHeight*Zoomratio*MaxZoom)+" position=Center zero");
+					run("Canvas Size...", "width="+round(cropWidth*Zoomratio)+" height="+round(cropHeight*Zoomratio)+" position=Center zero");
 				}
 				
 				logsum=getInfo("log");
@@ -1981,8 +1937,6 @@ if(SizeM!=0){
 	run("Grays");
 	saveAs("PNG", ""+myDir0+noext+"_OL_Shape.png");//save 20x MIP mask
 	saveAs("PNG", ""+savedir+noext+"_OL_Shape_MASK.png");
-	
-	print("PreAlignerError: brain shape problem");
 }
 
 run("Close All");
@@ -1999,234 +1953,6 @@ logsum=getInfo("log");
 File.saveString(logsum, filepath);
 
 run("Quit");
-
-
-
-function DupPcreationAndbasicTrans (MaxZoom,DupPcreationAndbasicTransArray, NumCPU, bitd, rotSearch,times){
-	
-	widthVx=DupPcreationAndbasicTransArray[0];
-	heightVx=DupPcreationAndbasicTransArray[1];
-	Ori_widthVx=DupPcreationAndbasicTransArray[2];
-	Ori_heightVx=DupPcreationAndbasicTransArray[3];
-	ZoomratioSmall=DupPcreationAndbasicTransArray[4];
-	Zoomratio=DupPcreationAndbasicTransArray[5];
-	nc82=DupPcreationAndbasicTransArray[6];
-	nc82Ori=DupPcreationAndbasicTransArray[7];
-	OBJScoreOri=DupPcreationAndbasicTransArray[8];
-	OriginalRot=DupPcreationAndbasicTransArray[9];
-	OriginalYshift=DupPcreationAndbasicTransArray[10];
-	OriginalXshift=DupPcreationAndbasicTransArray[11];
-	maxX=DupPcreationAndbasicTransArray[12];
-	maxY=DupPcreationAndbasicTransArray[13];
-	
-	widthVx=widthVx*MaxZoom; heightVx=heightVx*MaxZoom;
-	
-	Ori_widthVx = Ori_widthVx*MaxZoom; Ori_heightVx = Ori_heightVx*MaxZoom;
-	ZoomratioSmall=ZoomratioSmall*MaxZoom; Zoomratio = Zoomratio*MaxZoom;
-	
-	if(isOpen("OriginalProjection.tif")){
-		selectWindow("OriginalProjection.tif");
-		close();
-	}
-	
-	while(isOpen("DUPaveP.tif")){
-		selectWindow("DUPaveP.tif");
-		close();
-	}
-	
-	while(isOpen("nc82.tif")){
-		selectWindow("nc82.tif");
-		close();
-	}
-	if(isOpen("nc82.tif"))
-	exit("nc82 cannot close 897");
-	
-	wait(100);
-	call("java.lang.System.gc");
-	
-	selectWindow("nc82_Ori.tif");
-	rename("nc82.tif");
-	nc82=getImageID();
-	
-	run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=microns pixel_width="+Ori_widthVx+" pixel_height="+Ori_heightVx+" voxel_depth="+depth+"");
-	
-	run("Duplicate...", "title=nc82_Ori.tif duplicate");
-	nc82Ori=getImageID();
-	
-	selectWindow("nc82.tif");
-	
-	DupAvePprocessing (nc82,NumCPU,bitd,projectionSt);// DUPaveP.tif creation from nc82.tif
-	
-	selectWindow("DUPaveP.tif");//original size
-	
-	newImage("Mask", "8-bit white", getWidth, getHeight, 1);
-	run("Mask Median Subtraction", "mask=Mask data=DUPaveP.tif %=90 histogram=100");
-	selectWindow("Mask");
-	close();
-	selectWindow("DUPaveP.tif");
-	
-	//setBatchMode(false);
-	//updateDisplay();
-	//"do"
-	//exit();
-	
-	print("ZoomratioSmall; "+ZoomratioSmall+"   widthVx; "+widthVx+"  round(getWidth/ZoomratioSmall); "+round(getWidth/ZoomratioSmall)+"  line 2024");
-	run("Size...", "width="+round(getWidth*ZoomratioSmall)+" height="+round(getHeight*ZoomratioSmall)+" depth=1 constrain interpolation=None");
-	run("Canvas Size...", "width=102 height=102 position=Center zero");
-	
-	//if(times==1){
-	//setBatchMode(false);
-	//	updateDisplay();
-	//			"do"
-	//		exit();
-	
-	ImageCarray=newArray(0, 0, 0, 0);
-	ImageCorrelation2 ("DUPaveP.tif", projectionSt, rotSearch,ImageCarray,75,NumCPU,2,PNGsave);
-	
-	OBJScoreOri=ImageCarray[0];
-	OriginalRot=ImageCarray[1];
-	OriginalYshift=ImageCarray[2];
-	OriginalXshift=ImageCarray[3];
-	
-	maxX=OriginalXshift/2;
-	maxY=OriginalYshift/2;
-	//}
-	
-	
-	DupPcreationAndbasicTransArray[0]=widthVx;
-	DupPcreationAndbasicTransArray[1]=heightVx;
-	DupPcreationAndbasicTransArray[2]=Ori_widthVx;
-	DupPcreationAndbasicTransArray[3]=Ori_heightVx;
-	DupPcreationAndbasicTransArray[4] =ZoomratioSmall;
-	DupPcreationAndbasicTransArray[5] =Zoomratio;
-	DupPcreationAndbasicTransArray[6] =nc82;
-	DupPcreationAndbasicTransArray[7] =nc82Ori;
-	DupPcreationAndbasicTransArray[8] =OBJScoreOri;
-	DupPcreationAndbasicTransArray[9] =OriginalRot;
-	DupPcreationAndbasicTransArray[10] =OriginalYshift;
-	DupPcreationAndbasicTransArray[11] =OriginalXshift;
-	DupPcreationAndbasicTransArray[12] =maxX;
-	DupPcreationAndbasicTransArray[13] =maxY;
-	
-}//function DupPcreationAndbasicTrans (MaxZoom,DupPcreationAndbasicTransArray, NumCPU, bitd, rotSearch){
-
-
-function opticlobecheck (rotSearch,NumCPU,opticlobecheckArray,times,JFRC2010MedProPath){
-	
-	OBJScoreOri=opticlobecheckArray[0];
-	print("");
-	print("  Optic lobe checking!!  OBJScoreOri; "+OBJScoreOri);
-	
-	selectWindow(projectionSt);
-	
-	run("Duplicate...", "title=JFRC2010_MedPro-Rop.png");
-	makePolygon(82,34,74,52,66,65,69,76,90,80,99,72,101,58,100,34);// elimination of the R-Op
-	run("Fill", "slice");
-	run("Select All");
-	print(projectionSt+" size; W; "+getWidth+"   H; "+getHeight);
-	
-	BrainShape="Intact";
-	
-	selectWindow("DUPaveP.tif");//original size
-	print("DUPaveP.tif size; W; "+getWidth+"   H; "+getHeight);
-	
-	//if(times==2){
-	//	setBatchMode(false);
-	//	updateDisplay();
-	//	"do"
-	//	exit();
-	//}
-	
-	ImageCarray=newArray(0, 0, 0, 0);
-	ImageCorrelation2 ("DUPaveP.tif","JFRC2010_MedPro-Rop.png", rotSearch,ImageCarray,75,NumCPU,3,PNGsave);
-	
-	OBJScoreR=ImageCarray[0];
-	RotR=ImageCarray[1];
-	ShiftYR = ImageCarray[2];
-	ShiftXR = ImageCarray[3];
-	selectWindow("JFRC2010_MedPro-Rop.png");
-	close();//"JFRC2010_MedPro-Rop.png"
-	print("OBJScoreR; "+OBJScoreR);
-	
-	selectWindow(projectionSt);
-	makePolygon(17,31,22,42,31,51,37,65,31,79,14,79,2,74,2,54,1,38);//L-OL elimination
-	run("Fill", "slice");
-	
-	//		setBatchMode(false);
-	//		updateDisplay();
-	//		"do"
-	//		exit();
-	
-	ImageCarray=newArray(0, 0, 0, 0);
-	ImageCorrelation2 ("DUPaveP.tif", projectionSt, rotSearch,ImageCarray,75,NumCPU,4,PNGsave);
-	
-	OBJScoreL=ImageCarray[0];
-	RotL=ImageCarray[1];
-	ShiftYL = ImageCarray[2];
-	ShiftXL = ImageCarray[3];
-	print("OBJScoreL; "+OBJScoreL);
-	
-	selectWindow(projectionSt);
-	makePolygon(82,34,74,52,66,65,69,76,90,80,99,72,101,58,100,34);// elimination of the R-Op
-	run("Fill", "slice");
-	ImageCarray=newArray(0, 0, 0, 0);
-	ImageCorrelation2 ("DUPaveP.tif", projectionSt, rotSearch,ImageCarray,75,NumCPU,5,PNGsave);
-	
-	OBJScoreBoth=ImageCarray[0];
-	RotBoth=ImageCarray[1];
-	ShiftYboth = ImageCarray[2];
-	ShiftXboth = ImageCarray[3];
-	print("OBJScoreBoth; "+OBJScoreBoth);
-	
-	if(OBJScoreL>OBJScoreR && OBJScoreL>OBJScoreOri-15 && OBJScoreL>OBJScoreBoth){
-		OBJScoreOri = OBJScoreL;
-		BrainShape="Left_OL_missing";
-		OriginalRot=RotL;
-		OriginalXshift = ShiftXL;
-		OriginalYshift = ShiftYL;
-		ID20xMIP=1;
-		finalMIP="Max projection";
-		SizeM=1; 
-		
-	}
-	if(OBJScoreR>OBJScoreL && OBJScoreR>OBJScoreOri-15 && OBJScoreR>OBJScoreBoth){
-		OBJScoreOri = OBJScoreR;
-		BrainShape="Right_OL_missing";
-		OriginalRot=RotR;
-		OriginalXshift = ShiftXR;
-		OriginalYshift = ShiftYR;
-		
-		ID20xMIP=1;
-		finalMIP="Max projection";
-		SizeM=1; 
-	}
-	if(OBJScoreBoth>OBJScoreR && OBJScoreBoth>OBJScoreL && OBJScoreBoth>OBJScoreOri){
-		OBJScoreOri = OBJScoreBoth;
-		BrainShape="Both_OL_missing";
-		OriginalRot=RotBoth;
-		OriginalXshift = ShiftXboth;
-		OriginalYshift = ShiftYboth;
-		
-		ID20xMIP=1;
-		finalMIP="Max projection";
-		SizeM=1; 
-	}
-	
-	finalshiftX=round(OriginalXshift/ZoomratioSmall);
-	finalshiftY=round(OriginalYshift/ZoomratioSmall);
-	
-	opticlobecheckArray[0] = OBJScoreOri;
-	opticlobecheckArray[1] = BrainShape;
-	opticlobecheckArray[2] = OriginalXshift;
-	opticlobecheckArray[3] = OriginalYshift;
-	opticlobecheckArray[4] = finalshiftX;
-	opticlobecheckArray[5] = finalshiftY;
-	opticlobecheckArray[6] = SizeM;
-	opticlobecheckArray[7] = finalMIP;
-	opticlobecheckArray[8] = ID20xMIP;
-	opticlobecheckArray[9] = OriginalRot;
-}//function opticlobecheck (rotSearch,NumCPU,){
-
 
 function TwoDfillHole (){// accept binary
 	run("Select All");
@@ -2368,82 +2094,40 @@ function VoxSizeADJ (VoxSizeADJArray,DesireX,objective){
 }//function VoxSizeADJ (VoxSizeADJArray){
 
 
-function ImageCorrelation(ImageCorrelationArray,widthVx,NumCPU,projectionSt,PNGsave){
+function ImageCorrelation(ImageCorrelationArray,widthVx,NumCPU){
 	nc82=ImageCorrelationArray[0];
 	ImageAligned=ImageCorrelationArray[1];
 	
-	STring="EQ";
-	tempSD=1;
-	
-	if(isOpen("SampMIP.tif")){
-		selectWindow("SampMIP.tif");
-		close();
-		print("SampMIP was Open!!!!????");
-	}
-	
 	selectImage(nc82);
-	
-	if(projectionSt=="JFRC2010_MedPro.tif")
-	run("Z Project...", "start=5 stop="+nSlices-10+" projection=[Median]");//Max Intensity
-	
-	if(projectionSt=="JFRC2010_AvePro.png")
-	run("Z Project...", "start=15 stop="+nSlices-10+" projection=[Average Intensity]");//Max Intensity
-	
-	if(projectionSt=="JFRC2010_MIP.tif")
-	run("Z Project...", "start=5 stop="+nSlices-10+" projection=[Max Intensity]");//Max Intensity
-	
-	dotindex=lastIndexOf(projectionSt,".");
-	tempsavename=substring(projectionSt, 0, dotindex);
-	
-	resetMinAndMax();
-	run("16-bit");
+	run("Z Project...", "start=15 stop="+nSlices-10+" projection=[Max Intensity]");
 	run("Grays");
 	rename("SampMIP.tif");
+	//	run("Enhance Local Contrast (CLAHE)", "blocksize=127 histogram=4095 maximum=5 mask=*None* fast_(less_accurate)");
 	
-	ZoomratioFun=6.2243/widthVx; //10.5813/widthVx;
-	print("1798 60px ZoomratioFun; "+ZoomratioFun+"   widthVx; "+widthVx+"  getWidth"+getWidth+"   getHeight"+getHeight+"  round(getWidth/ZoomratioFun); "+round(getWidth/ZoomratioFun));
-	run("Size...", "width="+round(getWidth/ZoomratioFun)+" height="+round(getHeight/ZoomratioFun)+" depth=1 constrain interpolation=None");
+	newImage("Mask", "8-bit white", getWidth, getHeight, 1);
+	run("Mask Median Subtraction", "mask=Mask data=SampMIP.tif %=90 histogram=100");
+	selectWindow("Mask");
+	close();
 	
-	if(ZoomratioFun==6.2243/widthVx)
-	run("Canvas Size...", "width=102 height=102 position=Center zero");
-	else
+	Zoomratio=widthVx/0.62;
+	print("1798 Zoomratio; "+Zoomratio+"   widthVx; "+widthVx);
+	selectWindow("SampMIP.tif");
+	run("Size...", "width="+round((getWidth/20)*Zoomratio)+" height="+round((getHeight/20)*Zoomratio)+" depth=1 constrain interpolation=None");
 	run("Canvas Size...", "width=60 height=60 position=Center zero");
-	
-	
-	//	newImage("Mask", "8-bit white", getWidth, getHeight, 1);
-	//	run("Mask Median Subtraction", "mask=Mask data=SampMIP.tif %=90 histogram=100");
-	//	selectWindow("Mask");
-	//	close();
-	
-	
 	
 	//	setBatchMode(false);
 	//		updateDisplay();
 	//			"do"
 	//		exit();
 	
-	if(ZoomratioFun==6.2243/widthVx){
-		
-		run("Image Correlation Atomic EQ", "samp=SampMIP.tif temp="+projectionSt+" +=179 -=180 overlap=75 parallel="+NumCPU+" rotation=1 show calculation=OBJPeasonCoeff");
-		if(PNGsave==1){
-			run("Merge Channels...", "c1="+projectionSt+" c2=DUP_SampMIP.tif  c3="+projectionSt+" keep");
-			saveAs("PNG", savedir+noext+"_"+tempsavename+".png");
-			close();
-		}
-		
-		selectWindow("DUP_SampMIP.tif");
-		close();
-		
-	}else{
-		run("Image Correlation Atomic EQ", "samp=SampMIP.tif temp=JFRC2010_60pxMedP.tif +=179 -=180 overlap=75 parallel="+NumCPU+" rotation=1 show calculation=OBJPeasonCoeff");
-		
-		run("Merge Channels...", "c1=JFRC2010_60pxMedP.tif c2=DUP_SampMIP.tif  c3=JFRC2010_60pxMedP.tif keep");
-		saveAs("PNG", savedir+noext+"_"+tempsavename+".png");
-		close();
-		selectWindow("DUP_SampMIP.tif");
-		close();
-	}
+	run("Image Correlation Atomic EQ", "samp=SampMIP.tif temp=JFRC2010_50pxMIP.tif +=179 -=180 overlap=80 parallel="+NumCPU+" rotation=1 show calculation=OBJPeasonCoeff");
 	
+	run("Merge Channels...", "c1=JFRC2010_50pxMIP.tif c2=DUP_SampMIP.tif  c3=JFRC2010_50pxMIP.tif keep");
+	saveAs("PNG", savedir+noext+"_JFRC2010_50pxMIP.png");
+	close();
+	
+	selectWindow("DUP_SampMIP.tif");
+	close();
 	
 	selectWindow("SampMIP.tif");
 	
@@ -2465,7 +2149,7 @@ function ImageCorrelation(ImageCorrelationArray,widthVx,NumCPU,projectionSt,PNGs
 	maxY=substring(totalLog,yindex+7, rotindex-2);//getResult("shifty", 0);
 	maxY=parseFloat(maxY);//Chaneg string to number
 	
-	
+
 	elipsoidAngle=parseFloat(Rot);
 	if (elipsoidAngle>90) 
 	elipsoidAngle = -(180 - elipsoidAngle);
@@ -2474,15 +2158,13 @@ function ImageCorrelation(ImageCorrelationArray,widthVx,NumCPU,projectionSt,PNGs
 	OBJScore=round(OBJScore);
 	MaxZoom=1;
 	MaxinSlice=0;
-	threasholdOBJ=780;
-	
-	if(OBJScore<threasholdOBJ){
+	if(OBJScore<635){
 		selectImage(nc82);
 		run("Duplicate...", "title=Samp.tif, duplicate");
 		run("16-bit");
 		rename("Samp.tif");
 		
-		run("Size...", "width="+round(getWidth/ZoomratioFun)+" height="+round(getHeight/ZoomratioFun)+" depth="+round(nSlices/2)+" constrain interpolation=None");
+		run("Size...", "width="+round((getWidth/20)*Zoomratio)+" height="+round((getHeight/20)*Zoomratio)+" depth="+round(nSlices/2)+" constrain interpolation=None");
 		run("Canvas Size...", "width=60 height=60 position=Center zero");
 		
 		//		setBatchMode(false);
@@ -2497,22 +2179,14 @@ function ImageCorrelation(ImageCorrelationArray,widthVx,NumCPU,projectionSt,PNGs
 			setSlice(inSlice);
 			run("Duplicate...", "title=SingleSamp.tif");
 			
-			run("Enhance Contrast", "saturated=3");
-			run("Apply LUT");
-			
-			
 			run("Image Correlation Atomic EQ", "samp=SingleSamp.tif temp=JFRC2010_50pxSlice.tif +=55 -=55 overlap=90 parallel="+NumCPU+" rotation=1 show calculation=OBJPeasonCoeff");
 			
-			if(PNGsave==1){
-				run("Merge Channels...", "c1=JFRC2010_50pxSlice.tif c2=DUP_SingleSamp.tif c3=JFRC2010_50pxSlice.tif keep");
-				saveAs("PNG", savedir+noext+"_JFRC2010_50pxSlice.png");
-				close();
-			}
+			run("Merge Channels...", "c1=JFRC2010_50pxSlice.tif c2=DUP_SingleSamp.tif  c3=JFRC2010_50pxSlice.tif keep");
+			saveAs("PNG", savedir+noext+"_JFRC2010_50pxSlice.png");
+			close();
 			
-			if(isOpen("DUP_SingleSamp")){
-				selectWindow("DUP_SingleSamp");
-				close();
-			}
+			selectWindow("DUP_SingleSamp");
+			close();
 			
 			totalLog=getInfo("log");
 			OBJindex = lastIndexOf(totalLog, "score;");
@@ -2550,88 +2224,25 @@ function ImageCorrelation(ImageCorrelationArray,widthVx,NumCPU,projectionSt,PNGs
 		selectWindow("Samp.tif");
 		close();
 		
-		if(OBJScore<threasholdOBJ){
-			print("2D Zoom adjustment, due to low obj score; <"+threasholdOBJ+"");
+		if(OBJScore<635){
+			print("2D Zoom adjustment, due to low obj score; <635");
 			PreMaxOBJ=OBJScore; PreOBJ=OBJScore;
-			
-			setForegroundColor(0, 0, 0);
-			
-			for(iZoom=0.75; iZoom<=1.3; iZoom+=0.03){
-				
-				if(tempSD==0){
-					selectWindow("SampMIP.tif");
-					run("Select All");
-					run("Duplicate...", "title=ZOOM.tif");
-				}//if(tempSD==0){
-				
-				if(tempSD==1){
-					selectWindow(projectionSt);
-					run("Select All");
-					run("Duplicate...", "title=TempZOOM.tif");
-					
-					STring="SD";
-					
-					makePolygon(17,31,22,42,31,51,37,65,31,79,14,79,2,74,2,54,1,38);//L-OL elimination
-					run("Fill", "slice");
-					
-					makePolygon(82,34,74,52,66,65,69,76,90,80,99,72,101,58,100,34);// elimination of the R-Op
-					run("Fill", "slice");
-					run("Select All");
-				}
-				
+			for(iZoom=0.85; iZoom<1.4; iZoom+=0.05){
+				selectWindow("SampMIP.tif");
+				run("Duplicate...", "title=ZOOM.tif");
 				run("Size...", "width="+round(getWidth*iZoom)+" height="+round(getHeight*iZoom)+" depth=1 constrain interpolation=None");
-				
-				if(ZoomratioFun==6.2243/widthVx)
-				run("Canvas Size...", "width=102 height=102 position=Center zero");
-				else
 				run("Canvas Size...", "width=60 height=60 position=Center zero");
 				
-				run("Enhance Contrast", "saturated=1");
-				run("Apply LUT");
+				run("Image Correlation Atomic EQ", "samp=ZOOM.tif temp=JFRC2010_50pxMIP.tif +=180 -=179 overlap=70 parallel="+NumCPU+" rotation=1 show calculation=OBJPeasonCoeff");
 				
-				if(ZoomratioFun==6.2243/widthVx){
-					
-					if(tempSD==0){
-						run("Image Correlation Atomic "+STring+"", "samp=ZOOM.tif temp="+projectionSt+" +=55 -=55 overlap=75 parallel="+NumCPU+" rotation=1 show calculation=OBJPeasonCoeff");
-						
-						if(PNGsave==1){
-							run("Merge Channels...", "c1="+projectionSt+" c2=DUP_ZOOM.tif  c3="+projectionSt+" keep");
-							saveAs("PNG", savedir+noext+"_Zoom_"+tempsavename+"_"+iZoom+".png");
-							close();
-						}
-					}else{
-						run("Image Correlation Atomic "+STring+"", "samp=TempZOOM.tif temp=SampMIP.tif +=55 -=55 overlap=70 parallel="+NumCPU+" rotation=1 show calculation=OBJPeasonCoeff");
-						if(PNGsave==1){
-							run("Merge Channels...", "c1=DUP_TempZOOM.tif c2=SampMIP.tif  c3=DUP_TempZOOM.tif keep");
-							saveAs("PNG", savedir+noext+"_Zoom_"+tempsavename+"_"+iZoom+".png");
-							close();
-						}
-						selectWindow("DUP_TempZOOM.tif");
-						close();
-						
-						selectWindow("TempZOOM.tif");
-						close();
-					}
-					
-					
-				}else{
-					run("Image Correlation Atomic "+STring+"", "samp=ZOOM.tif temp=JFRC2010_60pxMedP.tif +=180 -=179 overlap=75 parallel="+NumCPU+" rotation=1 show calculation=OBJPeasonCoeff");
-					if(PNGsave==1){
-						run("Merge Channels...", "c1=JFRC2010_60pxMedP.tif c2=DUP_ZOOM.tif  c3=JFRC2010_60pxMedP.tif keep");
-						saveAs("PNG", savedir+noext+"_Zoom_JFRC2010_60pxMed_"+iZoom+".png");
-						close();
-					}
-				}
+				run("Merge Channels...", "c1=JFRC2010_50pxMIP.tif c2=DUP_ZOOM.tif  c3=JFRC2010_50pxMIP.tif keep");
+				saveAs("PNG", savedir+noext+"_"+iZoom+"_Zoom_JFRC2010_50pxMIP.png");
+				close();
 				
-				if(isOpen("DUP_ZOOM.tif")){
-					selectWindow("DUP_ZOOM.tif");
-					close();
-				}
+				selectWindow("DUP_ZOOM.tif");
+				close();
 				
-				while(isOpen("ZOOM.tif")){
-					selectWindow("ZOOM.tif");
-					close();
-				}
+				selectWindow("SampMIP.tif");
 				
 				totalLog=getInfo("log");
 				OBJindex = lastIndexOf(totalLog, "score;");
@@ -2641,6 +2252,8 @@ function ImageCorrelation(ImageCorrelationArray,widthVx,NumCPU,projectionSt,PNGs
 				
 				OBJScore=substring(totalLog,OBJindex+6, lengthOf(totalLog));//getResult("OBJ score", 0);
 				OBJScore=parseFloat(OBJScore);//Chaneg string to number
+				
+				
 				
 				print("iZoom; "+iZoom+"   OBJScore; "+OBJScore);
 				
@@ -2660,10 +2273,15 @@ function ImageCorrelation(ImageCorrelationArray,widthVx,NumCPU,projectionSt,PNGs
 					
 					MaxZoom=iZoom;
 				}
+				selectWindow("ZOOM.tif");
 				
+				//	setBatchMode(false);
+				//	updateDisplay();
+				//	"do"
+				///	exit();
 				
+				close();
 			}
-			
 			print("PreOBJ; "+PreOBJ+" NewOBJ; "+PreMaxOBJ+"   elipsoidAngle; "+elipsoidAngle+"   maxY; "+maxY+"   maxX; "+maxX+"   MaxZoom; "+MaxZoom);
 			OBJScore=PreMaxOBJ;
 		}
@@ -2675,8 +2293,7 @@ function ImageCorrelation(ImageCorrelationArray,widthVx,NumCPU,projectionSt,PNGs
 	//"do"
 	//exit();
 	
-	if(tempSD==1)
-	MaxZoom=abs(1+(1-MaxZoom));
+	
 	
 	while(isOpen("SampMIP.tif")){
 		selectWindow("SampMIP.tif");
@@ -2850,49 +2467,27 @@ function rotationF(rotation,unit,vxwidth,vxheight,depth,xTrue,yTrue){
 }//function
 
 
-function ImageCorrelation2 (sample,templateImg, rotSearch,ImageCarray,overlap,NumCPU,trynum,PNGsave){
+function ImageCorrelation2 (sample, templateImg, rotSearch,ImageCarray,overlap,NumCPU){
 	selectWindow(sample);
 	rename("SampMIP.tif");
 	
-	NumCPU=round(NumCPU);
-	rotSearch=round(rotSearch);
-	
-	binary=0;
-	
-	if(binary==1){
-		sampbinary=is("binary");
-		
-		if(sampbinary==0){
-			setAutoThreshold("Mean dark");
-			//setThreshold(28, 255);
-			setOption("BlackBackground", true);
-			run("Convert to Mask");
-		}
-	}
-	print("2789");
 	selectWindow(templateImg);
 	rename("Temp22.tif");
 	
-	if(binary==1){
-		tempbinaly=is("binary");
-		
-		if(tempbinaly==0){
-			setAutoThreshold("Mean dark no-reset");
-			run("Convert to Mask");
-		}
-	}
-	print("ImageCorrelation2 running; rotSearch; "+rotSearch+"  overlap; "+overlap+"  NumCPU;"+NumCPU+"  trynum; "+trynum);
-	if(trynum==2 || trynum==3 || trynum==4 || trynum==5)
-	run("Image Correlation Atomic SD", "samp=SampMIP.tif temp=Temp22.tif +="+rotSearch+" -="+rotSearch+" overlap="+overlap+" parallel="+NumCPU+" rotation=1 show calculation=OBJPeasonCoeff");
-	else
 	run("Image Correlation Atomic EQ", "samp=SampMIP.tif temp=Temp22.tif +="+rotSearch+" -="+rotSearch+" overlap="+overlap+" parallel="+NumCPU+" rotation=1 show calculation=OBJPeasonCoeff");
 	
-	//if(trynum==3){
-	//	setBatchMode(false);
-	//	updateDisplay();
-	//	"do"
-	//	exit();
-	//}
+	run("Merge Channels...", "c1=Temp22.tif c2=DUP_SampMIP.tif  c3=Temp22.tif keep");
+	saveAs("PNG", savedir+noext+"_"+templateImg+".png");
+	close();
+	
+	selectWindow("DUP_SampMIP.tif");
+	close();
+	
+	selectWindow("Temp22.tif");
+	rename(templateImg);
+	
+	selectWindow("SampMIP.tif");
+	rename(sample);
 	
 	totalLog=getInfo("log");
 	OBJindex = lastIndexOf(totalLog, "score;");
@@ -2911,24 +2506,6 @@ function ImageCorrelation2 (sample,templateImg, rotSearch,ImageCarray,overlap,Nu
 	
 	maxY=substring(totalLog,yindex+7, rotindex-2);//getResult("shifty", 0);
 	maxY=parseFloat(maxY);//Chaneg string to number
-	
-	if(PNGsave==1){
-		run("Merge Channels...", "c1=Temp22.tif c2=DUP_SampMIP.tif  c3=Temp22.tif keep");
-		saveAs("PNG", savedir+noext+"_"+templateImg+"_"+trynum+"_"+OBJScore+".png");
-		close();
-	}
-	if(isOpen("DUP_SampMIP.tif")){
-		selectWindow("DUP_SampMIP.tif");
-		close();
-	}
-	
-	selectWindow("Temp22.tif");
-	rename(templateImg);
-	
-	selectWindow("SampMIP.tif");
-	rename(sample);
-	
-	
 	
 	ImageCarray[0]=OBJScore;
 	ImageCarray[1]=Rot;
@@ -3086,7 +2663,7 @@ function FILL_HOLES(DD2, DD3) {
 	}//if (2DD==1){
 }
 
-function lateralDepthAdjustment(op1center,op2center,lateralArray,nc82,templateBr,NumCPU,shrinkTo2010,objective,PNGsave){
+function lateralDepthAdjustment(op1center,op2center,lateralArray,nc82,templateBr,NumCPU,shrinkTo2010,objective){
 	
 	nc82ID=getImageID();
 	orizslice=nSlices();
@@ -3205,8 +2782,13 @@ function lateralDepthAdjustment(op1center,op2center,lateralArray,nc82,templateBr
 		run("Fill Holes");
 		
 		run("Canvas Size...", "width=65 height=110 position=Center zero");
-		
+			
 		run("Image Correlation Atomic EQ", "samp=smallMIP.tif temp=Lateral_JFRC2010_5time_smallerMIP.tif +=10 -=10 overlap=90 parallel="+NumCPU+" rotation=1 show calculation=OBJPeasonCoeff");
+		
+
+		
+		
+		
 		
 		totalLog=getInfo("log");
 		OBJindex = lastIndexOf(totalLog, "score;");
@@ -3228,7 +2810,7 @@ function lateralDepthAdjustment(op1center,op2center,lateralArray,nc82,templateBr
 			MaxOBJL=OBJScoreL;
 			Rot= substring(totalLog,rotindex+9, OBJindex-6);//getResult("rotation", 0);
 			Rot=parseFloat(Rot);//Chaneg string to number
-			
+
 			elipsoidAngle=parseFloat(Rot);
 			if (elipsoidAngle>90) 
 			elipsoidAngle = -(180 - elipsoidAngle);
@@ -3261,10 +2843,9 @@ function lateralDepthAdjustment(op1center,op2center,lateralArray,nc82,templateBr
 	setMinAndMax(0, 254);
 	run("Apply LUT");
 	run("8-bit");
-	if(PNGsave==1){
-		saveAs("PNG", ""+savedir+noext+"_Lateral.png");
-		close();
-	}
+	saveAs("PNG", ""+savedir+noext+"_Lateral.png");
+	close();
+	
 	while(isOpen(noext+"_Lateral.png")){
 		selectWindow(noext+"_Lateral.png");
 		close();
@@ -3343,66 +2924,59 @@ function lateralDepthAdjustment(op1center,op2center,lateralArray,nc82,templateBr
 	lateralArray[5]=MaxOBJL;
 }
 
-function DupAvePprocessing (nc82,NumCPU,bitd,projectionSt){
+function DupAvePprocessing (nc82,NumCPU,bitd){
 	
 	selectWindow("nc82.tif");
 	oriwidth=getWidth(); oriheight=getHeight(); orislice=nSlices();
 	
-	//if(bitd!=8){
-	//		print("Mask dimension; oriwidth; "+oriwidth+"   oriheight; "+oriheight+"  orislice; "+orislice);
-	
-	//		newImage("mask.tif", "8-bit white", oriwidth, oriheight, orislice);
-	//		run("Mask Median Subtraction", "mask=mask.tif data=nc82.tif %=100 histogram=100");
-	
-	//		selectWindow("mask.tif");
-	//		close();
-	//	}
+	if(bitd!=8){
+		print("Mask dimension; oriwidth; "+oriwidth+"   oriheight; "+oriheight+"  orislice; "+orislice);
+		
+		newImage("mask.tif", "8-bit white", oriwidth, oriheight, orislice);
+		run("Mask Median Subtraction", "mask=mask.tif data=nc82.tif %=100 histogram=100");
+		
+		selectWindow("mask.tif");
+		close();
+	}
 	selectImage(nc82);
 	
-	if(projectionSt=="JFRC2010_MedPro.tif")
-	run("Z Project...", "start=5 stop="+nSlices-10+" projection=[Median]");//Max Intensity
-	
-	if(projectionSt=="JFRC2010_AvePro.png")
-	run("Z Project...", "start=15 stop="+nSlices-10+" projection=[Average Intensity]");//Max Intensity
-	
-	if(projectionSt=="JFRC2010_MIP.tif")
-	run("Z Project...", "start=5 stop="+nSlices-10+" projection=[Max Intensity]");//Max Intensity
-	
+	run("Z Project...", "start=10 stop="+nSlices-10+" projection=[Average Intensity]");// imageID is AR
 	rename("OriginalProjection.tif");
-	
-	resetMinAndMax();
-	run("16-bit");
 	
 	run("Duplicate...", "title=DUPaveP.tif");
 	getMinAndMax(min, max);
 	if(min!=0 && max!=255)
 	run("Apply LUT");
 	
-	//setBatchMode(false);
-	//updateDisplay();
-	//"do"
-	//exit();
+	run("Gamma ", "gamma=2.1 in=InMacro cpu="+NumCPU+"");
+	gammaup=getTitle();
 	
-	//run("Gamma ", "gamma=1.5 in=InMacro cpu="+NumCPU+"");
-	//gammaup=getTitle();
+	selectWindow("DUPaveP.tif");
+	close();
 	
-	//selectWindow("DUPaveP.tif");
-	//close();
+	selectWindow(gammaup);
+	rename("DUPaveP.tif");
 	
-	//selectWindow(gammaup);
-	//rename("DUPaveP.tif");
-	
-	run("Enhance Contrast", "saturated=1");
+	run("Enhance Contrast", "saturated=0.35");
 	getMinAndMax(min, max);
 	
 	bitd=bitDepth();
 	if(bitd==8)
 	run("16-bit");
 	
+	if(bitd!=8){
+		newImage("mask.tif", "8-bit white", oriwidth, oriheight, 1);
+		run("Mask Median Subtraction", "mask=mask.tif data=nc82.tif %=100 histogram=100");
+		
+		selectWindow("mask.tif");
+		close();
+	}
+	selectWindow("DUPaveP.tif");
+	
 	setMinAndMax(min, max);
 	if(min!=0 && max!=65535)
 	run("Apply LUT");
-}//function DupAvePprocessing (
+}
 
 function rotateshift3D (resliceLongLength,finalshiftX,Zoomratio,finalshiftY,elipsoidAngle,shrinkTo2010,cropWidth,cropHeight,Ori_widthVx,Ori_heightVx,depth){
 	run("Canvas Size...", "width="+resliceLongLength+" height="+resliceLongLength+" position=Center zero");
