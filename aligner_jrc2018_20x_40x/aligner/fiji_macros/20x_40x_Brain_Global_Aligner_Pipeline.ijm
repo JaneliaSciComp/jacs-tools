@@ -52,6 +52,7 @@ testArg=0;
 //<<<<<<< HEAD
 //testArg= "/test/20x_brain_alignment/,JRC_SS04948_20150828_31_F1_tile-2586750767218032674.h5j,/Users/otsunah/Downloads/Workstation/JRC_SS04948/JRC_SS04948_20150828_31_F1_tile-2586750767218032674.h5j,/Users/otsunah/Documents/otsunah/20x_brain_aligner/,0.52,1,7,20x,JRC2018,Unknown,??"
 //=======
+<<<<<<< Updated upstream:aligner_jrc2018_20x_40x/aligner/fiji_macros/20x_40x_Brain_Global_Aligner_Pipeline.ijm
 //testArg= "/test/20x_brain_alignment/TwoChannel/,GMR_MB433B_20121003_31_A1_tile-2586697527118004258.v3draw,/Users/otsunah/Downloads/Workstation/GMR_MB433B/GMR_MB433B_20121003_31_A1_tile-2586697527118004258.v3draw,/Users/otsunah/Documents/otsunah/20x_brain_aligner/,0.56,1,7,20x,JRC2018,Unknown,??"
 
 //0.46
@@ -63,6 +64,10 @@ testArg=0;
 flipchannel=0;
 PNGsave=0;
 //-Rop
+=======
+//testArg= "/test/20x_brain_alignment/TwoChannel/,tile-2595111898559021090.v3draw,/test/20x_brain_alignment/fail/tile-2595111898559021090.v3draw,/Users/otsunah/Documents/otsunah/20x_brain_aligner/,0.5189,1,7,20x,JRC2018,Unknown,/test/20x_brain_alignment/TwoChannel/ConsolidatedLabel.v3dpbd"
+//>>>>>>> origin/master
+>>>>>>> Stashed changes:aligner_jrc2018_20x_40x/aligner/20x_40x_Brain_Global_Aligner_Pipeline.ijm
 
 if(testArg!=0)
 args = split(testArg,",");
