@@ -393,7 +393,8 @@ else
     echo "Otsuna_Brain preprocessing start: $START"
     echo "Otsuna_Brain preprocessing stop: $STOP"
     # check for prealigner errors
-    LOGFILE="${DEBUG_DIR}/20x_brain_pre_aligner_log.txt"
+    LOGFILE="${OUTPUT}/20x_brain_pre_aligner_log.txt"
+    cp $LOGFILE $DEBUG_DIR
     PreAlignerError=`grep "PreAlignerError: " $LOGFILE | head -n1 | sed "s/PreAlignerError: //"`
     if [[ ! -z "$PreAlignerError" ]]; then
         writeErrorProperties "PreAlignerError" "JRC2018_${genderT}" "$objective" "$PreAlignerError"
@@ -620,8 +621,8 @@ compressAllRaw "$Vaa3D" "$OUTPUT"
 echo "+----------------------------------------------------------------------+"
 echo "| Copying files to final destination"
 echo "+----------------------------------------------------------------------+"
-cp $OUTPUT/*.{png,jpg,log,txt} $FINALOUTPUT/debug
-cp -R $OUTPUT/*.xform $FINALOUTPUT/debug
+cp $OUTPUT/*.{png,jpg,log,txt} $DEBUG_DIR
+cp -R $OUTPUT/*.xform $DEBUG_DIR
 cp $OUTPUT/REG*.v3dpbd $FINALOUTPUT
 cp $OUTPUT/REG*.properties $FINALOUTPUT
 
