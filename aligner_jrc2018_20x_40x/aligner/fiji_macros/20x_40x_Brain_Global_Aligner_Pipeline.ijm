@@ -81,6 +81,8 @@ templateBr = args [8];//"JFRC2014", JFRC2013, JFRC2014, JRC2018
 BrainShape = args [9];//"Both_OL_missing (40x)";//"Intact", "Both_OL_missing (40x)", "Unknown"
 PathConsolidatedLabel=args[10];// full file path for ConsolidatedLabel.v3dpbd
 
+MatchingFilesDir=MatchingFilesDir+"/";
+
 Frontal50pxPath = MatchingFilesDir+"JFRC2010_60pxMedP.tif";// full file path for "JFRC2010_60pxMedP.tif"
 LateralMIPPath = MatchingFilesDir+"Lateral_JFRC2010_5time_smallerMIP.tif";//  full file path for "Lateral_JFRC2010_5time_smallerMIP.tif"
 Slice50pxPath = MatchingFilesDir+"JFRC2010_50pxSlice.tif";//  full file path for "JFRC2010_50pxSlice.tif"
