@@ -416,7 +416,7 @@ registered_warp_xform=$OUTPUT"/warp.xform"
 
 reformat_JRC2018_to_Uni=$TempDir"/Deformation_Fields/JRC2018_VNC_Unisex_JRC2018_"$genderT
 
-LOGFILE="${DEBUG_DIR}/VNC_pre_aligner_log.txt"
+LOGFILE="${OUTPUT}/VNC_pre_aligner_log.txt"
 if [[ -e $LOGFILE ]]; then
     echo "Already exists: $LOGFILE"
 else
@@ -431,9 +431,10 @@ else
     echo "Otsuna preprocessing start: $START"
     echo "Otsuna preprocessing stop: $STOP"
     # check for prealigner errors
+    cp $LOGFILE $DEBUG_DIR
     PreAlignerError=`grep "PreAlignerError: " $LOGFILE | head -n1 | sed "s/PreAlignerError: //"`
     if [[ ! -z "$PreAlignerError" ]]; then
-        writeErrorProperties "PreAlignerError" "JRC2018_${genderT}" "$objective" "$PreAlignerError"
+        writeErrorProperties "PreAlignerError" "JRC2018_VNC_${genderT}" "$objective" "$PreAlignerError"
         exit 0
     fi
 fi
