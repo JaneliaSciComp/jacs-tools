@@ -61,7 +61,7 @@ testArg=0;
 //-Lop
 //testArg= "/test/20x_brain_alignment/NoLop/,GMR_13D08_AE_01_13-fA01b_C080304_20080305233708703.zip,/test/20x_brain_alignment/pre_Align_Test_Vol/-Lop/GMR_13D08_AE_01_13-fA01b_C080304_20080305233708703.zip,/Users/otsunah/Documents/otsunah/20x_brain_aligner/,0.46,1,7,20x,JRC2018,Unknown,??"
 flipchannel=0;
-PNGsave=1;
+PNGsave=0;
 //-Rop
 
 if(testArg!=0)
