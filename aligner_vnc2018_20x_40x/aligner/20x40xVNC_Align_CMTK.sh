@@ -538,7 +538,13 @@ scoreGen $sig"_01.nrrd" $iniT "score2018"
 #    rm $RAWOUT_NEURON
 #fi
 
-writeProperties "$RAWOUT" "" "JRC2018_VNC_${genderT}" "$objective" "0.461122x0.461122x0.70" "572x1164x229" "$score2018" "" ""
+if [[ $INPUT1_GENDER == "f" ]]; then
+    image_size="573x1164x205"
+elif [[ $INPUT1_GENDER == "m" ]]; then
+    image_size="572x1164x229"
+fi
+
+writeProperties "$RAWOUT" "" "JRC2018_VNC_${genderT}" "$objective" "0.461122x0.461122x0.70" "$image_size" "$score2018" "" ""
 
 
 ########################################################################################################
