@@ -397,7 +397,7 @@ else
     cp $LOGFILE $DEBUG_DIR
     PreAlignerError=`grep "PreAlignerError: " $LOGFILE | head -n1 | sed "s/PreAlignerError: //"`
     if [[ ! -z "$PreAlignerError" ]]; then
-        writeErrorProperties "PreAlignerError" "JRC2018_${genderT}" "$objective" "$PreAlignerError"
+        writeErrorProperties "PreAlignerError" "JRC2018_${genderT}" "$objective" "Pre-aligner rejection: $PreAlignerError"
         exit 0
     fi
 fi

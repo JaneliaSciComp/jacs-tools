@@ -331,7 +331,7 @@ function writeErrorProperties() {
 
     META="${FINALOUTPUT}/${_prefix}.properties"
     echo "alignment.error="${_error} > $META
-    echo "alignment.image.area=Brain" >> $META
+    echo "alignment.image.area=VNC" >> $META
     echo "alignment.space.name=$_alignment_space" >> $META
     echo "alignment.objective=$_objective" >> $META
 }
@@ -434,7 +434,7 @@ else
     cp $LOGFILE $DEBUG_DIR
     PreAlignerError=`grep "PreAlignerError: " $LOGFILE | head -n1 | sed "s/PreAlignerError: //"`
     if [[ ! -z "$PreAlignerError" ]]; then
-        writeErrorProperties "PreAlignerError" "JRC2018_VNC_${genderT}" "$objective" "$PreAlignerError"
+        writeErrorProperties "PreAlignerError" "JRC2018_VNC_${genderT}" "$objective" "Pre-aligner rejection: $PreAlignerError"
         exit 0
     fi
 fi
