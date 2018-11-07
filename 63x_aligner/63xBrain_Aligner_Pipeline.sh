@@ -49,6 +49,10 @@ OUTPUT=$WORK_DIR"/Output"
 FINALOUTPUT=$WORK_DIR"/FinalOutputs"
 TempDir="/nrs/scicompsoft/otsuna/Masayoshi_63x/Template"
 
+# refomat scale; 0; full only, 2; HFonly
+REFSCALE=2
+
+
 Unaligned_Neuron_Separator_Result_V3DPBD="/Users/otsunah/Downloads/Workstation/BJD_124H07_AE_01/BJD_124H07_AE_01_20180629_62_C1_ConsolidatedLabel.v3dpbd"
 
 glfilename="PRE_PROCESSED"
@@ -271,7 +275,7 @@ function reformatAll() {
           echo "| Rotation after registration       |"
           echo "+----------------------------------------------------------------------+"
 
-          $FIJI -macro $ROTATEAFTERWARP "$OUTPUT/,$_fn,$OUTPUT_NRRD,$TxtPath,2" 
+          $FIJI -macro $ROTATEAFTERWARP "$OUTPUT/,$_fn,$OUTPUT_NRRD,$TxtPath,$REFSCALE" 
         fi
 
         $FIJI --headless -macro $NRRDCOMP "$OUTPUT_NRRD"
@@ -444,7 +448,14 @@ if [[ $INPUT1_GENDER == "f" ]]; then
   OLDTEMPPATH=$JFRC2013
   OLDSPACE="JFRC2013"
   iniT=${TempDir}"/JRC2018_FEMALE_63x.nrrd"
+
+if [[ $REFSCALE == 2 ]]; then
   scoreT=${TempDir}"/JRC2018_FEMALE_38um_iso.nrrd"
+fi
+if [[ $REFSCALE == 0 ]]; then
+  scoreT=${TempDir}"/JRC2018_FEMALE_63x.nrrd"
+fi
+
   OLDVOXELS="0.38x0.38x0.38"
   OLDSIZE="1450x725x436"
 
@@ -461,7 +472,15 @@ elif [[ $INPUT1_GENDER == "m" ]]; then
   OLDTEMPPATH=$JFRC2014
   OLDSPACE="JFRC2014"
   iniT=${TempDir}"/JRC2018_MALE_63x.nrrd"
+
+if [[ $REFSCALE == 2 ]]; then
   scoreT=${TempDir}"/JRC2018_MALE_38um_iso.nrrd"
+fi
+if [[ $REFSCALE == 0 ]]; then
+  scoreT=${TempDir}"/JRC2018_MALE_63x.nrrd"
+fi
+
+
   OLDVOXELS="0.38x0.38x0.38"
   OLDSIZE="1450x725x436"
 
@@ -621,7 +640,13 @@ DEFFIELD="$reformat_JRC2018_to_Uni"
 fn="REG_UNISEX_Brain"
 gsig=$OUTPUT"/""REG_JRC2018_"$genderT
 sig=$OUTPUT"/"$fn
-TEMP="$JRC2018UNISEX38um"
+
+if [[ $REFSCALE == 2 ]]; then
+  TEMP="$JRC2018UNISEX38um"
+fi
+if [[ $REFSCALE == 0 ]]; then
+  TEMP="$JRC2018UNISEX"
+fi
 
 reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
 
