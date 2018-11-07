@@ -195,7 +195,7 @@ if(HFneed==2){
 	run("Size...", "width=1561 height=744 depth=476 interpolation=Bicubic");
 }
 
-run("Unsharp Mask...", "radius=0.5 mask=0.60 stack");
+//run("Unsharp Mask...", "radius=0.5 mask=0.60 stack");
 run("Nrrd Writer", "compressed nrrd="+VolPath);
 
 if(HFneed==0){
