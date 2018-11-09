@@ -518,7 +518,7 @@ fi
 
 if [[ $INPUT1_GENDER == "f" ]]; then
     image_size="1427x664x413"
-    voxel_size="0.4397318x0.4394810x0.4398998"
+    voxel_size="0.44x0.44x0.44"
 elif [[ $INPUT1_GENDER == "m" ]]; then
     image_size="1348x642x411"
     voxel_size="0.4399438x0.4398785x0.4398785"
@@ -554,7 +554,7 @@ if [[ $TRESOLUTION != "20x_gen1" ]]; then
         rm $RAWOUT_NEURON
     fi
 
-    writeProperties "$RAWOUT" "$FLIP_NEURON" "JRC2018_Unisex_${TRESOLUTION}" "$TRESOLUTION" "0.4397318x0.4396678x0.4391327" "1427x668x394" "" "$main_aligned_file"
+    writeProperties "$RAWOUT" "$FLIP_NEURON" "JRC2018_Unisex_${TRESOLUTION}" "$TRESOLUTION" "0.44x0.44x0.44" "1427x668x394" "" "$main_aligned_file"
 fi
 
 
