@@ -521,7 +521,7 @@ if [[ $INPUT1_GENDER == "f" ]]; then
     voxel_size="0.44x0.44x0.44"
 elif [[ $INPUT1_GENDER == "m" ]]; then
     image_size="1348x642x411"
-    voxel_size="0.4399438x0.4398785x0.4398785"
+    voxel_size="0.44x0.44x0.44"
 fi
 
 writeProperties "$RAWOUT" "" "JRC2018_${genderT}_${TRESOLUTION}" "$TRESOLUTION" "$voxel_size" "$image_size" "$score2018" ""
