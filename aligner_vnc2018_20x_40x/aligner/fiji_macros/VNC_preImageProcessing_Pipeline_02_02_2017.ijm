@@ -23,7 +23,7 @@ argstr=0;
 
 //argstr="/nrs/scicompsoft/otsuna/VNC_pipeline_error/,Out_PUT,/nrs/scicompsoft/otsuna/VNC_Lateral_F.tif,/nrs/jacs/jacsData/filestore/flylight/Sample/624/412/2389599578052624412/stitch/stitched-2377239301013373026.v3draw,ssr,0.44,0.44,f,/groups/jacs/jacsDev/devstore/flylight/Separation/122/600/2379727076623122600/separate/ConsolidatedLabel.v3dpbd,4"//for test
 //argstr="/test/VNC_pipeline/,tile-2577638111085330453new.v3draw,/Users/otsunah/Dropbox (HHMI)/VNC_project/,/Volumes/otsuna/VNC_Aligner/tile-2577638111085330453new.v3draw,ssr,0.52,0.52,m,??,11"//for test
-//argstr="/test/VNC_pipeline/,tempsubjectsx.v3dpbd,/Users/otsunah/Dropbox (HHMI)/VNC_project/,/test/VNC_Test/tempsubjectsx.v3dpbd,sssr,0.45,0.45,f,/test/VNC_Test/ConsolidatedLabel.v3dpbd,4"//for test
+//argstr="/test/VNC_pipeline/,BJD_103D01_AE_01_20170510_63_A5_VNC.v3draw,/Users/otsunah/Dropbox (HHMI)/VNC_project/,/Users/otsunah/Downloads/Workstation/BJD_103D01_AE_01/BJD_103D01_AE_01_20170510_63_A5_VNC.v3draw,sssr,0.45,0.45,f,/test/VNC_Test/ConsolidatedLabel.v3dpbd,4"//for test
 
 //argstr="/test/VNC_Test/PreAligned/,BJD_103D01_AE_01_20170510_63_A5_VNC.v3draw,/Users/otsunah/Dropbox (HHMI)/VNC_project/,/Users/otsunah/Downloads/Workstation/BJD_103D01_AE_01/BJD_103D01_AE_01_20170510_63_A5_VNC.v3draw,sr,0.44,0.44,f,/test/VNC_Test/Sample/ConsolidatedLabel.v3dpbd,8"//for test
 
@@ -876,6 +876,7 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 					}
 				}//if(nResults>0){
 				trynum=trynum+1;
+
 			}//while(nResults==0  && donotOperate==0){
 			print(" 714; nImages; "+nImages);
 			
@@ -2418,11 +2419,7 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 			run("Nrrd Writer", "compressed nrrd="+myDir4+noext+"_Cannot_segment_AR_short"+maxARshape+".nrrd");
 			donotOperate=0;
 		}
-		//		if(donotOperate==1){
-		//			if(isOpen(DUP))
-		//			selectImage(DUP);
-		//			run("Nrrd Writer", "compressed nrrd="+myDir4+noext+"_No_nc82.nrrd");
-		//		}
+	
 	}else if(channels==1){//if(channels>1)
 		print("This stack has only single channel!");
 		logsum=getInfo("log");
