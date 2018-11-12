@@ -521,7 +521,7 @@ fi
 if [[ $TRESOLUTION == "20x_gen1" ]]; then
     voxel_size="0.6214809x0.6214809x1.0"
     voxel_size_uni="0.5189161x0.5189161x1.0"
-    image_size_uni="1010x473x174"
+    image_size_uni="1210x566x174"
 
     if [[ $INPUT1_GENDER == "f" ]]; then
         image_size="1010x470x182"
