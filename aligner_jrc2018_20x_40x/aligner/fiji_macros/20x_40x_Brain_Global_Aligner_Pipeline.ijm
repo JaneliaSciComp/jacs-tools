@@ -345,7 +345,7 @@ if(channels==3){
 	selectImage(UnknownChannel[0]);//ch1
 	neuron=getImageID();
 	
-	selectImage(UnknownChannel[=1]);//ch2
+	selectImage(UnknownChannel[1]);//ch2
 	neuron2=getImageID();
 }//if(posicolor0=="Red" && posicolor1=="White"){
 
