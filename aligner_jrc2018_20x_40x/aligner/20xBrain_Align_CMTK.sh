@@ -43,7 +43,7 @@ Path=$INPUT1_FILE
 objective=$INPUT1_OBJECTIVE
 OUTPUT=$WORK_DIR"/Output"
 FINALOUTPUT=$WORK_DIR"/FinalOutputs"
-TempDir=$TEMPLATE_DIR/jrc2018_20x_40x_templates
+TempDir=`realpath $TEMPLATE_DIR/jrc2018_20x_40x_templates`
 testmode=0
 
 DEBUG_DIR=$FINALOUTPUT"/debug"

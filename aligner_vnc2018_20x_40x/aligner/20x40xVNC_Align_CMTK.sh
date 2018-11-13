@@ -43,7 +43,7 @@ Path=$INPUT1_FILE
 objective=$INPUT1_OBJECTIVE
 OUTPUT=$WORK_DIR"/Output"
 FINALOUTPUT=$WORK_DIR"/FinalOutputs"
-TempDir=$TEMPLATE_DIR/vnc2018_20x_40x_templates
+TempDir=`realpath $TEMPLATE_DIR/vnc2018_20x_40x_templates`
 
 DEBUG_DIR=$FINALOUTPUT"/debug"
 mkdir -p $DEBUG_DIR
