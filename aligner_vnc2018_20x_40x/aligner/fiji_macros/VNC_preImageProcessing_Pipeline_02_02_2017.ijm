@@ -195,7 +195,7 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 		
 		if(zipIndex==-1){
 			nc82=0;
-			for (i=channels-1; i>=0; i--) {
+			for (i=0; i<channels.length; i++) {
 				//	wname = "C" + (i+1) + "-original";
 				selectWindow(titlelist[i]);
 				
