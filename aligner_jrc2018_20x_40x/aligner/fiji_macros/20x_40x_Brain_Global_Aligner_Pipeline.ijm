@@ -342,10 +342,10 @@ if(channels==3){
 	selectImage(UnknownChannel[2]);//ch3
 	nc82=getImageID();
 	
-	selectImage(UnknownChannel[1]);//ch1
+	selectImage(UnknownChannel[0]);//ch1
 	neuron=getImageID();
 	
-	selectImage(UnknownChannel[0]);//ch2
+	selectImage(UnknownChannel[=1]);//ch2
 	neuron2=getImageID();
 }//if(posicolor0=="Red" && posicolor1=="White"){
 
@@ -354,13 +354,13 @@ if(channels==4){
 	selectImage(UnknownChannel[3]);
 	nc82=getImageID();
 	
-	selectImage(UnknownChannel[2]);
+	selectImage(UnknownChannel[0]);
 	neuron=getImageID();
 	
 	selectImage(UnknownChannel[1]);
 	neuron2=getImageID();	
 	
-	selectImage(UnknownChannel[0]);
+	selectImage(UnknownChannel[2]);
 	neuron3=getImageID();	
 }//if(channels==4){
 
