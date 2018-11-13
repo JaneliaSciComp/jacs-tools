@@ -25,7 +25,7 @@ argstr=0;
 //argstr="/test/VNC_pipeline/,tile-2577638111085330453new.v3draw,/Users/otsunah/Dropbox (HHMI)/VNC_project/,/Volumes/otsuna/VNC_Aligner/tile-2577638111085330453new.v3draw,ssr,0.52,0.52,m,??,11"//for test
 //argstr="/test/VNC_pipeline/,tempsubjectsx.v3dpbd,/Users/otsunah/Dropbox (HHMI)/VNC_project/,/test/VNC_Test/tempsubjectsx.v3dpbd,sssr,0.45,0.45,f,/test/VNC_Test/ConsolidatedLabel.v3dpbd,4"//for test
 
-argstr="/test/VNC_Test/PreAligned/,BJD_103D01_AE_01_20170510_63_A5_VNC.v3draw,/Users/otsunah/Dropbox (HHMI)/VNC_project/,/Users/otsunah/Downloads/Workstation/BJD_103D01_AE_01/BJD_103D01_AE_01_20170510_63_A5_VNC.v3draw,sr,0.44,0.44,f,/test/VNC_Test/Sample/ConsolidatedLabel.v3dpbd,8"//for test
+//argstr="/test/VNC_Test/PreAligned/,BJD_103D01_AE_01_20170510_63_A5_VNC.v3draw,/Users/otsunah/Dropbox (HHMI)/VNC_project/,/Users/otsunah/Downloads/Workstation/BJD_103D01_AE_01/BJD_103D01_AE_01_20170510_63_A5_VNC.v3draw,sr,0.44,0.44,f,/test/VNC_Test/Sample/ConsolidatedLabel.v3dpbd,8"//for test
 
 if(argstr!=0)
 args = split(argstr,",");
