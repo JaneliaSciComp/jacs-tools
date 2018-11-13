@@ -23,7 +23,18 @@ Creating a new tool in the Workstation is simple:
     * **harnessClass** - The fully qualified name of the Java Class that will call your tool. See [Harness Classes](#harness-classes) below.
     * **apps** - A list of ContainerizedApp objects listing all the possible apps in your container. Each app consists of a name and a description.
 
-*Note: in the future, it will be possible to register your service using e a user-friendly web page, but for now it's a manual step which can be accomplished directly with MongoDB, or with the Java API.*
+Note: in the future, it will be possible to register your service using e a user-friendly web page, but for now it's a manual step which can be accomplished directly with MongoDB, or with the Java API.*
+
+5. Add regression tests by creating a `tests` subdirectory in your tool directory. Then create a subdirectory in `tests` for each test you want to run. Inside each of these directories, you should place a test.sh to execute the test. The resulting structure will look like this:
+
+* tool_name
+** tests
+*** test1
+**** test.sh
+*** test2
+**** test.sh
+
+Note: large test data should not be added to this repository. It should be kept in a shared location, such as /nrs/jacs/jacsData.
 
 ## Interface
 

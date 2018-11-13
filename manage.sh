@@ -3,14 +3,28 @@
 # Management script for Singularity containers
 #
 
-BUILD_DIR=./build
+DIR=$(cd "$(dirname "$0")"; pwd)
+BUILD_DIR=$DIR/build
 
 # Exit on error
 set -e
 
 if [ "$#" -lt 2 ]; then
-    echo "Usage: `basename $0` [build|shell|clean|deploy] [tool1] [tool2] .. [tooln]"
-    echo "       You can combine multiple commands with a plus, e.g. clean+build+deploy"
+    echo "Usage: `basename $0` [build|shell|clean|test|deploy|push] [tool_1] [tool_2] .. [tool_n]"
+    echo "       You can combine multiple commands with a plus sign, e.g. clean+build+deploy"
+    echo
+    echo "Commands:"
+    echo "  build - Builds the given container into a Singularity image"
+    echo "  shell - Runs an interactive shell on the given container"
+    echo "  clean - Removes the built container and any temporary files"
+    echo "  test - Runs integration tests (if any) on the given container"
+    echo "  deploy - Copies the given container into the deployment area given by the \$JACS_SINGULARITY_DIR environment variable"
+    echo "  push - Pushes the given container to Janelia's Singularity container repository"
+    echo 
+    echo "Examples:"
+    echo "  Build all the JRC2018 aligners, run the integration tests, and deploy them if all the tests succeed:"
+    echo "  ./`basename $0` clean+build+test+deploy aligner*2018*"
+    echo
     exit 1
 fi
 
@@ -122,13 +136,55 @@ do
 
     elif [ "$COMMAND" == "clean" ]; then
 
-        echo "Will clean these images: $@"
+        echo "Cleaning test output"
+        rm -rf $BUILD_DIR/test
 
+        echo "Cleaning images: $@"
         for ALIGNER in "$@"
         do
             ALIGNER=${ALIGNER%/}
             # I hope ALIGNER doesn't have any spaces in it!
             rm -f $BUILD_DIR/${ALIGNER}*
+        done
+
+    elif [ "$COMMAND" == "test" ]; then
+
+        echo "Will test these images: $@"
+
+        for ALIGNER in "$@"
+        do
+            ALIGNER=${ALIGNER%/}
+            VERSION=`grep VERSION $ALIGNER/Singularity | sed "s/VERSION //" | head -n 1`
+            FILENAME=${ALIGNER}-${VERSION}.img
+            IMGFILE=$BUILD_DIR/$FILENAME
+
+            for TEST_DIR in $ALIGNER/tests/*/
+            do
+                if [[ -d "$TEST_DIR" ]]; then
+                    TEST_NAME=`basename $TEST_DIR`
+                    TEST_SCRIPT=$TEST_DIR/test.sh
+                    if [[ -e "$TEST_SCRIPT" ]]; then
+                        echo "---------------------------------------------------------"
+                        echo "Running $ALIGNER test '$TEST_NAME'"
+                        echo "---------------------------------------------------------"
+                        TMPDIR=$BUILD_DIR/test/$ALIGNER
+                        rm -rf $TMPDIR || true
+                        mkdir -p $TMPDIR
+                        set +e # disable exit on error, so that we can catch and deal with errors here
+                        bash $TEST_SCRIPT $DIR $IMGFILE $TMPDIR
+                        TEST_CODE=$?
+                        set -e
+                        if [[ "$TEST_CODE" -ne 0 ]]; then
+                            echo "Test failed, exit code $TEST_CODE"
+                            cat $TMPDIR/*.log
+                            exit 1
+                        fi
+                    else 
+                        echo "Test $TEST_NAME has no test.sh script"
+                    fi
+                fi
+            done
+
         done
 
     else

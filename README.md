@@ -19,6 +19,13 @@ To open a shell into a built container:
 ./manage.sh shell [tool]
 ```
 
+## Regression Tests
+Regression tests can be added to each container under the "test" directory. Each sub-directory in the "tests" directory is 
+considered to be a standalone test. A file called test.sh must be placed in each test directory. To run tests:
+```
+./manage test [tool1] [tool2] [tool3] ...
+```
+
 ## Deploy
 To deploy a built container to another location, you must first define the target location in your environment, 
 e.g. in your ~/.bashrc file:
