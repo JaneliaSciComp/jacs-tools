@@ -195,15 +195,16 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 		
 		if(zipIndex==-1){
 			nc82=0;
-			for (i=0; i<channels; i++) {
-				//	wname = "C" + (i+1) + "-original";
+			
+			selectWindow(titlelist[titlelist.length-1]);
+			nc82=getImageID();
+			
+			for (i=0; i<channels-1; i++) {
+				
 				selectWindow(titlelist[i]);
 				
 				if(titlelist.length>1){
-					if(nc82==0){
-						selectWindow(titlelist[titlelist.length-1]);
-						nc82=getImageID();
-					}else if(signal_count==0){
+					if(signal_count==0){
 						neuron=getImageID();
 						neuronTitle[0]=getTitle();
 						signal_count=signal_count+1;
@@ -770,7 +771,7 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 				DUP_AVEP=getImageID();
 				DUP_AVEPst=getTitle();
 				
-		//		lower=lower+2;
+				lower=lower+2;
 				
 				if(lower>3000){
 					if(step1==1){
