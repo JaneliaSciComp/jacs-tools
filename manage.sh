@@ -5,6 +5,7 @@
 
 DIR=$(cd "$(dirname "$0")"; pwd)
 BUILD_DIR=$DIR/build
+TEST_BUILD_DIR=$BUILD_DIR/test
 
 # Exit on error
 set -e
@@ -28,6 +29,9 @@ if [ "$#" -lt 2 ]; then
     exit 1
 fi
 
+# Load the customized enviroment
+. $DIR/env.sh
+
 COMMANDS=$1
 CMDARR=(${COMMANDS//+/ })
 shift 1 # remove command parameter from args
@@ -36,7 +40,7 @@ for COMMAND in "${CMDARR[@]}"
 do
     echo "Executing $COMMAND command on these targets: $@"
 
-    if [ "$COMMAND" == "build" ]; then
+    if [[ "$COMMAND" == "build" ]]; then
 
         mkdir -p $BUILD_DIR
 
@@ -66,9 +70,11 @@ do
             cp /tmp/$FILENAME $FINAL
             sudo rm -f /tmp/$FILENAME
             echo "Created container $FINAL"
+            rm -rf $TEST_BUILD_DIR/$ALIGNER
+            echo "Purged test results for $ALIGNER"
         done
 
-    elif [ "$COMMAND" == "shell" ]; then
+    elif [[ "$COMMAND" == "shell" ]]; then
 
         ALIGNER=${1%/}
         VERSION=`grep VERSION $ALIGNER/Singularity | sed "s/VERSION //" | head -n 1`
@@ -82,7 +88,7 @@ do
 
         singularity shell $IMGFILE
 
-    elif [ "$COMMAND" == "deploy" ]; then
+    elif [[ "$COMMAND" == "deploy" ]]; then
 
         if [ -z "$JACS_SINGULARITY_DIR" ]; then
             echo "Set the JACS_SINGULARITY_DIR environment variable to the directory where containers will be deployed"
@@ -107,7 +113,7 @@ do
 
         done
 
-     elif [ "$COMMAND" == "push" ]; then
+     elif [[ "$COMMAND" == "push" ]]; then
 
         LOCAL_REGISTRY=`grep int.janelia.org ~/.sregistry`
         if [ -z "$LOCAL_REGISTRY" ]; then
@@ -134,10 +140,10 @@ do
 
         done
 
-    elif [ "$COMMAND" == "clean" ]; then
+    elif [[ "$COMMAND" == "clean" ]]; then
 
         echo "Cleaning test output"
-        rm -rf $BUILD_DIR/test
+        rm -rf $TEST_BUILD_DIR
 
         echo "Cleaning images: $@"
         for ALIGNER in "$@"
@@ -147,7 +153,7 @@ do
             rm -f $BUILD_DIR/${ALIGNER}*
         done
 
-    elif [ "$COMMAND" == "test" ]; then
+    elif [[ "$COMMAND" == "test" || "$COMMAND" == "cleantest" ]]; then
 
         echo "Will test these images: $@"
 
@@ -164,20 +170,32 @@ do
                     TEST_NAME=`basename $TEST_DIR`
                     TEST_SCRIPT=$TEST_DIR/test.sh
                     if [[ -e "$TEST_SCRIPT" ]]; then
-                        echo "---------------------------------------------------------"
-                        echo "Running $ALIGNER test '$TEST_NAME'"
-                        echo "---------------------------------------------------------"
-                        TMPDIR=$BUILD_DIR/test/$ALIGNER
-                        rm -rf $TMPDIR || true
-                        mkdir -p $TMPDIR
-                        set +e # disable exit on error, so that we can catch and deal with errors here
-                        bash $TEST_SCRIPT $DIR $IMGFILE $TMPDIR
-                        TEST_CODE=$?
-                        set -e
-                        if [[ "$TEST_CODE" -ne 0 ]]; then
-                            echo "Test failed, exit code $TEST_CODE"
-                            cat $TMPDIR/*.log
-                            exit 1
+                        TMPDIR=$TEST_BUILD_DIR/$ALIGNER/$TEST_NAME
+                    
+                        if [[ "$COMMAND" == "cleantest" ]]; then
+                            echo "Cleaning previous test results"
+                            rm -rf $TMPDIR
+                        fi
+
+                        if [[ -e $TMPDIR/passed ]]; then
+                            echo "Test '$TEST_NAME' already passed for this build"
+                        else
+                            echo "---------------------------------------------------------"
+                            echo "Running $ALIGNER test '$TEST_NAME'"
+                            echo "---------------------------------------------------------"
+                            mkdir -p $TMPDIR
+                            set +e # disable exit on error, so that we can catch and deal with errors here
+                            bash $TEST_SCRIPT $DIR $IMGFILE $TMPDIR
+                            TEST_CODE=$?
+                            set -e
+                            if [[ "$TEST_CODE" -ne 0 ]]; then
+                                echo "Test FAILED with exit code $TEST_CODE"
+                                echo "See output in $TMPDIR for more details."
+                                exit 1
+                            else
+                                touch $TMPDIR/passed
+                                echo "Test passed"
+                            fi
                         fi
                     else 
                         echo "Test $TEST_NAME has no test.sh script"
