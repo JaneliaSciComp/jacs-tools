@@ -17,6 +17,7 @@ inputs:
   image_size: 913x865x330
   mounting_protocol: DPX PBS Mounting
   neuron_mask: $B2/aligner_vnc2018_20x_40x/female_40x/BJD_113D09_AE_01-20180316_64_F3-VNC-ConsolidatedLabel.v3dpbd
+  num_channels: 4
   objective: 40x
   ref_channel: 4
   voxel_size: 0.44x0.44x0.44
