@@ -22,7 +22,7 @@ argstr=0;
 //argstr="D:"+File.separator+",I1_ZB49_T1,D:"+File.separator+"Dropbox (HHMI)"+File.separator+"VNC_project"+File.separator+"VNC_Lateral_F.tif,C:"+File.separator+"I2_ZB50_T1.v3draw,sr,0.2965237,0.2965237,f"//for test
 
 //argstr="/nrs/scicompsoft/otsuna/VNC_pipeline_error/,Out_PUT,/nrs/scicompsoft/otsuna/VNC_Lateral_F.tif,/nrs/jacs/jacsData/filestore/flylight/Sample/624/412/2389599578052624412/stitch/stitched-2377239301013373026.v3draw,ssr,0.44,0.44,f,/groups/jacs/jacsDev/devstore/flylight/Separation/122/600/2379727076623122600/separate/ConsolidatedLabel.v3dpbd,4"//for test
-//argstr="/test/VNC_pipeline/,tile-2577638111085330453new.v3draw,/Users/otsunah/Dropbox (HHMI)/VNC_project/,/Volumes/otsuna/VNC_Aligner/tile-2577638111085330453new.v3draw,ssr,0.52,0.52,m,??,11"//for test
+//argstr="/test/VNC_pipeline/,JRC_SS45843_20180126_21_A4_VNC.h5j,/Users/otsunah/Dropbox (HHMI)/VNC_project/,/Users/otsunah/Downloads/Workstation/JRC_SS45843/JRC_SS45843_20180126_21_A4_VNC.h5j,ssr,0.59,0.59,f,??,11"//for test
 //argstr="/test/VNC_pipeline/,BJD_103D01_AE_01_20170510_63_A5_VNC.v3draw,/Users/otsunah/Dropbox (HHMI)/VNC_project/,/Users/otsunah/Downloads/Workstation/BJD_103D01_AE_01/BJD_103D01_AE_01_20170510_63_A5_VNC.v3draw,sssr,0.45,0.45,f,/test/VNC_Test/ConsolidatedLabel.v3dpbd,4"//for test
 
 //argstr="/test/VNC_Test/PreAligned/,BJD_103D01_AE_01_20170510_63_A5_VNC.v3draw,/Users/otsunah/Dropbox (HHMI)/VNC_project/,/Users/otsunah/Downloads/Workstation/BJD_103D01_AE_01/BJD_103D01_AE_01_20170510_63_A5_VNC.v3draw,sr,0.44,0.44,f,/test/VNC_Test/Sample/ConsolidatedLabel.v3dpbd,8"//for test
