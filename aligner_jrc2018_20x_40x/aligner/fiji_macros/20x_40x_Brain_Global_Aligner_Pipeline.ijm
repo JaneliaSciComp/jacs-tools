@@ -479,7 +479,7 @@ if(BrainShape=="Intact" || BrainShape=="Unknown"){
 			
 			nc82=DupPcreationAndbasicTransArray[6];
 			nc82Ori=DupPcreationAndbasicTransArray[7];
-	//		OBJScoreOri=DupPcreationAndbasicTransArray[8];
+			OBJScoreOri=DupPcreationAndbasicTransArray[8];
 	//		OriginalRot=DupPcreationAndbasicTransArray[9];
 	//		OriginalYshift=DupPcreationAndbasicTransArray[10];
 	//		OriginalXshift=DupPcreationAndbasicTransArray[11];
