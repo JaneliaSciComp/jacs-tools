@@ -60,8 +60,8 @@ echo "testmode; "$testmode
 if [[ $testmode == "1" ]]; then
   echo "Test mode ON"
 
-TempDir="/nrs/scicompsoft/otsuna/Masayoshi_63x/Template"
-Unaligned_Neuron_Separator_Result_V3DPBD="/Users/otsunah/Downloads/Workstation/BJD_124H07_AE_01/BJD_124H07_AE_01_20180629_62_C1_ConsolidatedLabel.v3dpbd"
+  TempDir="/nrs/scicompsoft/otsuna/Masayoshi_63x/Template"
+  Unaligned_Neuron_Separator_Result_V3DPBD="/Users/otsunah/Downloads/Workstation/BJD_124H07_AE_01/BJD_124H07_AE_01_20180629_62_C1_ConsolidatedLabel.v3dpbd"
 
   OUTPUT=$1
   inputfilename=$2
@@ -85,7 +85,7 @@ Unaligned_Neuron_Separator_Result_V3DPBD="/Users/otsunah/Downloads/Workstation/B
   SCOREGENERATION="/Volumes/otsuna/Masayoshi_63x/Score_Generator_Cluster63x.ijm"
   NSLOTS=11
 
-# for VMware windows
+  # for VMware windows
   FIJI=/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx
   TempDir="/Volumes/Registration2/63x_align/Template"
   CMTK=/Applications/Fiji.app/bin/cmtk
@@ -95,7 +95,7 @@ Unaligned_Neuron_Separator_Result_V3DPBD="/Users/otsunah/Downloads/Workstation/B
   reformat_JRC2018U_to_JFRC2010="/Volumes/Registration2/63x_align/Template/Deformation_Fields/JFRC2010_JRC2018_UNISEX"
   reformat_JRC2018U_to_JFRC2013="/Volumes/Registration2/63x_align/Template/Deformation_Fields/JFRC2013_JRC2018_UNISEX"
 
-#for MacBookPro
+  #for MacBookPro
   TempDir="/test/63x_align/Template"
   CMTK="/Applications/FijizOLD.app/bin/cmtk"
   CMTKM="/Applications/FijizOLD.app/bin/cmtk/munger"
@@ -501,13 +501,13 @@ if [[ -e $LOGFILE ]]; then
     echo "Already exists: $LOGFILE"
 else
     echo "+---------------------------------------------------------------------------------------+"
-    echo "| Running Otsuna preprocessing step                                                     |"
-    echo "| $FIJI -macro $PREPROCIMG \"$OUTPUT/,$glfilename,$TempDir,$Path,ssr,$RESX,$RESY,$INPUT1_GENDER,$Unaligned_Neuron_Separator_Result_V3DPBD,$NSLOTS\" |"
+    echo "| Running Otsuna preprocessing step"
+    echo "| $FIJI -macro $PREPROCIMG \"$OUTPUT/,PRE_PROCESSED,$Path,$TempDir/,$RESX,$RESZ,$NSLOTS,$objective,$INPUT1_GENDER\""
     echo "+---------------------------------------------------------------------------------------+"
     START=`date '+%F %T'`
     # Expect to take far less than 1 hour
     # TODO: doesnt take neurons?
-    $FIJI -macro $PREPROCIMG "$OUTPUT/,$inputfilename,$Path,$TempDir/,$RESX,$RESZ,$NSLOTS,$objective,$INPUT1_GENDER"  >$DEBUG_DIR/preproc.log 2>&1
+    $FIJI -macro $PREPROCIMG "$OUTPUT/,PRE_PROCESSED,$Path,$TempDir/,$RESX,$RESZ,$NSLOTS,$objective,$INPUT1_GENDER"  >$DEBUG_DIR/preproc.log 2>&1
 
     STOP=`date '+%F %T'`
     echo "Otsuna preprocessing start: $START"
