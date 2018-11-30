@@ -1886,6 +1886,10 @@ if(FromDir==1){
 		saveAs("PNG", myDir+trufilename+"_TempP_SampG.png");
 		close();
 		
+		while (isOpen("Temp.nrrd")){
+			selectWindow("Temp.nrrd");
+			close();
+		}
 		
 		selectImage(OriginalBIG);
 		selectWindow(OriginalBIGST);
@@ -2083,6 +2087,7 @@ if(FromDir==1){
 					SliceNumberAdjustment(nSlices,TempSlice);
 					run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=microns pixel_width="+OriSampWidth+" pixel_height="+OriSampHeight+" voxel_depth="+OriSampDepth+"");
 					
+					print("NRRD save; "+myDirimages+trufilename+"_0"+startNrrdNo+".nrrd");
 					run("Nrrd Writer", "compressed nrrd="+myDirimages+trufilename+"_0"+startNrrdNo+".nrrd");
 					close();
 					
@@ -2120,7 +2125,7 @@ if(FromDir==1){
 		gaptimesec=gaptimesec/60;
 		print(gaptimesec+" min for the operation");
 	}
-//	if(dotIndexFolder==-1)
+	//	if(dotIndexFolder==-1)
 	startRegNo=startRegNo+1;
 	
 	if(nImages>10){
