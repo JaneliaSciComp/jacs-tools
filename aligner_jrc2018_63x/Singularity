@@ -59,12 +59,12 @@ chown -R root:root /opt/*
 chmod -R g+r /opt/*
 
 %apprun align
-/opt/aligner/20xBrain_Align_CMTK.sh $@ 0
+/opt/aligner/63xBrain_Aligner_Pipeline.sh $@ 0
 %apphelp align
 Uses the CMTK aligner to align a brain to the JRC2018 template
 
 %apprun align_half
-/opt/aligner/20xBrain_Align_CMTK.sh $@ 2
+/opt/aligner/63xBrain_Aligner_Pipeline.sh $@ 2
 %apphelp align_half
 Uses the CMTK aligner to align a brain to the JRC2018 template with half-sized outputs
 

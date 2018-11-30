@@ -2,33 +2,32 @@
 #
 # 63x Brain aligner by Hideo Otsuna
 #
-testmode=0
 
-if [[ $testmode != 1 ]]; then
-  DIR=$(cd "$(dirname "$0")"; pwd)
-  . $DIR/common.sh
-  parseParameters "$@"
+DIR=$(cd "$(dirname "$0")"; pwd)
+. $DIR/common.sh
+parseParameters "$@"
+# refomat scale; 0; full only, 2; HFonly
+REFSCALE=$3
 
-  # Available input variables:
-  #  $TEMPLATE_DIR
-  #  $WORK_DIR
-  #  $INPUT1_FILE
-  #  $INPUT1_REF
-  #  $INPUT1_NEURONS
-  #  $INPUT1_CHANNELS
-  #  $INPUT1_GENDER
-  #  $INPUT1_MOUNTING_PROTOCOL
-  #  $INPUT1_RESX
-  #  $INPUT1_RESY
-  #  $INPUT1_RESZ
-  #  $NSLOTS
-fi
+# Available input variables:
+#  $TEMPLATE_DIR
+#  $WORK_DIR
+#  $INPUT1_FILE
+#  $INPUT1_REF
+#  $INPUT1_NEURONS
+#  $INPUT1_CHANNELS
+#  $INPUT1_GENDER
+#  $INPUT1_MOUNTING_PROTOCOL
+#  $INPUT1_RESX
+#  $INPUT1_RESY
+#  $INPUT1_RESZ
+#  $NSLOTS
 
 export CMTK_WRITE_UNCOMPRESSED=1
 
 # Tools
 CMTK=/opt/CMTK/bin
-CMTKM=/opt/CMTK/bin/munger
+CMTKM=$CMTK/munger
 FIJI=/opt/Fiji/ImageJ-linux64
 Vaa3D=/opt/Vaa3D/vaa3d
 MACRO_DIR=/opt/aligner/fiji_macros
@@ -43,34 +42,33 @@ REGCROP=$MACRO_DIR"/TempCrop_after_affine.ijm"
 ROTATEAFTERWARP=$MACRO_DIR"/Rotation_AfterReg.ijm"
 TWENTYHRGENERATION=$MACRO_DIR"/TwentyHRgeneration.ijm"
 
+glfilename="PRE_PROCESSED"
+inputfilename=$INPUT1_FILE
 Path=$INPUT1_FILE
 objective=$INPUT1_OBJECTIVE
 OUTPUT=$WORK_DIR"/Output"
 FINALOUTPUT=$WORK_DIR"/FinalOutputs"
-TempDir="/nrs/scicompsoft/otsuna/Masayoshi_63x/Template"
+TempDir=`realpath $TEMPLATE_DIR/jrc2018_63x_templates`
+Unaligned_Neuron_Separator_Result_V3DPBD=$INPUT1_NEURONS
+testmode=0
 
-# refomat scale; 0; full only, 2; HFonly
-REFSCALE=2
+DEBUG_DIR=$FINALOUTPUT"/debug"
+mkdir -p $DEBUG_DIR
 
-
-Unaligned_Neuron_Separator_Result_V3DPBD="/Users/otsunah/Downloads/Workstation/BJD_124H07_AE_01/BJD_124H07_AE_01_20180629_62_C1_ConsolidatedLabel.v3dpbd"
-
-glfilename="PRE_PROCESSED"
-inputfilename=#file name of the merged .v3draw
-
-
-
-
-echo "$testmode; "$testmode
+echo "testmode; "$testmode
 # For TEST ############################################
 if [[ $testmode == "1" ]]; then
   echo "Test mode ON"
+
+TempDir="/nrs/scicompsoft/otsuna/Masayoshi_63x/Template"
+Unaligned_Neuron_Separator_Result_V3DPBD="/Users/otsunah/Downloads/Workstation/BJD_124H07_AE_01/BJD_124H07_AE_01_20180629_62_C1_ConsolidatedLabel.v3dpbd"
 
   OUTPUT=$1
   inputfilename=$2
 
   echo "OUTPUT "$OUTPUT
   echo "inputfilename "$inputfilename
+  REFSCALE=2
 
 
   RESX=0.1882680
@@ -126,8 +124,6 @@ if [[ $testmode == "1" ]]; then
 fi #if [[ $testmode == "1" ]]
 
 TxtPath=$OUTPUT/"${INPUT1_FILE%.*}_translation.txt"
-DEBUG_DIR=$FINALOUTPUT"/debug"
-mkdir -p $DEBUG_DIR
 
 # "-------------------Template----------------------"
 JFRC2010=$TempDir/JFRC2010_16bit.nrrd
@@ -138,9 +134,6 @@ JRC2018UNISEX=$TempDir/JRC2018_UNISEX_63x.nrrd
 JRC2018UNISEX38um=$TempDir/JRC2018_UNISEX_38um_iso.nrrd
 
 JRC2018_63x_CROPPED=$OUTPUT"/Temp1.nrrd"
-
-
-
 
 # "-------------------Global aligned files----------------------"
 GLOUTPUT=$OUTPUT/images
@@ -228,9 +221,9 @@ function reformat() {
     else
         echo "--------------"
         echo "Running CMTK reformatting on channel $_channel"
-        echo "$CMTK/reformatx -o $_sig --floating $_gsig $_TEMP $_DEFFIELD"
+        echo "$CMTK/reformatx --threads $NSLOTS -o $_sig $_opts --floating $_gsig $_TEMP $_DEFFIELD"
         START=`date '+%F %T'`
-        $CMTK/reformatx -o "$_sig" --floating $_gsig $_TEMP $_DEFFIELD
+        $CMTK/reformatx --threads $NSLOTS -o "$_sig" $_opts --floating $_gsig $_TEMP $_DEFFIELD
         STOP=`date '+%F %T'`
 
         if [[ ! -e $_sig ]]; then
@@ -264,27 +257,30 @@ function reformatAll() {
     for ((i=1; i<=$INPUT1_CHANNELS; i++)); do
         GLOBAL_NRRD="${_gsig}_0${i}.nrrd"
         OUTPUT_NRRD="${_sig}_0${i}.nrrd"
-
         echo "reformat; $GLOBAL_NRRD" "$_TEMP" "$_DEFFIELD" "$OUTPUT_NRRD" "$i" "ignore" "$opts"
-
         reformat "$GLOBAL_NRRD" "$_TEMP" "$_DEFFIELD" "$OUTPUT_NRRD" "$i" "ignore" "$opts"
 
         echo "_fn; $_fn"
         if [[ $_fn = "REG_JRC2018_"$genderT ]]; then
           echo "+----------------------------------------------------------------------+"
-          echo "| Rotation after registration       |"
+          echo "| Rotation after registration"
+          echo "| $FIJI -macro $ROTATEAFTERWARP \"$OUTPUT/,$_fn,$OUTPUT_NRRD,$TxtPath,$REFSCALE\""
           echo "+----------------------------------------------------------------------+"
-
-          $FIJI -macro $ROTATEAFTERWARP "$OUTPUT/,$_fn,$OUTPUT_NRRD,$TxtPath,$REFSCALE" 
+          $FIJI -macro $ROTATEAFTERWARP "$OUTPUT/,$_fn,$OUTPUT_NRRD,$TxtPath,$REFSCALE"
         fi
 
+        echo "+----------------------------------------------------------------------+"
+        echo "| NRRD Compression"
+        echo "| $FIJI --headless -macro $NRRDCOMP \"$OUTPUT_NRRD\""
+        echo "+----------------------------------------------------------------------+"
         $FIJI --headless -macro $NRRDCOMP "$OUTPUT_NRRD"
+
         if [[ $_fn = "REG_UNISEX_Brain" ]]; then
           echo "+----------------------------------------------------------------------+"
-          echo "| Unisex 20x HR generation       |"
+          echo "| Unisex 20x HR generation"
+          echo "| $FIJI -macro $TWENTYHRGENERATION \"$OUTPUT,$i,$OUTPUT_NRRD\""
           echo "+----------------------------------------------------------------------+"
           $FIJI -macro $TWENTYHRGENERATION "$OUTPUT,$i,$OUTPUT_NRRD" 
-
           # will generate "REG_UNISEX_20x_HR_0"+i+".nrrd"
         fi
 
@@ -327,9 +323,7 @@ function scoreGen() {
         START=`date '+%F %T'`
         # Expect to take far less than 1 hour
         # Alignment Score generation:ZNCC, does not need Xvfb
-
-        $FIJI -macro $SCOREGENERATION $OUTPUT/,$_outpath,$NSLOTS,$_scoretemp >$DEBUG_DIR/scoregen.log 2>&1
-#--headless
+        $FIJI --headless -macro $SCOREGENERATION $OUTPUT/,$_outpath,$NSLOTS,$_scoretemp >$DEBUG_DIR/scoregen.log 2>&1
         STOP=`date '+%F %T'`
 
         echo "ZNCC JRC2018 score generation start: $START"
@@ -373,7 +367,7 @@ function writeProperties() {
         fi
         if [[ -e $_raw_aligned_neurons ]]; then
             raw_neurons_filename=`basename ${_raw_aligned_neurons}`
-            echo "neuron.masks.glfilename=$raw_neurons_filename" >> $META
+            echo "neuron.masks.filename=$raw_neurons_filename" >> $META
         fi
         if [[ ! -z "$_bridged_from" ]]; then
             echo "alignment.bridged.from=$_bridged_from" >> $META
@@ -420,7 +414,6 @@ if [[ ! -d $GLOUTPUT ]]; then
   mkdir $GLOUTPUT
 fi
 
-
 if [[ ! -d $FINALOUTPUT ]]; then
     mkdir $FINALOUTPUT
 fi
@@ -439,53 +432,53 @@ Unaligned_Neuron_Separator_Result_V3DPBD=$INPUT1_NEURONS
 Global_Aligned_Separator_Result=$OUTPUT"/ConsolidatedLabel.nrrd"
 
 if [[ $INPUT1_GENDER == "f" ]]; then
-  genderT="FEMALE"
-  oldBrain="$JFRC2013.nrrd"
-  reformat_JRC2018_to_oldBRAIN=$TempDir"/Deformation_Fields/JFRC2013_JRC2018_FEMALE"
-  reformat_JRC2018_to_JFRC2010=$TempDir"/Deformation_Fields/JFRC2010_JRC2018_FEMALE"
-  reformat_JRC2018_to_Uni="/Deformation_Fields/JRC2018_Unisex_JRC2018_FEMALE"
-  TEMPNAME="JRC2018_Female"
-  OLDTEMPPATH=$JFRC2013
-  OLDSPACE="JFRC2013"
-  iniT=${TempDir}"/JRC2018_FEMALE_63x.nrrd"
+    genderT="FEMALE"
+    oldBrain="$JFRC2013.nrrd"
+    reformat_JRC2018_to_oldBRAIN=$TempDir"/Deformation_Fields/JFRC2013_JRC2018_FEMALE"
+    reformat_JRC2018_to_JFRC2010=$TempDir"/Deformation_Fields/JFRC2010_JRC2018_FEMALE"
+    reformat_JRC2018_to_Uni="/Deformation_Fields/JRC2018_Unisex_JRC2018_FEMALE"
+    TEMPNAME="JRC2018_Female"
+    OLDTEMPPATH=$JFRC2013
+    OLDSPACE="JFRC2013"
+    iniT=${TempDir}"/JRC2018_FEMALE_63x.nrrd"
 
-if [[ $REFSCALE == 2 ]]; then
-  scoreT=${TempDir}"/JRC2018_FEMALE_38um_iso.nrrd"
-fi
-if [[ $REFSCALE == 0 ]]; then
-  scoreT=${TempDir}"/JRC2018_FEMALE_63x.nrrd"
-fi
+    if [[ $REFSCALE == 2 ]]; then
+        scoreT=${TempDir}"/JRC2018_FEMALE_38um_iso.nrrd"
+    fi
 
-  OLDVOXELS="0.38x0.38x0.38"
-  OLDSIZE="1450x725x436"
+    if [[ $REFSCALE == 0 ]]; then
+        scoreT=${TempDir}"/JRC2018_FEMALE_63x.nrrd"
+    fi
 
-  JRC2018RESO="0.3798409x0.3799680x0.3800808"
-  JRC2018SIZE="1652x768x478"
+    OLDVOXELS="0.38x0.38x0.38"
+    OLDSIZE="1450x725x436"
+    JRC2018RESO="0.3798409x0.3799680x0.3800808"
+    JRC2018SIZE="1652x768x478"
 
 elif [[ $INPUT1_GENDER == "m" ]]; then
-  genderT="MALE"
-  oldBrain="$JFRC2014.nrrd"
-  reformat_JRC2018_to_oldBRAIN=$TempDir"/Deformation_Fields/JFRC2014_JRC2018_MALE"
-  reformat_JRC2018_to_JFRC2010=$TempDir"/Deformation_Fields/JFRC2010_JRC2018_MALE"
-  reformat_JRC2018_to_Uni="/Deformation_Fields/JRC2018_Unisex_JRC2018_MALE"
-  TEMPNAME="JRC2018_Male"
-  OLDTEMPPATH=$JFRC2014
-  OLDSPACE="JFRC2014"
-  iniT=${TempDir}"/JRC2018_MALE_63x.nrrd"
 
-if [[ $REFSCALE == 2 ]]; then
-  scoreT=${TempDir}"/JRC2018_MALE_38um_iso.nrrd"
-fi
-if [[ $REFSCALE == 0 ]]; then
-  scoreT=${TempDir}"/JRC2018_MALE_63x.nrrd"
-fi
+    genderT="MALE"
+    oldBrain="$JFRC2014.nrrd"
+    reformat_JRC2018_to_oldBRAIN=$TempDir"/Deformation_Fields/JFRC2014_JRC2018_MALE"
+    reformat_JRC2018_to_JFRC2010=$TempDir"/Deformation_Fields/JFRC2010_JRC2018_MALE"
+    reformat_JRC2018_to_Uni="/Deformation_Fields/JRC2018_Unisex_JRC2018_MALE"
+    TEMPNAME="JRC2018_Male"
+    OLDTEMPPATH=$JFRC2014
+    OLDSPACE="JFRC2014"
+    iniT=${TempDir}"/JRC2018_MALE_63x.nrrd"
 
+    if [[ $REFSCALE == 2 ]]; then
+        scoreT=${TempDir}"/JRC2018_MALE_38um_iso.nrrd"
+    fi
+    if [[ $REFSCALE == 0 ]]; then
+        scoreT=${TempDir}"/JRC2018_MALE_63x.nrrd"
+    fi
 
-  OLDVOXELS="0.38x0.38x0.38"
-  OLDSIZE="1450x725x436"
+    OLDVOXELS="0.38x0.38x0.38"
+    OLDSIZE="1450x725x436"
+    JRC2018RESO="0.38x0.38x0.38"
+    JRC2018SIZE="1561x744x476"
 
-  JRC2018RESO="0.38x0.38x0.38"
-  JRC2018SIZE="1561x744x476"
 else
     echo "ERROR: invalid gender: $INPUT1_GENDER"
     exit 1
@@ -504,19 +497,19 @@ skip=0
 if [[ $skip = 0 ]]; then
 
 LOGFILE="${DEBUG_DIR}/63x_brain_pre_aligner_log.txt"
-#if [[ -e $LOGFILE ]]; then
-#    echo "Already exists: $LOGFILE"
-#else
+if [[ -e $LOGFILE ]]; then
+    echo "Already exists: $LOGFILE"
+else
     echo "+---------------------------------------------------------------------------------------+"
     echo "| Running Otsuna preprocessing step                                                     |"
     echo "| $FIJI -macro $PREPROCIMG \"$OUTPUT/,$glfilename,$TempDir,$Path,ssr,$RESX,$RESY,$INPUT1_GENDER,$Unaligned_Neuron_Separator_Result_V3DPBD,$NSLOTS\" |"
     echo "+---------------------------------------------------------------------------------------+"
     START=`date '+%F %T'`
     # Expect to take far less than 1 hour
-  $FIJI -macro $PREPROCIMG "$OUTPUT/,$inputfilename,$Path,$TempDir/,$RESX,$RESZ,$NSLOTS,$objective,$INPUT1_GENDER"  >$DEBUG_DIR/preproc.log 2>&1
+    # TODO: doesnt take neurons?
+    $FIJI -macro $PREPROCIMG "$OUTPUT/,$inputfilename,$Path,$TempDir/,$RESX,$RESZ,$NSLOTS,$objective,$INPUT1_GENDER"  >$DEBUG_DIR/preproc.log 2>&1
 
-
-  STOP=`date '+%F %T'`
+    STOP=`date '+%F %T'`
     echo "Otsuna preprocessing start: $START"
     echo "Otsuna preprocessing stop: $STOP"
     # check for prealigner errors
@@ -525,7 +518,7 @@ LOGFILE="${DEBUG_DIR}/63x_brain_pre_aligner_log.txt"
         writeErrorProperties "PreAlignerError" "JRC2018_${genderT}" "$objective" "$PreAlignerError"
         exit 0
     fi
-#fi
+fi
 
 # For TEST ############################################
 #if [[ $testmode == 1 ]]; then
@@ -544,12 +537,12 @@ else
     echo "+---------------------------------------------------------------------------------------+"
     echo "| Running CMTK registration"
     echo "| OUTPUT; $OUTPUT"
-    echo "| $CMTK registration --threads $NSLOTS --principal_axes $iniT $gloval_nc82_nrrd $registered_initial_xform"
+    echo "| $CMTKM -b $CMTK -a -X 26 -C 8 -G 80 -R 4 -A '--accuracy 0.8' -W '--accuracy 0.8' -T $NSLOTS -s \"$JRC2018_63x_CROPPED\" images"
     echo "+---------------------------------------------------------------------------------------+"
     START=`date '+%F %T'`
 
     cd "$OUTPUT"
-    "$CMTKM" -b "$CMTK" -a -X 26 -C 8 -G 80 -R 4 -A '--accuracy 0.8' -W '--accuracy 0.8'  -T $NSLOTS -s "$JRC2018_63x_CROPPED" images
+    $CMTKM -b "$CMTK" -a -X 26 -C 8 -G 80 -R 4 -A '--accuracy 0.8' -W '--accuracy 0.8'  -T $NSLOTS -s "$JRC2018_63x_CROPPED" images
 
     STOP=`date '+%F %T'`
     if [[ ! -e $registered_affine_xform ]]; then
@@ -573,7 +566,7 @@ gsig="$GLOUTPUT/"$glfilename"_01.nrrd"
 
 $CMTK/reformatx -o "$sig" --floating $gsig $TEMP $DEFFIELD
 
-$FIJI -macro $REGCROP "$TEMP,$sig,$NSLOTS" #--headless 
+$FIJI -macro $REGCROP "$TEMP,$sig,$NSLOTS"
 rm -rf $sig
 
 # CMTK warping
@@ -587,11 +580,10 @@ else
     echo "+----------------------------------------------------------------------+"
     START=`date '+%F %T'`
 
-    #$CMTK/warp --threads $NSLOTS -o $registered_warp_xform --grid-spacing 80 --fast --exploration 26 --coarsest 8 --accuracy 0.8 --refine 4 --energy-weight 1e-1 --ic-weight 0 --initial $registered_affine_xform $JRC2018_63x_CROPPED $gloval_nc82_nrrd
     $CMTK/warp --threads $NSLOTS -v --registration-metric nmi --jacobian-weight 0 --fast -e 26 --grid-spacing 80 --energy-weight 1e-1 --refine 4 --coarsest 8 --ic-weight 0 --output-intermediate --accuracy 0.8 -o $registered_warp_xform $registered_affine_xform
 
 
-STOP=`date '+%F %T'`
+    STOP=`date '+%F %T'`
     if [[ ! -e $registered_warp_xform ]]; then
         echo -e "Error: CMTK warping failed"
         exit -1
@@ -643,8 +635,7 @@ sig=$OUTPUT"/"$fn
 
 if [[ $REFSCALE == 2 ]]; then
   TEMP="$JRC2018UNISEX38um"
-fi
-if [[ $REFSCALE == 0 ]]; then
+elif [[ $REFSCALE == 0 ]]; then
   TEMP="$JRC2018UNISEX"
 fi
 
@@ -701,8 +692,8 @@ compressAllRaw "$Vaa3D" "$OUTPUT"
 echo "+----------------------------------------------------------------------+"
 echo "| Copying files to final destination"
 echo "+----------------------------------------------------------------------+"
-cp $OUTPUT/*.{png,log,txt} $FINALOUTPUT/debug
-cp -R $OUTPUT/*.xform $FINALOUTPUT/debug
+cp $OUTPUT/*.{png,log,txt} $DEBUG_DIR
+cp -R $OUTPUT/*.xform $DEBUG_DIR
 cp $OUTPUT/REG*.v3dpbd $FINALOUTPUT
 cp $OUTPUT/REG*.properties $FINALOUTPUT
 
