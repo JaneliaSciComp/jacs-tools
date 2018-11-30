@@ -111,11 +111,10 @@ if(FromDir==1){
 		File.makeDirectory(savedir);
 	}
 	
-	dotIndex= lastIndexOf(filename, ".");
-	linename=substring(filename,0,dotIndex);
+	linename=filename
 	
 	logsum=getInfo("log");
-	filepath=savedir+linename+"63x_brain_pre_aligner_log.txt";
+	filepath=savedir+filename+"63x_brain_pre_aligner_log.txt";
 	File.saveString(logsum, filepath);
 	
 	if(temptype=="Active_Image"){
