@@ -50,7 +50,7 @@ reverseR=0;
 
 //for 20x
 //<<<<<<< HEAD
-//testArg= "/test/20x_brain_alignment/,JRC_SS27970_20161111_28_B6_.v3dpbd,/Users/otsunah/Downloads/Workstation/JRC_SS27970/JRC_SS27970_20161111_28_B6_.v3dpbd,/Users/otsunah/Documents/otsunah/20x_brain_aligner/,0.52,1,7,20x,JRC2018,Unknown,??"
+//testArg= "/test/20x_brain_alignment/,GMR_13D08_AE_01_13-fA01b_C080304_20080305233708703.zip,/test/20x_brain_alignment/pre_Align_Test_Vol/-Lop/GMR_13D08_AE_01_13-fA01b_C080304_20080305233708703.zip,/Users/otsunah/Documents/otsunah/20x_brain_aligner/,0.52,1,7,20x,JRC2018,Unknown,??"
 //=======
 //testArg= "/test/20x_brain_alignment/TwoChannel/,JRC_SS31881_20180615_24_B2_Brain.h5j,/Users/otsunah/Downloads/Workstation/JRC_SS31881/JRC_SS31881_20180615_24_B2_Brain.h5j,/Users/otsunah/Documents/otsunah/20x_brain_aligner/,0.52,1,7,20x,JRC2018,Unknown,??"
 
@@ -480,11 +480,11 @@ if(BrainShape=="Intact" || BrainShape=="Unknown"){
 			nc82=DupPcreationAndbasicTransArray[6];
 			nc82Ori=DupPcreationAndbasicTransArray[7];
 			OBJScoreOri=DupPcreationAndbasicTransArray[8];
-	//		OriginalRot=DupPcreationAndbasicTransArray[9];
-	//		OriginalYshift=DupPcreationAndbasicTransArray[10];
-	//		OriginalXshift=DupPcreationAndbasicTransArray[11];
-	//		maxX=DupPcreationAndbasicTransArray[12];
-	//		maxY=DupPcreationAndbasicTransArray[13];
+			//		OriginalRot=DupPcreationAndbasicTransArray[9];
+			//		OriginalYshift=DupPcreationAndbasicTransArray[10];
+			//		OriginalXshift=DupPcreationAndbasicTransArray[11];
+			//		maxX=DupPcreationAndbasicTransArray[12];
+			//		maxY=DupPcreationAndbasicTransArray[13];
 			
 			print("   OBJScore after Zoom; "+OBJScoreOri+"  OriginalRot; "+OriginalRot);	
 		}//if(MaxZoom!=1){
@@ -496,7 +496,7 @@ if(BrainShape=="Intact" || BrainShape=="Unknown"){
 	
 	finalshiftX=round((OriginalXshift/ZoomratioSmall)*MaxZoom);
 	finalshiftY=round((OriginalYshift/ZoomratioSmall)*MaxZoom);
-	print("MaxZoom; "+MaxZoom+"   widthVx; "+Ori_widthVx+"   heightVx; "+Ori_heightVx+"   Zoomratio; "+Zoomratio);
+	print("MaxZoom; "+MaxZoom+"   widthVx; "+Ori_widthVx+"   heightVx; "+Ori_heightVx+"   Zoomratio; "+Zoomratio+"  finalshiftX; "+finalshiftX+"  finalshiftY; "+finalshiftY);
 }//	if(BrainShape=="Intact" || BrainShape=="Unknown"){
 
 if(BrainShape=="Unknown"){
@@ -504,29 +504,29 @@ if(BrainShape=="Unknown"){
 	opticlobecheckArray = newArray(OBJScoreOri, BrainShape, OriginalXshift, OriginalYshift,finalshiftX,finalshiftY,0,0,0,0);
 	opticlobecheck (rotSearch,NumCPU,opticlobecheckArray,1,JFRC2010MedProPath);
 	
-//	OBJScoreOri = opticlobecheckArray[0];
+	//	OBJScoreOri = opticlobecheckArray[0];
 	BrainShape = opticlobecheckArray[1];
-//	OriginalXshift = opticlobecheckArray[2];
-//	OriginalYshift = opticlobecheckArray[3];
-//	finalshiftX = opticlobecheckArray[4];
-//	finalshiftY = opticlobecheckArray[5];
+	//	OriginalXshift = opticlobecheckArray[2];
+	//	OriginalYshift = opticlobecheckArray[3];
+	//	finalshiftX = opticlobecheckArray[4];
+	//	finalshiftY = opticlobecheckArray[5];
 	SizeM = opticlobecheckArray[6];
 	finalMIP = opticlobecheckArray[7];
 	ID20xMIP = opticlobecheckArray[8];
-//	OriginalRot = opticlobecheckArray[9];
+	//	OriginalRot = opticlobecheckArray[9];
 	
-//	maxX=finalshiftX;
-//	maxY=finalshiftY;
+	//	maxX=finalshiftX;
+	//	maxY=finalshiftY;
 	
-//	if(MaxZoom>=1.05)
-//	MaxZoom=MaxZoom-0.03;
+	//	if(MaxZoom>=1.05)
+	//	MaxZoom=MaxZoom-0.03;
 	
-//	if(MaxZoom<=0.95)
-//	MaxZoom=MaxZoom+0.03;
+	//	if(MaxZoom<=0.95)
+	//	MaxZoom=MaxZoom+0.03;
 	
 	
-//	finalshiftX=round((OriginalXshift/ZoomratioSmall)*MaxZoom);
-//	finalshiftY=round((OriginalYshift/ZoomratioSmall)*MaxZoom);
+	//	finalshiftX=round((OriginalXshift/ZoomratioSmall)*MaxZoom);
+	//	finalshiftY=round((OriginalYshift/ZoomratioSmall)*MaxZoom);
 	
 	
 }//if(BrainShape=="Unknown"){
@@ -575,10 +575,10 @@ if(BrainShape!="Intact" && MaxZoom!=1 && reversetoOne==1){
 	
 	OBJScoreOri = opticlobecheckArray[0];
 	BrainShape = opticlobecheckArray[1];
-	OriginalXshift = opticlobecheckArray[2];
-	OriginalYshift = opticlobecheckArray[3];
-	finalshiftX = opticlobecheckArray[4];
-	finalshiftY = opticlobecheckArray[5];
+//	OriginalXshift = opticlobecheckArray[2];
+//	OriginalYshift = opticlobecheckArray[3];
+//	finalshiftX = opticlobecheckArray[4];
+//	finalshiftY = opticlobecheckArray[5];
 	SizeM = opticlobecheckArray[6];
 	finalMIP = opticlobecheckArray[7];
 	ID20xMIP = opticlobecheckArray[8];
@@ -617,8 +617,8 @@ if(BrainShape=="Both_OL_missing (40x)"){
 	OriginalXshift = ImageCorrelationArray[2];
 	OriginalYshift = ImageCorrelationArray[3];
 	
-	OriginalXshift=OriginalXshift*-1;
-	OriginalYshift=OriginalYshift*-1;
+//	OriginalXshift=OriginalXshift*-1;
+//	OriginalYshift=OriginalYshift*-1;
 	
 	MaxZoom=parseFloat(MaxZoom);//Chaneg string to number
 	
@@ -634,10 +634,10 @@ if(BrainShape=="Both_OL_missing (40x)"){
 		
 		//	widthVx=DupPcreationAndbasicTransArray[0];
 		//	heightVx=DupPcreationAndbasicTransArray[1];
-			Ori_widthVx=DupPcreationAndbasicTransArray[2];
-			Ori_heightVx=DupPcreationAndbasicTransArray[3];
-			ZoomratioSmall=DupPcreationAndbasicTransArray[4];
-			Zoomratio=DupPcreationAndbasicTransArray[5];
+		Ori_widthVx=DupPcreationAndbasicTransArray[2];
+		Ori_heightVx=DupPcreationAndbasicTransArray[3];
+		ZoomratioSmall=DupPcreationAndbasicTransArray[4];
+		Zoomratio=DupPcreationAndbasicTransArray[5];
 		nc82=DupPcreationAndbasicTransArray[6];
 		nc82Ori=DupPcreationAndbasicTransArray[7];
 		OBJScoreOri=DupPcreationAndbasicTransArray[8];
@@ -694,7 +694,7 @@ run("Set Measurements...", "area centroid center perimeter fit shape redirect=No
 print("Zoomratio; "+Zoomratio);
 
 if(BrainShape=="Intact"){
-	firstTime=0; 
+	firstTime=0; MaxShiftY=-1000; MaxShiftX=-1000;
 	for(MIPstep=1; MIPstep<3; MIPstep++){// Segmentation of the brain
 		endthre=0; lowestthre=100000; maxARshapeGap=100000; maxThreTry=100; MaxCirc=0.18; 
 		for(ThreTry=0; ThreTry<=maxThreTry; ThreTry++){
@@ -1018,11 +1018,11 @@ if(BrainShape=="Intact"){
 	
 	print("MaxOBJScore; "+MaxOBJScore+"   MaxMaskRot; "+angle+MaxRot+"  TrueShiftY; "+MaxShiftY+"  TrueShiftX; "+MaxShiftX+"  lowerM; "+lowerM+"  best threTry; "+threTry+"   SizeM; "+SizeM);
 }else{//if(BrainShape=="Intact"){ // if brain is not intact
-	maxY = OriginalYshift/2;
-	maxX = OriginalXshift/2;
+//	maxY = OriginalYshift/2;
+//	maxX = OriginalXshift/2;
 	
-	finalshiftX=round(maxX*20*Zoomratio);
-	finalshiftY=round(maxY*20*Zoomratio);
+//	finalshiftX=round(maxX*20*Zoomratio);
+//	finalshiftY=round(maxY*20*Zoomratio);
 	ID20xMIP=1;
 	ImageAligned=1;// this means, xy shift + rotation are already known
 	finalMIP="Max projection";
@@ -1242,7 +1242,7 @@ if(SizeM!=0){
 					run("16-bit");
 					run("Rotation Hideo", "rotate="+elipsoidAngle+" in=InMacro");
 					
-				//	run("Rotate... ", "angle="+elipsoidAngle+" grid=1 interpolation=None enlarge");//Rotate mask to horizontal
+					//	run("Rotate... ", "angle="+elipsoidAngle+" grid=1 interpolation=None enlarge");//Rotate mask to horizontal
 					run("Translate...", "x="+finalshiftX+" y="+finalshiftY+" interpolation=None");
 					
 					run("Size...", "width="+round(getWidth*Zoomratio*MaxZoom)+" height="+round(getHeight*Zoomratio*MaxZoom)+" depth=1 constrain interpolation=None");
@@ -1253,10 +1253,10 @@ if(SizeM!=0){
 					run("Duplicate...", "title=DupMask2D.tif");
 					DupMask=getImageID();
 					
-				//	setBatchMode(false);
-				//				updateDisplay();
-				//				"do"
-				//	exit();
+				//		setBatchMode(false);
+				//					updateDisplay();
+				//					"do"
+				//		exit();
 					
 					xsize=getWidth();
 					ysize=getHeight();
@@ -1292,10 +1292,10 @@ if(SizeM!=0){
 				run("Analyze Particles...", "size=4000-Infinity display clear");
 				updateResults();
 				
-			//	setBatchMode(false);
-			//			updateDisplay();
-			//			"do"
-			//			exit();
+				//	setBatchMode(false);
+				//			updateDisplay();
+				//			"do"
+				//			exit();
 				
 				sizeDiffOp= newArray(getValue("results.count")); sizediff1=300000; sizediff2=300000;
 				minX1position=10000;
@@ -1329,10 +1329,10 @@ if(SizeM!=0){
 					optic2_Area_sum=optic2_Area_sum+AreaArray[opticL1];
 				}
 				
-			//	setBatchMode(false);
-			//	updateDisplay();
-			//	"do"
-			//	exit();
+				//	setBatchMode(false);
+				//	updateDisplay();
+				//	"do"
+				//	exit();
 				
 				print("optic1_Area_sum; "+optic1_Area_sum+"  optic2_Area_sum; "+optic2_Area_sum);
 				
@@ -2752,9 +2752,11 @@ function ImageCorrelation(ImageCorrelationArray,widthVx,NumCPU,projectionSt,PNGs
 					
 					maxX= substring(totalLog,xindex+7, yindex-2);//getResult("shiftx", 0);
 					maxX=parseFloat(maxX);//Chaneg string to number
+					maxX=maxX*-1;
 					
 					maxY=substring(totalLog,yindex+7, rotindex-2);//getResult("shifty", 0);
 					maxY=parseFloat(maxY);//Chaneg string to number
+					maxY=maxY*-1;
 					
 					MaxZoom=iZoom;
 				}
@@ -3508,7 +3510,7 @@ function rotateshift3D (resliceLongLength,finalshiftX,Zoomratio,finalshiftY,elip
 	print("3482 Translated X; "+round(finalshiftX)+"  Y; "+round(finalshiftY)+", nc82, elipsoidAngle; "+elipsoidAngle+"   Zoomratio; "+Zoomratio+"  Canvas W; "+round(cropWidth/Zoomratio)+"   Canvas H; "+round(cropHeight/Zoomratio));
 	print("reverseR; true");
 	if(reverseR==0){
-			if(bitDepth==8)
+		if(bitDepth==8)
 		run("16-bit");
 		run("Rotation Hideo", "rotate="+elipsoidAngle+" 3d in=InMacro");
 		
