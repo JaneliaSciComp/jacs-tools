@@ -428,7 +428,6 @@ if [[ ! -e $FIJI ]]; then
     exit 1
 fi
 
-Unaligned_Neuron_Separator_Result_V3DPBD=$INPUT1_NEURONS
 Global_Aligned_Separator_Result=$OUTPUT"/ConsolidatedLabel.nrrd"
 
 if [[ $INPUT1_GENDER == "f" ]]; then
@@ -496,7 +495,7 @@ skip=0
 
 if [[ $skip = 0 ]]; then
 
-LOGFILE="${DEBUG_DIR}/63x_brain_pre_aligner_log.txt"
+LOGFILE="${DEBUG_DIR}/PRE_PROCESSED63x_brain_pre_aligner_log.txt"
 if [[ -e $LOGFILE ]]; then
     echo "Already exists: $LOGFILE"
 else
@@ -513,6 +512,7 @@ else
     echo "Otsuna preprocessing start: $START"
     echo "Otsuna preprocessing stop: $STOP"
     # check for prealigner errors
+    cp $LOGFILE $DEBUG_DIR
     PreAlignerError=`grep "PreAlignerError: " $LOGFILE | head -n1 | sed "s/PreAlignerError: //"`
     if [[ ! -z "$PreAlignerError" ]]; then
         writeErrorProperties "PreAlignerError" "JRC2018_${genderT}" "$objective" "$PreAlignerError"
