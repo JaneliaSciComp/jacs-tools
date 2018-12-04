@@ -38,6 +38,10 @@ PLUGINS_SOURCE=/opt/aligner/fiji_plugins
 PLUGINS_TARGET=/opt/Fiji/plugins
 cp -R $PLUGINS_SOURCE/* $PLUGINS_TARGET && /bin/rm -rf $PLUGINS_SOURCE
 
+echo "Installing Perl"
+# Needed for CMTK munger
+yum install -y perl perl-IO-Compress
+
 echo "Installing CMTK"
 # Prereqs for CMTK
 yum install -y fftw-libs-double
