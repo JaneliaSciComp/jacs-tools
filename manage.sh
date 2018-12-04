@@ -20,7 +20,7 @@ if [ "$#" -lt 2 ]; then
     echo "  clean - Removes the built container and any temporary files"
     echo "  test - Runs integration tests (if any) on the given container"
     echo "  deploy - Copies the given container into the deployment area given by the \$JACS_SINGULARITY_DIR environment variable"
-    echo "  push - Pushes the given container to Janelia's Singularity container repository"
+    #echo "  push - Pushes the given container to Janelia's Singularity container repository"
     echo 
     echo "Examples:"
     echo "  Build all the JRC2018 aligners, run the integration tests, and deploy them if all the tests succeed:"
@@ -113,7 +113,7 @@ do
 
         done
 
-     elif [[ "$COMMAND" == "push" ]]; then
+     elif [[ "$COMMAND" == "push_is_unsupported" ]]; then
 
         LOCAL_REGISTRY=`grep int.janelia.org ~/.sregistry`
         if [ -z "$LOCAL_REGISTRY" ]; then
