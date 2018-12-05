@@ -27,7 +27,7 @@ if [[ -e $OUT/stdout.log ]]; then
     echo "Test was already run"
 else
     bsub -K -e $OUT/stderr.log -o $OUT/stdout.log -n $NSLOTS $TOOLS_DIR/scripts/testAligner.sh \
-        "singularity run -B $B1 -B $B2 --app align_both_ol_missing $CONTAINER" $NSLOTS $OUT $OUT/align.yml debug
+        "singularity run -B $B1 -B $B2 --app align $CONTAINER" $NSLOTS $OUT $OUT/align.yml debug
 fi
 
 . $TOOLS_DIR/scripts/asserts.sh $OUT
