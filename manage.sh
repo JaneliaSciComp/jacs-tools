@@ -171,7 +171,7 @@ do
                     TEST_SCRIPT=$TEST_DIR/test.sh
                     if [[ -e "$TEST_SCRIPT" ]]; then
                         TMPDIR=$TEST_BUILD_DIR/$ALIGNER/$TEST_NAME
-                    
+
                         if [[ "$COMMAND" == "cleantest" ]]; then
                             echo "Cleaning previous test results"
                             rm -rf $TMPDIR
@@ -182,6 +182,8 @@ do
                         else
                             echo "---------------------------------------------------------"
                             echo "Running $ALIGNER test '$TEST_NAME'"
+                            echo "  Test script: $TEST_SCRIPT"
+                            echo "  Working directory: $TMPDIR"
                             echo "---------------------------------------------------------"
                             mkdir -p $TMPDIR
                             set +e # disable exit on error, so that we can catch and deal with errors here
