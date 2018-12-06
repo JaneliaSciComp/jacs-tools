@@ -178,8 +178,11 @@ do
                         fi
 
                         if [[ -e $TMPDIR/passed ]]; then
-                            echo "Test '$TEST_NAME' already passed for this build"
+                            echo "Test '$TEST_NAME' already passed for this build. Use 'cleantest' to run it again."
                         else
+                            if [[ -e $TMPDIR ]]; then
+                                echo "Test '$TEST_NAME' has existing results which will be reused. Use 'cleantest' to start from scratch."
+                            fi
                             echo "---------------------------------------------------------"
                             echo "Running $ALIGNER test '$TEST_NAME'"
                             echo "  Test script: $TEST_SCRIPT"
