@@ -33,11 +33,11 @@ else
 fi
 
 . $TOOLS_DIR/scripts/asserts.sh $OUT
-echo "TEST COMPLETE. ASSERTIONS DISABLED FOR NOW. CHECK OUTPUT MANUALLY."
-#assertExists REG_JFRC2010_40x.v3dpbd
+echo "TEST COMPLETE. CHECK OUTPUT MANUALLY IN $OUT"
+assertExists REG_JFRC2010_63x.v3dpbd
 #assertExists REG_JFRC2013_40x.v3dpbd
 #assertExists REG_JRC2018_FEMALE_40x.v3dpbd
-#assertExists REG_UNISEX_40x.v3dpbd
+#assertExists REG_UNISEX_63x.v3dpbd
 #assertExists REG_UNISEX_ColorMIP_HR.v3dpbd
 #assertContains REG_JFRC2010_40x.properties "alignment.image.size=1024x512x218"
 #assertContains REG_JFRC2010_40x.properties "alignment.resolution.voxels=0.62x0.62x1.00"
