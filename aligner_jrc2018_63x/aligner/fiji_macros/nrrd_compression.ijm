@@ -13,14 +13,6 @@ open(path);
 run("Nrrd Writer", "compressed nrrd="+path);
 
 
-run("Z Project...", "projection=[Max Intensity]");
-run("Enhance Contrast", "saturated=0.3");
-run("Apply LUT");
-run("8-bit");
-
-saveAs("PNG", halfpath+"_MIP.png");
-close();
-
 
 run("Misc...", "divide=Infinity save");
 run("Quit");

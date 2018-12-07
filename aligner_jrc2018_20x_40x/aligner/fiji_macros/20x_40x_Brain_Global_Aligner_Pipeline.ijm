@@ -617,9 +617,6 @@ if(BrainShape=="Both_OL_missing (40x)"){
 	OriginalXshift = ImageCorrelationArray[2];
 	OriginalYshift = ImageCorrelationArray[3];
 	
-//	OriginalXshift=OriginalXshift*-1;
-//	OriginalYshift=OriginalYshift*-1;
-	
 	MaxZoom=parseFloat(MaxZoom);//Chaneg string to number
 	
 	if(MaxZoom!=1){
@@ -651,7 +648,7 @@ if(BrainShape=="Both_OL_missing (40x)"){
 		finalshiftX=round((OriginalXshift/ZoomratioSmall)*MaxZoom);
 		finalshiftY=round((OriginalYshift/ZoomratioSmall)*MaxZoom);
 		print("MaxZoom; "+MaxZoom+"   widthVx; "+Ori_widthVx+"   heightVx; "+Ori_heightVx+"   Zoomratio; "+Zoomratio);
-		print("   OBJScore after Zoom; "+OBJScoreOri+"  OriginalRot; "+OriginalRot+"  finalshiftX; "+finalshiftX+"  finalshiftY; "+finalshiftY+"  OriginalRot; "+OriginalRot);	
+		print("   OBJScore after Zoom; "+OBJScoreOri+"  OriginalRot; "+OriginalRot+"  finalshiftX; "+finalshiftX+"  finalshiftY; "+finalshiftY);	
 	}//if(MaxZoom!=1){
 	
 	
@@ -1242,7 +1239,6 @@ if(SizeM!=0){
 					run("16-bit");
 					run("Rotation Hideo", "rotate="+elipsoidAngle+" in=InMacro");
 					
-					//	run("Rotate... ", "angle="+elipsoidAngle+" grid=1 interpolation=None enlarge");//Rotate mask to horizontal
 					run("Translate...", "x="+finalshiftX+" y="+finalshiftY+" interpolation=None");
 					
 					run("Size...", "width="+round(getWidth*Zoomratio*MaxZoom)+" height="+round(getHeight*Zoomratio*MaxZoom)+" depth=1 constrain interpolation=None");
@@ -1268,10 +1264,7 @@ if(SizeM!=0){
 				//			"do"
 				//			exit();
 				
-				
-				//print("1404 shiftY; "+shiftY);
 				ycenterCrop=round((cropHeight*Zoomratio)/2);//(cropHeight/2)-((cropHeight/2)*0.1);
-				//	ycenterCrop=cropHeight/2+shiftY-30;
 				
 				logsum=getInfo("log");
 				File.saveString(logsum, filepath);
@@ -1396,7 +1389,7 @@ if(SizeM!=0){
 						ImageCorrelation(ImageCorrelationArray,Ori_widthVx,NumCPU,projectionSt,PNGsave,BrainShape);
 						ImageAligned2=ImageCorrelationArray[1];
 						
-						print("ImageAligned2; "+ImageAligned2);
+						print("1399 ImageAligned2; "+ImageAligned2);
 						
 						logsum=getInfo("log");
 						File.saveString(logsum, filepath);
@@ -1535,7 +1528,7 @@ if(SizeM!=0){
 				selectImage(nc82);
 				wait(100);
 				call("java.lang.System.gc");
-			}
+			}//if(BrainShape=="Intact"){
 			
 			print("1292");
 			//	setBatchMode(false);
