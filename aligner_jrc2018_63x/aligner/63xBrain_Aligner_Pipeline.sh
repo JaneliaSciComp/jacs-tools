@@ -352,7 +352,7 @@ function writeProperties() {
     if [[ -f "$_raw_aligned" ]]; then
         META="${OUTPUT}/${prefix}.properties"
         echo "alignment.stack.glfilename="${raw_filename} > $META
-        echo "alignment.image.area=VNC" >> $META
+        echo "alignment.image.area=Brain" >> $META
         echo "alignment.image.channels=$INPUT1_CHANNELS" >> $META
         echo "alignment.image.refchan=$INPUT1_REF" >> $META
         echo "alignment.space.name=$_alignment_space" >> $META
@@ -495,7 +495,7 @@ skip=0
 
 if [[ $skip = 0 ]]; then
 
-LOGFILE="${DEBUG_DIR}/PRE_PROCESSED63x_brain_pre_aligner_log.txt"
+LOGFILE="${OUTPUT}/PRE_PROCESSED63x_brain_pre_aligner_log.txt"
 if [[ -e $LOGFILE ]]; then
     echo "Already exists: $LOGFILE"
 else
