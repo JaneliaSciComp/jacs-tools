@@ -190,8 +190,10 @@ do
                             echo "---------------------------------------------------------"
                             mkdir -p $TMPDIR
                             set +e # disable exit on error, so that we can catch and deal with errors here
+                            set -x
                             bash $TEST_SCRIPT $DIR $IMGFILE $TMPDIR
                             TEST_CODE=$?
+                            set +x
                             set -e
                             if [[ "$TEST_CODE" -ne 0 ]]; then
                                 echo "Test FAILED with exit code $TEST_CODE"
