@@ -123,7 +123,8 @@ if [[ $testmode == "1" ]]; then
 
 fi #if [[ $testmode == "1" ]]
 
-TxtPath=$OUTPUT/"${INPUT1_FILE%.*}_translation.txt"
+INTPUT_FILENAME=`basename $INPUT1_FILE`
+TxtPath=$OUTPUT/"${INPUT_FILENAME%.*}_translation.txt"
 
 # "-------------------Template----------------------"
 JFRC2010=$TempDir/JFRC2010_16bit.nrrd
@@ -324,7 +325,7 @@ function scoreGen() {
         START=`date '+%F %T'`
         # Expect to take far less than 1 hour
         # Alignment Score generation:ZNCC, does not need Xvfb
-        $FIJI --headless -macro $SCOREGENERATION $OUTPUT/,$_outpath,$NSLOTS,$_scoretemp >$DEBUG_DIR/scoregen.log 2>&1
+        $FIJI --headless -macro $SCOREGENERATION $OUTPUT/,$_outpath,$NSLOTS,$_scoretemp >$DEBUG_DIR/${tempname}_scoregen.log 2>&1
         STOP=`date '+%F %T'`
 
         echo "ZNCC JRC2018 score generation start: $START"
@@ -433,13 +434,12 @@ Global_Aligned_Separator_Result=$OUTPUT"/ConsolidatedLabel.nrrd"
 
 if [[ $INPUT1_GENDER == "f" ]]; then
     genderT="FEMALE"
-    oldBrain="$JFRC2013.nrrd"
     reformat_JRC2018_to_oldBRAIN=$TempDir"/Deformation_Fields/JFRC2013_JRC2018_FEMALE"
     reformat_JRC2018_to_JFRC2010=$TempDir"/Deformation_Fields/JFRC2010_JRC2018_FEMALE"
     reformat_JRC2018_to_Uni="/Deformation_Fields/JRC2018_Unisex_JRC2018_FEMALE"
     TEMPNAME="JRC2018_Female"
     OLDTEMPPATH=$JFRC2013
-    OLDSPACE="JFRC2013"
+    OLDSPACE="JFRC2013_63x"
     iniT=${TempDir}"/JRC2018_FEMALE_63x.nrrd"
 
     if [[ $REFSCALE == 2 ]]; then
@@ -458,13 +458,12 @@ if [[ $INPUT1_GENDER == "f" ]]; then
 elif [[ $INPUT1_GENDER == "m" ]]; then
 
     genderT="MALE"
-    oldBrain="$JFRC2014.nrrd"
     reformat_JRC2018_to_oldBRAIN=$TempDir"/Deformation_Fields/JFRC2014_JRC2018_MALE"
     reformat_JRC2018_to_JFRC2010=$TempDir"/Deformation_Fields/JFRC2010_JRC2018_MALE"
     reformat_JRC2018_to_Uni="/Deformation_Fields/JRC2018_Unisex_JRC2018_MALE"
     TEMPNAME="JRC2018_Male"
     OLDTEMPPATH=$JFRC2014
-    OLDSPACE="JFRC2014"
+    OLDSPACE="JFRC2014_63x"
     iniT=${TempDir}"/JRC2018_MALE_63x.nrrd"
 
     if [[ $REFSCALE == 2 ]]; then
@@ -488,8 +487,8 @@ reformat_JRC2018_to_Uni=$TempDir"/Deformation_Fields/JRC2018_Unisex_JRC2018_"$ge
 
 echo "INPUT1_GENDER; "$INPUT1_GENDER
 echo "genderT; "$genderT
-echo "oldBrain; "$oldBrain
 echo "OLDSPACE; "$OLDSPACE
+echo "OLDTEMPPATH; "$OLDTEMPPATH
 echo "reformat_JRC2018_to_oldBRAIN; "$reformat_JRC2018_to_oldBRAIN
 
 skip=0
@@ -621,7 +620,7 @@ reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
 scoreGen $sig"_01.nrrd" $scoreT "score2018"
 
 if [[ $testmode = "0" ]]; then
-  writeProperties "$RAWOUT" "" "JRC2018_63x38umBrain_${genderT}" "$objective" "$JRC2018RESO" "$JRC2018SIZE" "$score2018" "" ""
+  writeProperties "$RAWOUT" "" "JRC2018_${genderT}_63x" "$objective" "$JRC2018RESO" "$JRC2018SIZE" "$score2018" "" ""
 fi
 
 ########################################################################################################
@@ -643,7 +642,7 @@ fi
 reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
 
 if [[ $testmode = "0" ]]; then
-  writeProperties "$RAWOUT" "" "JRC2018_63x38umBrain_Unisex" "$objective" "0.3798409x0.3799458x0.3794261" "1652x773x456" "" "" "$main_aligned_file"
+  writeProperties "$RAWOUT" "" "JRC2018_Unisex_63x" "$objective" "0.3798409x0.3799458x0.3794261" "1652x773x456" "" "" "$main_aligned_file"
 fi
 
 ########################################################################################################
@@ -698,7 +697,7 @@ TEMP="$JFRC2010"
 reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
 
 if [[ $testmode = "0" ]]; then
-  writeProperties "$RAWOUT" "" "JFRC2010" "20x" "0.62x0.62x1.00" "1024x512x218" "" "" "$main_aligned_file"
+  writeProperties "$RAWOUT" "" "JFRC2010_20x" "20x" "0.62x0.62x1.00" "1024x512x218" "" "" "$main_aligned_file"
 fi
 
 # -------------------------------------------------------------------------------------------
