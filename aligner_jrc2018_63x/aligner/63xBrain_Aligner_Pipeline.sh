@@ -352,7 +352,7 @@ function writeProperties() {
 
     if [[ -f "$_raw_aligned" ]]; then
         META="${OUTPUT}/${prefix}.properties"
-        echo "alignment.stack.glfilename="${raw_filename} > $META
+        echo "alignment.stack.filename="${raw_filename} > $META
         echo "alignment.image.area=Brain" >> $META
         echo "alignment.image.channels=$INPUT1_CHANNELS" >> $META
         echo "alignment.image.refchan=$INPUT1_REF" >> $META
