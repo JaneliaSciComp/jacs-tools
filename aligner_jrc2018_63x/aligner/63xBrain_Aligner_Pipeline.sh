@@ -132,6 +132,7 @@ JFRC2014=$TempDir/JFRC2014_63x_DistCorrected_G15.nrrd
 
 JRC2018UNISEX=$TempDir/JRC2018_UNISEX_63x.nrrd
 JRC2018UNISEX38um=$TempDir/JRC2018_UNISEX_38um_iso.nrrd
+JRC2018UNISEX20xHR=$TempDir/JRC2018_UNISEX_20xHR.nrrd
 
 JRC2018_63x_CROPPED=$OUTPUT"/Temp1.nrrd"
 
@@ -644,6 +645,25 @@ reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
 if [[ $testmode = "0" ]]; then
   writeProperties "$RAWOUT" "" "JRC2018_63x38umBrain_Unisex" "$objective" "0.3798409x0.3799458x0.3794261" "1652x773x456" "" "" "$main_aligned_file"
 fi
+
+########################################################################################################
+# JRC2018 unisex 20x HR reformat
+########################################################################################################
+
+banner "JRC2018 unisex 20xHR reformat"
+DEFFIELD="$reformat_JRC2018_to_Uni"
+fn="REG_UNISEX_20x_HR_Brain"
+gsig=$OUTPUT"/""REG_JRC2018_"$genderT
+sig=$OUTPUT"/"$fn
+
+TEMP="$JRC2018UNISEX20xHR"
+
+reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
+
+if [[ $testmode = "0" ]]; then
+writeProperties "$RAWOUT" "" "JRC2018_Unisex_20x_HR" "20x" "0.5189161x0.5189161x1.0" "1210x566x174" "" "" "$main_aligned_file"
+fi
+
 
 ########################################################################################################
 # oldBRAIN_$genderT reformat
