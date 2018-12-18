@@ -70,7 +70,6 @@ if [[ $testmode == "1" ]]; then
   echo "inputfilename "$inputfilename
   REFSCALE=2
 
-
   RESX=0.1882680
   RESZ=0.3794261
   NSLOTS=6
@@ -263,7 +262,7 @@ function reformatAll() {
         reformat "$GLOBAL_NRRD" "$_TEMP" "$_DEFFIELD" "$OUTPUT_NRRD" "$i" "ignore" "$opts"
 
         echo "_fn; $_fn"
-        if [[ $_fn = "REG_JRC2018_"$genderT ]]; then
+        if [[ $_fn = "REG_JRC2018_"$genderT"_63x" ]]; then
           echo "+----------------------------------------------------------------------+"
           echo "| Rotation after registration"
           echo "| $FIJI -macro $ROTATEAFTERWARP \"$OUTPUT/,$_fn,$OUTPUT_NRRD,$TxtPath,$REFSCALE\""
@@ -277,12 +276,12 @@ function reformatAll() {
         echo "+----------------------------------------------------------------------+"
         $FIJI --headless -macro $NRRDCOMP "$OUTPUT_NRRD"
 
-        if [[ $_fn = "REG_UNISEX_Brain" ]]; then
+        if [[ $_fn = "REG_UNISEX_63x" ]]; then
           echo "+----------------------------------------------------------------------+"
           echo "| Unisex 20x HR generation"
           echo "| $FIJI -macro $TWENTYHRGENERATION \"$OUTPUT,$i,$OUTPUT_NRRD\""
           echo "+----------------------------------------------------------------------+"
-          $FIJI -macro $TWENTYHRGENERATION "$OUTPUT,$i,$OUTPUT_NRRD" 
+          $FIJI -macro $TWENTYHRGENERATION "$OUTPUT/,$i,$OUTPUT_NRRD" 
           # will generate "REG_UNISEX_20x_HR_0"+i+".nrrd"
         fi
 
@@ -560,7 +559,7 @@ echo "------------------------------------------------------------"
 
 sig=$OUTPUT"/Affine_${inputfilename%.*}_01.nrrd"
 DEFFIELD=$registered_affine_xform
-TSTRING="JRC2018 63X_$"
+TSTRING="JRC2018 63X"
 TEMP="$JRC2018_63x_CROPPED"
 gsig="$GLOUTPUT/"$glfilename"_01.nrrd"
 
@@ -581,7 +580,6 @@ else
     START=`date '+%F %T'`
 
     $CMTK/warp --threads $NSLOTS -v --registration-metric nmi --jacobian-weight 0 --fast -e 26 --grid-spacing 80 --energy-weight 1e-1 --refine 4 --coarsest 8 --ic-weight 0 --output-intermediate --accuracy 0.8 -o $registered_warp_xform $registered_affine_xform
-
 
     STOP=`date '+%F %T'`
     if [[ ! -e $registered_warp_xform ]]; then
@@ -609,7 +607,7 @@ fi # skip
 
 banner "JRC2018 $genderT reformat"
 DEFFIELD=$registered_warp_xform
-fn="REG_JRC2018_"$genderT
+fn="REG_JRC2018_${genderT}_63x"
 main_aligned_file=${fn}".v3draw"
 sig=$OUTPUT"/"$fn
 TEMP="$JRC2018_63x_CROPPED"
@@ -620,7 +618,7 @@ reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
 scoreGen $sig"_01.nrrd" $scoreT "score2018"
 
 if [[ $testmode = "0" ]]; then
-  writeProperties "$RAWOUT" "" "JRC2018_${genderT}_63x" "$objective" "$JRC2018RESO" "$JRC2018SIZE" "$score2018" "" ""
+    writeProperties "$RAWOUT" "" "JRC2018_${genderT}_63x" "$objective" "$JRC2018RESO" "$JRC2018SIZE" "$score2018" "" ""
 fi
 
 ########################################################################################################
@@ -629,7 +627,7 @@ fi
 
 banner "JRC2018 unisex reformat"
 DEFFIELD="$reformat_JRC2018_to_Uni"
-fn="REG_UNISEX_Brain"
+fn="REG_UNISEX_63x"
 gsig=$OUTPUT"/""REG_JRC2018_"$genderT
 sig=$OUTPUT"/"$fn
 
@@ -642,7 +640,7 @@ fi
 reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
 
 if [[ $testmode = "0" ]]; then
-  writeProperties "$RAWOUT" "" "JRC2018_Unisex_63x" "$objective" "0.3798409x0.3799458x0.3794261" "1652x773x456" "" "" "$main_aligned_file"
+    writeProperties "$RAWOUT" "" "JRC2018_Unisex_63x" "$objective" "0.3798409x0.3799458x0.3794261" "1652x773x456" "" "" "$main_aligned_file"
 fi
 
 ########################################################################################################
@@ -651,7 +649,7 @@ fi
 
 banner "JRC2018 unisex 20xHR reformat"
 DEFFIELD="$reformat_JRC2018_to_Uni"
-fn="REG_UNISEX_20x_HR_Brain"
+fn="REG_UNISEX_ColorMIP_HR"
 gsig=$OUTPUT"/""REG_JRC2018_"$genderT
 sig=$OUTPUT"/"$fn
 
@@ -660,7 +658,7 @@ TEMP="$JRC2018UNISEX20xHR"
 reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
 
 if [[ $testmode = "0" ]]; then
-writeProperties "$RAWOUT" "" "JRC2018_Unisex_20x_HR" "20x" "0.5189161x0.5189161x1.0" "1210x566x174" "" "" "$main_aligned_file"
+    writeProperties "$RAWOUT" "" "JRC2018_Unisex_20x_HR" "20x" "0.5189161x0.5189161x1.0" "1210x566x174" "" "" "$main_aligned_file"
 fi
 
 
@@ -678,10 +676,10 @@ TEMP="$OLDTEMPPATH"
 
 reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
 
-scoreGen $sig"_01.nrrd" "$OLDTEMPPATH" "oldBRAIN_" "scoreOLD"
+scoreGen $sig"_01.nrrd" "$OLDTEMPPATH" "scoreOLD"
 
 if [[ $testmode = "0" ]]; then
-  writeProperties "$RAWOUT" "" "$OLDSPACE" "$objective" "$OLDVOXELS" "$OLDSIZE" "$scoreOLD" "" "$main_aligned_file"
+    writeProperties "$RAWOUT" "" "$OLDSPACE" "$objective" "$OLDVOXELS" "$OLDSIZE" "$scoreOLD" "" "$main_aligned_file"
 fi
 
 ########################################################################################################
@@ -690,14 +688,14 @@ fi
 
 banner "JFRC2010 $genderT reformat"
 DEFFIELD="$reformat_JRC2018_to_JFRC2010"
-fn="REG_JFRC2010"
-sig=$OUTPUT"/REG_JFRC2010"
+fn="REG_JFRC2010_20x"
+sig=$OUTPUT"/"$fn
 TEMP="$JFRC2010"
 
 reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
 
 if [[ $testmode = "0" ]]; then
-  writeProperties "$RAWOUT" "" "JFRC2010_20x" "20x" "0.62x0.62x1.00" "1024x512x218" "" "" "$main_aligned_file"
+    writeProperties "$RAWOUT" "" "JFRC2010_20x" "20x" "0.62x0.62x1.00" "1024x512x218" "" "" "$main_aligned_file"
 fi
 
 # -------------------------------------------------------------------------------------------
@@ -717,5 +715,4 @@ cp $OUTPUT/REG*.v3dpbd $FINALOUTPUT
 cp $OUTPUT/REG*.properties $FINALOUTPUT
 
 echo "$0 done"
-
 
