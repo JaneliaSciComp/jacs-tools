@@ -124,7 +124,7 @@ if [[ $testmode == "1" ]]; then
 fi #if [[ $testmode == "1" ]]
 
 INTPUT_FILENAME=`basename $INPUT1_FILE`
-TxtPath=$OUTPUT/"${INPUT_FILENAME%.*}_translation.txt"
+TxtPath=$OUTPUT/"${glfilename}_translation.txt"
 
 # "-------------------Template----------------------"
 JFRC2010=$TempDir/JFRC2010_16bit.nrrd
@@ -501,12 +501,12 @@ if [[ -e $LOGFILE ]]; then
 else
     echo "+---------------------------------------------------------------------------------------+"
     echo "| Running Otsuna preprocessing step"
-    echo "| $FIJI -macro $PREPROCIMG \"$OUTPUT/,PRE_PROCESSED,$Path,$TempDir/,$RESX,$RESZ,$NSLOTS,$objective,$INPUT1_GENDER\""
+    echo "| $FIJI -macro $PREPROCIMG \"$OUTPUT/,$glfilename,$Path,$TempDir/,$RESX,$RESZ,$NSLOTS,$objective,$INPUT1_GENDER\""
     echo "+---------------------------------------------------------------------------------------+"
     START=`date '+%F %T'`
     # Expect to take far less than 1 hour
     # TODO: doesnt take neurons?
-    $FIJI -macro $PREPROCIMG "$OUTPUT/,PRE_PROCESSED,$Path,$TempDir/,$RESX,$RESZ,$NSLOTS,$objective,$INPUT1_GENDER"  >$DEBUG_DIR/preproc.log 2>&1
+    $FIJI -macro $PREPROCIMG "$OUTPUT/,$glfilename,$Path,$TempDir/,$RESX,$RESZ,$NSLOTS,$objective,$INPUT1_GENDER"  >$DEBUG_DIR/preproc.log 2>&1
 
     STOP=`date '+%F %T'`
     echo "Otsuna preprocessing start: $START"
