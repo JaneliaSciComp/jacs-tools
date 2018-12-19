@@ -431,6 +431,12 @@ fi
 
 Global_Aligned_Separator_Result=$OUTPUT"/ConsolidatedLabel.nrrd"
 
+if [[ $REFSCALE == 2 ]]; then
+    TRESOLUTION="63x_DS"
+elif [[ $REFSCALE == 0 ]]; then
+    TRESOLUTION="63x"
+fi
+
 if [[ $INPUT1_GENDER == "f" ]]; then
     genderT="FEMALE"
     reformat_JRC2018_to_oldBRAIN=$TempDir"/Deformation_Fields/JFRC2013_JRC2018_FEMALE"
@@ -607,7 +613,7 @@ fi # skip
 
 banner "JRC2018 $genderT reformat"
 DEFFIELD=$registered_warp_xform
-fn="REG_JRC2018_${genderT}_63x"
+fn="REG_JRC2018_${genderT}_${TRESOLUTION}"
 main_aligned_file=${fn}".v3draw"
 sig=$OUTPUT"/"$fn
 TEMP="$JRC2018_63x_CROPPED"
@@ -618,7 +624,7 @@ reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
 scoreGen $sig"_01.nrrd" $scoreT "score2018"
 
 if [[ $testmode = "0" ]]; then
-    writeProperties "$RAWOUT" "" "JRC2018_${genderT}_63x" "$objective" "$JRC2018RESO" "$JRC2018SIZE" "$score2018" "" ""
+    writeProperties "$RAWOUT" "" "JRC2018_${genderT}_${TRESOLUTION}" "$objective" "$JRC2018RESO" "$JRC2018SIZE" "$score2018" "" ""
 fi
 
 ########################################################################################################
@@ -627,9 +633,9 @@ fi
 
 banner "JRC2018 unisex reformat"
 DEFFIELD="$reformat_JRC2018_to_Uni"
-fn="REG_UNISEX_63x"
-gsig=$OUTPUT"/""REG_JRC2018_"$genderT
+fn="REG_UNISEX_${TRESOLUTION}"
 sig=$OUTPUT"/"$fn
+gsig=$OUTPUT"/""REG_JRC2018_${genderT}_63x"
 
 if [[ $REFSCALE == 2 ]]; then
   TEMP="$JRC2018UNISEX38um"
@@ -640,7 +646,7 @@ fi
 reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
 
 if [[ $testmode = "0" ]]; then
-    writeProperties "$RAWOUT" "" "JRC2018_Unisex_63x" "$objective" "0.3798409x0.3799458x0.3794261" "1652x773x456" "" "" "$main_aligned_file"
+    writeProperties "$RAWOUT" "" "JRC2018_Unisex_${TRESOLUTION}" "$objective" "0.3798409x0.3799458x0.3794261" "1652x773x456" "" "" "$main_aligned_file"
 fi
 
 ########################################################################################################
@@ -650,7 +656,6 @@ fi
 banner "JRC2018 unisex 20xHR reformat"
 DEFFIELD="$reformat_JRC2018_to_Uni"
 fn="REG_UNISEX_ColorMIP_HR"
-gsig=$OUTPUT"/""REG_JRC2018_"$genderT
 sig=$OUTPUT"/"$fn
 
 TEMP="$JRC2018UNISEX20xHR"
@@ -670,7 +675,6 @@ banner "$OLDSPACE $genderT reformat"
 #"--inverse takes 1.5h / channel for reformatting"
 DEFFIELD="$reformat_JRC2018_to_oldBRAIN"
 fn="REG_$OLDSPACE"
-gsig=$OUTPUT"/""REG_JRC2018_"$genderT
 sig=$OUTPUT"/REG_$OLDSPACE"
 TEMP="$OLDTEMPPATH"
 
