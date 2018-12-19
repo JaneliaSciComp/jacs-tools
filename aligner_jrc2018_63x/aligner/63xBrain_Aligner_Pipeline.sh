@@ -262,7 +262,7 @@ function reformatAll() {
         reformat "$GLOBAL_NRRD" "$_TEMP" "$_DEFFIELD" "$OUTPUT_NRRD" "$i" "ignore" "$opts"
 
         echo "_fn; $_fn"
-        if [[ $_fn = "REG_JRC2018_"$genderT"_63x" ]]; then
+        if [[ $_fn = "REG_JRC2018_"$genderT"_"$TRESOLUTION ]]; then
           echo "+----------------------------------------------------------------------+"
           echo "| Rotation after registration"
           echo "| $FIJI -macro $ROTATEAFTERWARP \"$OUTPUT/,$_fn,$OUTPUT_NRRD,$TxtPath,$REFSCALE\""
@@ -276,7 +276,7 @@ function reformatAll() {
         echo "+----------------------------------------------------------------------+"
         $FIJI --headless -macro $NRRDCOMP "$OUTPUT_NRRD"
 
-        if [[ $_fn = "REG_UNISEX_63x" ]]; then
+        if [[ $_fn = "REG_UNISEX_"$TRESOLUTION ]]; then
           echo "+----------------------------------------------------------------------+"
           echo "| Unisex 20x HR generation"
           echo "| $FIJI -macro $TWENTYHRGENERATION \"$OUTPUT,$i,$OUTPUT_NRRD\""
@@ -635,7 +635,7 @@ banner "JRC2018 unisex reformat"
 DEFFIELD="$reformat_JRC2018_to_Uni"
 fn="REG_UNISEX_${TRESOLUTION}"
 sig=$OUTPUT"/"$fn
-gsig=$OUTPUT"/""REG_JRC2018_${genderT}_${TRESOLUTION}"
+gsig=$OUTPUT"/REG_JRC2018_${genderT}_${TRESOLUTION}"
 
 if [[ $REFSCALE == 2 ]]; then
   TEMP="$JRC2018UNISEX38um"
