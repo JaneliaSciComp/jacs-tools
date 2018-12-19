@@ -635,7 +635,7 @@ banner "JRC2018 unisex reformat"
 DEFFIELD="$reformat_JRC2018_to_Uni"
 fn="REG_UNISEX_${TRESOLUTION}"
 sig=$OUTPUT"/"$fn
-gsig=$OUTPUT"/""REG_JRC2018_${genderT}_63x"
+gsig=$OUTPUT"/""REG_JRC2018_${genderT}_${TRESOLUTION}"
 
 if [[ $REFSCALE == 2 ]]; then
   TEMP="$JRC2018UNISEX38um"
