@@ -496,6 +496,13 @@ echo "OLDSPACE; "$OLDSPACE
 echo "OLDTEMPPATH; "$OLDTEMPPATH
 echo "reformat_JRC2018_to_oldBRAIN; "$reformat_JRC2018_to_oldBRAIN
 
+# Remove all special characters and convert to lower case
+TILES=`echo $INPUT1_TILES | tr -dc '[:alnum:]\n\r' | tr '[:upper:]' '[:lower:]'`
+if [[ $TILES == 'rightopticlobe' || $TILES == 'leftopticlobe' ]]; then
+    writeErrorProperties "PreAlignerError" "JRC2018_${genderT}_${TRESOLUTION}" "$objective" "Cannot align unstitched optic lobe tiles"
+    exit 0
+fi
+
 skip=0
 
 if [[ $skip = 0 ]]; then
@@ -520,7 +527,7 @@ else
     cp $LOGFILE $DEBUG_DIR
     PreAlignerError=`grep "PreAlignerError: " $LOGFILE | head -n1 | sed "s/PreAlignerError: //"`
     if [[ ! -z "$PreAlignerError" ]]; then
-        writeErrorProperties "PreAlignerError" "JRC2018_${genderT}" "$objective" "$PreAlignerError"
+        writeErrorProperties "PreAlignerError" "JRC2018_${genderT}_${TRESOLUTION}" "$objective" "$PreAlignerError"
         exit 0
     fi
 fi
