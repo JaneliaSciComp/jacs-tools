@@ -498,10 +498,11 @@ echo "reformat_JRC2018_to_oldBRAIN; "$reformat_JRC2018_to_oldBRAIN
 
 # Remove all special characters and convert to lower case
 TILES=`echo $INPUT1_TILES | tr -dc '[:alnum:]\n\r' | tr '[:upper:]' '[:lower:]'`
-if [[ $TILES == 'rightopticlobe' || $TILES == 'leftopticlobe' ]]; then
-    writeErrorProperties "PreAlignerError" "JRC2018_${genderT}_${TRESOLUTION}" "$objective" "Cannot align unstitched optic lobe tiles"
-    exit 0
-fi
+echo "Tiles; $TILES"
+#if [[ $TILES == 'rightopticlobe' || $TILES == 'leftopticlobe' ]]; then
+#    writeErrorProperties "PreAlignerError" "JRC2018_${genderT}_${TRESOLUTION}" "$objective" "Cannot align unstitched optic lobe tiles"
+#    exit 0
+#fi
 
 skip=0
 
