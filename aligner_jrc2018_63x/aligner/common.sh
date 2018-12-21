@@ -22,7 +22,7 @@ parseArray()
 {
     local result_var="$1"
     local yaml_path="$2"
-    value=`yq -r '$yaml_path // empty | join(",")' $YAML_CONFIG`
+    value=`yq -r "$yaml_path // empty | join(\",\")" $YAML_CONFIG`
     eval $result_var="'$value'"
 }
 
