@@ -449,16 +449,18 @@ if [[ $INPUT1_GENDER == "f" ]]; then
 
     if [[ $REFSCALE == 2 ]]; then
         scoreT=${TempDir}"/JRC2018_FEMALE_38um_iso.nrrd"
+        JRC2018RESO="0.38x0.38x0.38"
+        JRC2018SIZE="1652x768x478"
     fi
 
     if [[ $REFSCALE == 0 ]]; then
         scoreT=${TempDir}"/JRC2018_FEMALE_63x.nrrd"
+        JRC2018RESO="0.1882680x0.1882680x0.38"
+        JRC2018SIZE="3333x1550x478"
     fi
 
     OLDVOXELS="0.38x0.38x0.38"
     OLDSIZE="1450x725x436"
-    JRC2018RESO="0.3798409x0.3799680x0.3800808"
-    JRC2018SIZE="1652x768x478"
 
 elif [[ $INPUT1_GENDER == "m" ]]; then
 
@@ -473,15 +475,18 @@ elif [[ $INPUT1_GENDER == "m" ]]; then
 
     if [[ $REFSCALE == 2 ]]; then
         scoreT=${TempDir}"/JRC2018_MALE_38um_iso.nrrd"
+        JRC2018RESO="0.38x0.38x0.38"
+        JRC2018SIZE="1561x744x476"
     fi
     if [[ $REFSCALE == 0 ]]; then
         scoreT=${TempDir}"/JRC2018_MALE_63x.nrrd"
+        JRC2018RESO="0.1882680x0.1882680x0.38"
+        JRC2018SIZE="3150x1500x476"
     fi
 
     OLDVOXELS="0.38x0.38x0.38"
     OLDSIZE="1450x725x436"
-    JRC2018RESO="0.38x0.38x0.38"
-    JRC2018SIZE="1561x744x476"
+
 
 else
     echo "ERROR: invalid gender: $INPUT1_GENDER"
