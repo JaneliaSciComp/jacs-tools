@@ -43,7 +43,7 @@ testArg=0;
 
 reverseR=1;
 
-//nameFile="GMR_31E05.h5j"
+nameFile="_GMR_61B11_AD_01_20070825_GMR_61B11_AD_01_06-fA01b_20070911111020734_f_.h5j"
 
 // 40x
 //testArg= "/test/20x_brain_alignment/fail/,tile-2598433930730274853.v3draw,/test/20x_brain_alignment/fail/tile-2598433930730274853.v3draw,/Users/otsunah/Documents/otsunah/20x_brain_aligner/,0.44,0.44,11,40x,JRC2018,Both_OL_missing (40x),/test/20x_brain_alignment/fail/ConsolidatedLabel.v3dpbd"
@@ -507,15 +507,15 @@ if(BrainShape=="Intact" || BrainShape=="Unknown"){
 
 if(BrainShape=="Unknown"){
 	
-//	opticlobecheckArray = newArray(OBJScoreOri, BrainShape, OriginalXshift, OriginalYshift,finalshiftX,finalshiftY,0,0,0,0);
-//	opticlobecheck (rotSearch,NumCPU,opticlobecheckArray,1,JFRC2010MedProPath);
+	//	opticlobecheckArray = newArray(OBJScoreOri, BrainShape, OriginalXshift, OriginalYshift,finalshiftX,finalshiftY,0,0,0,0);
+	//	opticlobecheck (rotSearch,NumCPU,opticlobecheckArray,1,JFRC2010MedProPath);
 	
-
-//	BrainShape = opticlobecheckArray[1];
-//	SizeM = opticlobecheckArray[6];
-//	finalMIP = opticlobecheckArray[7];
-//	ID20xMIP = opticlobecheckArray[8];
-
+	
+	//	BrainShape = opticlobecheckArray[1];
+	//	SizeM = opticlobecheckArray[6];
+	//	finalMIP = opticlobecheckArray[7];
+	//	ID20xMIP = opticlobecheckArray[8];
+	
 	finalMIP="Max projection";
 	SizeM=1; 
 	BrainShape ="Intact";
@@ -2549,6 +2549,23 @@ function ImageCorrelation(ImageCorrelationArray,widthVx,NumCPU,projectionSt,PNGs
 	elipsoidAngle=elipsoidAngle*-1;// equalizing to later zoom analysis
 	preRot=elipsoidAngle;
 	
+	updown=0;
+	if(preRot>90 ||preRot<-90)
+	updown=1;
+	
+	
+	abspreX=abs(preX);
+	abspreY=abs(preY);
+	
+	suspicious=0;
+	if(updown==1 && abspreX>=10)
+	suspicious=1;
+	
+	if(updown==1 && abspreY>=10)
+	suspicious=1;
+	
+	trueUPD=0;
+	
 	print("initial objectscore; "+OBJScore+"  preX; "+preX+"  preY; "+preY+"  preRot; "+preRot);
 	print("");
 	OBJScore=round(OBJScore);
@@ -2748,14 +2765,62 @@ function ImageCorrelation(ImageCorrelationArray,widthVx,NumCPU,projectionSt,PNGs
 					gapY=abs(preY-maxY);
 					rotGap= abs(preRot-Rot);
 					
+					absmaxX=abs(maxX);
+					absmaxY=abs(maxY);
+					
+					if(updown==1){//if upside down
+						if(OBJScore>750)
+						if(gapX<5)
+						if(gapY<5)
+						if(rotGap<7)
+						if(absmaxX<7)
+						if(absmaxY<7){
+							
+							trueUPD=1;
+							bestmaxX=preX;
+							bestmaxY=preY;
+							
+							bestmaxX=bestmaxX*-1;
+							bestmaxY=bestmaxY*-1;
+							elipsoidAngle=preRot;
+							MaxZoom=iZoom;
+							
+							print("original rotation is right!");
+									break;
+							
+						}
+						
+						if(trueUPD==0){
+							if(Rot<90){
+								if(Rot>-90){
+									
+									rotGap=0;
+									
+									//if(suspicious==1){
+									
+									
+									if(absmaxX<9 && absmaxY<9){
+										if(OBJScore>PreMaxOBJ){
+											gapX=0;
+											gapY=0;
+											print("suspicious up-side-down, cancelled to normal");
+										}
+									}//if(absmaxX<9 && absmaxY<9){
+								}	
+							}//if(Rot<90 || Rot>-90){
+							//	}//	if(suspicious==1){
+						}//if(trueUPD==0){
+					}//if(updown==1){//if upside down
+					
+					
 					if(gapX<9 && gapY<9 && rotGap<9){
-												
+						
 						if(OBJScore>PreMaxOBJ){
 							
-							print("preX; "+preX+"  preY; "+preY+"   maxX; "+maxX+"   maxY; "+maxY+"  gapY; "+gapY+"  gapX; "+gapX);
-
+							print("preX; "+preX+"  preY; "+preY+"   maxX; "+maxX+"   maxY; "+maxY+"  Rot; "+Rot+"  gapY; "+gapY+"  gapX; "+gapX);
+							
 							PreMaxOBJ=OBJScore;
-					
+							
 							elipsoidAngle=parseFloat(Rot);
 							//			if (elipsoidAngle>90) 
 							//			elipsoidAngle = -(180 - elipsoidAngle);
