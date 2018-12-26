@@ -276,14 +276,14 @@ function reformatAll() {
         echo "+----------------------------------------------------------------------+"
         $FIJI --headless -macro $NRRDCOMP "$OUTPUT_NRRD"
 
-        if [[ $_fn = "REG_UNISEX_"$TRESOLUTION ]]; then
-          echo "+----------------------------------------------------------------------+"
-          echo "| Unisex 20x HR generation"
-          echo "| $FIJI -macro $TWENTYHRGENERATION \"$OUTPUT,$i,$OUTPUT_NRRD\""
-          echo "+----------------------------------------------------------------------+"
-          $FIJI -macro $TWENTYHRGENERATION "$OUTPUT/,$i,$OUTPUT_NRRD" 
-          # will generate "REG_UNISEX_20x_HR_0"+i+".nrrd"
-        fi
+     #   if [[ $_fn = "REG_UNISEX_"$TRESOLUTION ]]; then
+     #     echo "+----------------------------------------------------------------------+"
+     #     echo "| Unisex 20x HR generation"
+     #     echo "| $FIJI -macro $TWENTYHRGENERATION \"$OUTPUT,$i,$OUTPUT_NRRD\""
+     #     echo "+----------------------------------------------------------------------+"
+     #     $FIJI -macro $TWENTYHRGENERATION "$OUTPUT/,$i,$OUTPUT_NRRD" 
+     #     # will generate "REG_UNISEX_20x_HR_0"+i+".nrrd"
+     #   fi
 
          if [[ $testmode = "0" ]]; then
            echo "testmode; "$testmode
