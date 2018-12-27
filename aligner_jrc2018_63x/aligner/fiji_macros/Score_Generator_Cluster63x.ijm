@@ -340,7 +340,7 @@ if(endsWith(path,".tif") || endsWith(path,".h5j") || endsWith(path,".v3dpbd") ||
 			run("AVI... ", "compression=Uncompressed frame=25 save="+savedir+truname+"_"+OBJscore+".avi");
 		}else{
 			if(JpegMovie==true)
-			run("AVI... ", "compression=JPEG frame=25 save="+savedir+OBJscore+"_"+truname+".avi");//JPG
+			run("AVI... ", "compression=JPEG frame=25 save="+savedir+truname+".avi");//JPG //OBJscore
 			else
 			run("AVI... ", "compression=Uncompressed frame=25 save="+savedir+OBJscore+"_"+truname+".avi");
 		}
