@@ -1835,8 +1835,10 @@ if(FromDir==1){
 		
 		selectWindow("FinalGamma.tif");
 		
-		
+		if(samporiW<2000 || samporiH<2000)
 		run("Canvas Size...", "width="+samporiW+150+" height="+samporiH+150+" position=Center zero");
+		else
+		run("Canvas Size...", "width=2620 height=2650 position=Center zero");
 		
 		//		setBatchMode(false);
 		//		updateDisplay();
