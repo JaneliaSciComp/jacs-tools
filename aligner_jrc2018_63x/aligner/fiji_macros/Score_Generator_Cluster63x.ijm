@@ -329,7 +329,7 @@ if(endsWith(path,".tif") || endsWith(path,".h5j") || endsWith(path,".v3dpbd") ||
 	close();
 	
 	selectWindow(stack);
-	run("Size...", "width=833 height=390 depth=200 constrain average interpolation=Bicubic");
+	run("Size...", "width=832 height=390 depth=200 constrain average interpolation=Bicubic");
 	
 	
 	if(movieEx!=0){
