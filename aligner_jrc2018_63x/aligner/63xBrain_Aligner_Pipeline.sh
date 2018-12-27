@@ -659,7 +659,7 @@ fi
 reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
 
 if [[ $testmode = "0" ]]; then
-    writeProperties "$RAWOUT" "" "JRC2018_Unisex_${TRESOLUTION}" "$objective" "0.3798409x0.3799458x0.3794261" "1652x773x456" "" "" "$main_aligned_file"
+    writeProperties "$RAWOUT" "" "JRC2018_Unisex_${TRESOLUTION}" "$objective" "0.38x0.38x0.38" "1652x773x456" "" "" "$main_aligned_file"
 fi
 
 ########################################################################################################
