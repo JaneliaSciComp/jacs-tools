@@ -21,12 +21,14 @@ testArg=0;
 starttime=getTime();
 run("Misc...", "divide=Infinity save");
 
+testname="GMR_10B11_AE_01_20130605_1_B3_.h5j";
+
 //for VMware Mac
 //testArg = "/Volumes/otsuna/Masayoshi_63x/Failed_Pipeline/,JRC_SS24921_20161101_32_F1up.v3dpbd,/Volumes/otsuna/Masayoshi_63x/Failed_Pipeline/JRC_SS24921_20161101_32_F1up.v3dpbd,/Volumes/otsuna/Masayoshi_63x/Template/";
 
 //testArg = "/Volumes/Registration2/63x_align/,GMR_14G10_AE_01_20130712_1_D1.h5j,/Volumes/Registration2/63x_align/GMR_14G10_AE_01_20130712_1_D1.h5j,/Volumes/Registration2/63x_align/Template/,0.188,0.38,12,63x";
 
-//testArg = "/test/63x_align/OUTPUT/,GMR_14G10_AE_01_20130712_1_D1.h5j,/test/63x_align/GMR_14G10_AE_01_20130712_1_D1.h5j,/test/63x_align/Template/,0.188,0.38,12,63x";
+//testArg = "/test/63x_align/OUTPUT/,"+testname+",/test/63x_align/016sample/"+testname+",/test/63x_align/Template/,0.188,0.38,12,63x,f";
 
 //testArg = "H:/Registration2/Gab_failAlign/JRC_SS38164_20170712_31_D5/,JRC_SS38164_20170712_31_D5.h5j,H:/Registration2/Gab_failAlign/JRC_SS38164_20170712_31_D5.h5j,H:/Registration2/63x_align/Template/,0.188,0.38,12,63x"; // Gal
 
@@ -283,11 +285,9 @@ if(FromDir==1){
 	maxMean=0;
 	getDimensions(width, height, channels, slices, frames);
 	
-	print("Channels; "+channels+"  slices; "+nSlices()/channels+"  voxel size changed");
+	print("Channels; "+channels+"  slices; "+nSlices()/channels);
 	run("Properties...", "channels="+channels+" slices="+nSlices()/channels+" frames=1 unit=microns pixel_width="+ResX+" pixel_height="+ResX+" voxel_depth="+ResZ+"");
 	
-	
-	print("channels; "+channels);
 	
 	logsum=getInfo("log");
 	File.saveString(logsum, filepath);
@@ -322,6 +322,7 @@ if(FromDir==1){
 		
 		selectWindow("C"+nc82Channel+"-"+SampleTitle);
 	}else{
+		print("channels; "+channels);
 		rename("C1-"+SampleTitle);
 		nc82Channel=5;
 		
