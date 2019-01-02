@@ -156,6 +156,8 @@ function expandRes() {
   local _result_var="$2"
   if [[ $_res == "0.19" ]]; then
     result="0.1882680"
+  elif [[ $_res == "0.16" ]]; then
+    result="0.1882680"
   else
     result=$_res
   fi
