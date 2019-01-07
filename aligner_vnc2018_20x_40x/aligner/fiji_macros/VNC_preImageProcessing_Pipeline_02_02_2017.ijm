@@ -2215,6 +2215,7 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 								
 								setMinAndMax(minvalue, maxvalue);
 								run("Apply LUT", "stack");
+								run("A4095 normalizer", "subtraction=0 start=1 end="+nSlices+"");
 							}
 							
 							print("1850; nSlices; "+nSlices+"  rotation; "+rotation+"  vxwidth; "+vxwidth+"  vxheight; "+vxheight+"  depth; "+depth+"  xTrue; "+xTrue+"  yTrue; "+yTrue);
@@ -2264,10 +2265,28 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 								realNeuron2=getImageID();
 							}//if(AdvanceDepth){
 							
+							bitd2=bitDepth();
+							if(bitd2==8){
+								run("16-bit");
+								
+								run("Max value");
+								logsum=getInfo("log");
+								
+								maxStartindex=lastIndexOf(logsum,"Maxvalue");
+								maxEndindex=lastIndexOf(logsum,"Minvalue");
+								maxvalue=substring(logsum, maxStartindex+10, maxEndindex-2);
+								maxvalue=round(maxvalue);
+								
+								minvalue=substring(logsum, maxEndindex+10, lengthOf(logsum));
+								minvalue=round(minvalue);
+								
+								print("Detected2 Min; "+minvalue+"   Detected2 Max; "+maxvalue);
+								
+								setMinAndMax(minvalue, maxvalue);
+								run("Apply LUT", "stack");
+								run("A4095 normalizer", "subtraction=0 start=1 end="+nSlices+"");
+							}
 							
-							
-							//	if(bitd==8)
-							run("16-bit");
 							
 							if(ShapeProblem==0){
 								if(FrontAndBack>0)
