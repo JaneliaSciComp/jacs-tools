@@ -311,7 +311,7 @@ if(FromDir==1){
 		
 		setMinAndMax(0, maxvalue0);
 		run("Apply LUT", "stack");
-		
+		run("A4095 normalizer", "subtraction=0 start=1 end="+nSlices+"");
 	}
 	if(channels>1){
 		print(channels+" channels");
