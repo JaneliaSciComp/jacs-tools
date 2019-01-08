@@ -297,29 +297,36 @@ if(FromDir==1){
 	//			exit();
 	
 	bitd=bitDepth();
-	if(bitd==8){
-		run("16-bit");
-		
-		run("Max value");/// need new plugin
-		logsum=getInfo("log");
-		endlog=lengthOf(logsum);
-		maxposition=lastIndexOf(logsum, "Maxvalue;");
-		minposition=lastIndexOf(logsum, "  Minvalue;");
-		
-		maxvalue0=substring(logsum, maxposition+10, minposition);
-		maxvalue0=round(maxvalue0);
-		
-		setMinAndMax(0, maxvalue0);
-		run("Apply LUT", "stack");
-		run("A4095 normalizer", "subtraction=0 start=1 end="+nSlices+"");
-	}
+	
 	if(channels>1){
 		print(channels+" channels");
 		run("Split Channels");
 		meanArray=newArray(channels);
 		
-		nc82Channel=channels;
+		if(bitd==8){
+			
+			for(ichannel=1; ichannel<=channels; ichannel++){
+				
+				selectWindow("C"+ichannel+"-"+SampleTitle);
+				run("16-bit");
+				
+				run("Max value");/// need new plugin
+				logsum=getInfo("log");
+				endlog=lengthOf(logsum);
+				maxposition=lastIndexOf(logsum, "Maxvalue;");
+				minposition=lastIndexOf(logsum, "  Minvalue;");
+				
+				maxvalue0=substring(logsum, maxposition+10, minposition);
+				maxvalue0=round(maxvalue0);
+				
+				setMinAndMax(0, maxvalue0);
+				run("Apply LUT", "stack");
+				run("A4095 normalizer", "subtraction=0 start=1 end="+nSlices+"");
+			}//for(ichannel=0; ichannel<channels; ichannel++){
+		}//if(bitd==8){
 		
+		
+		nc82Channel=channels;
 		selectWindow("C"+nc82Channel+"-"+SampleTitle);
 	}else{
 		print("channels; "+channels);
