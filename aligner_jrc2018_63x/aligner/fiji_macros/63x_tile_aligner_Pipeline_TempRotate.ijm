@@ -21,14 +21,14 @@ testArg=0;
 starttime=getTime();
 run("Misc...", "divide=Infinity save");
 
-testname="GMR_10B11_AE_01_20130605_1_B3_.h5j";
+testname="GMR_33D11_AE_01_20110921_20_D3_.h5j";
 
 //for VMware Mac
 //testArg = "/Volumes/otsuna/Masayoshi_63x/Failed_Pipeline/,JRC_SS24921_20161101_32_F1up.v3dpbd,/Volumes/otsuna/Masayoshi_63x/Failed_Pipeline/JRC_SS24921_20161101_32_F1up.v3dpbd,/Volumes/otsuna/Masayoshi_63x/Template/";
 
 //testArg = "/Volumes/Registration2/63x_align/,GMR_14G10_AE_01_20130712_1_D1.h5j,/Volumes/Registration2/63x_align/GMR_14G10_AE_01_20130712_1_D1.h5j,/Volumes/Registration2/63x_align/Template/,0.188,0.38,12,63x";
 
-//testArg = "/test/63x_align/OUTPUT/,"+testname+",/test/63x_align/016sample/"+testname+",/test/63x_align/Template/,0.188,0.38,12,63x,f";
+//testArg = "/test/63x_align/OUTPUT/,"+testname+",/test/63x_align/Sample/"+testname+",/test/63x_align/Template/,0.188,0.38,12,63x,f";
 
 //testArg = "H:/Registration2/Gab_failAlign/JRC_SS38164_20170712_31_D5/,JRC_SS38164_20170712_31_D5.h5j,H:/Registration2/Gab_failAlign/JRC_SS38164_20170712_31_D5.h5j,H:/Registration2/63x_align/Template/,0.188,0.38,12,63x"; // Gal
 
@@ -321,7 +321,7 @@ if(FromDir==1){
 				
 				setMinAndMax(0, maxvalue0);
 				run("Apply LUT", "stack");
-				run("A4095 normalizer", "subtraction=0 start=1 end="+nSlices+"");
+				run("A4095 normalizer", "subtraction=1 start=1 end="+nSlices+"");
 			}//for(ichannel=0; ichannel<channels; ichannel++){
 		}//if(bitd==8){
 		
