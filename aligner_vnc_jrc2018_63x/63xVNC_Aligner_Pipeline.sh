@@ -122,7 +122,7 @@ MACRO_DIR=/Users/otsunah/Documents/jacs-tools/aligner_vnc_jrc2018_63x/aligner/fi
   REGCROP="$MACRO_DIR/TempCrop_after_affine.ijm"
   ROTATEAFTERWARP="$MACRO_DIR/Rotation_AfterReg.ijm"
   NRRDCOMP="$MACRO_DIR/nrrd_compression.ijm"
-  FINALOUTPUT=$OUTPUT"/FinalOutputs"
+ // FINALOUTPUT=$OUTPUT"/FinalOutputs"
 
 
   
@@ -433,8 +433,10 @@ if [[ ! -d $GLOUTPUT ]]; then
   mkdir $GLOUTPUT
 fi
 
-if [[ ! -d $FINALOUTPUT ]]; then
+if [[ $testmode = "0" ]]; then
+  if [[ ! -d $FINALOUTPUT ]]; then
     mkdir $FINALOUTPUT
+  fi
 fi
 
 if [[ ! -e $PREPROCIMG ]]; then
@@ -458,7 +460,7 @@ if [[ $INPUT1_GENDER == "f" ]]; then
     reformat_JRC2018_to_Uni=$TempDir"/Deformation_Fields/JRC2018_VNC_Unisex_JRC2018_FEMALE"
     TEMPNAME="JRC2018_VNC_Female_63x"
     OLDTEMPPATH=$VNC2017_Female
-    OLDSPACE="VNC2017_Female"
+    OLDSPACE="VNC2017F"
     iniT=${JRC2018_VNC_Female_63x}
 
 
@@ -477,7 +479,7 @@ elif [[ $INPUT1_GENDER == "m" ]]; then
     reformat_JRC2018_to_Uni=$TempDir"/Deformation_Fields/JRC2018_VNC_Unisex_JRC2018_MALE"
     TEMPNAME="JRC2018_VNC_Male_63x"
     OLDTEMPPATH=$VNC2017_Male
-    OLDSPACE="VNC2017_Male"
+    OLDSPACE="VNC2017M"
     iniT=${JRC2018_VNC_Male_63x}
 
     scoreT=${JRC2018_VNC_Male_63x}
@@ -685,26 +687,30 @@ fi
 # oldVNC_$genderT reformat
 ########################################################################################################
 
-banner "$OLDSPACE $genderT reformat"
+banner "$OLDSPACE reformat"
 #"--inverse takes 1.5h / channel for reformatting"
 DEFFIELD="$reformat_JRC2018_to_oldVNC"
-if [[ $testmode == 0 ]]; then
+if [[ $testmode == "0" ]]; then
   fn="REG_$OLDSPACE"
 else
-  fn="REG_$OLDSPACE_${inputfilename%.*}"
+  fn="REG_${OLDSPACE}_${inputfilename%.*}"
 fi
-sig=$OUTPUT"/REG_$OLDSPACE"
+
+sig=$OUTPUT"/"$fn
 TEMP="$OLDTEMPPATH"
 
 if [[ ! -e $sig"_01.nrrd" ]]; then
   reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
 
-  #scoreGen $sig"_01.nrrd" "$OLDTEMPPATH" "scoreOLD"
+  if [[ $INPUT1_GENDER == "f" ]]; then
+    scoreGen $sig"_01.nrrd" "$OLDTEMPPATH" "scoreOLD"
+  fi
 
   if [[ $testmode = "0" ]]; then
     writeProperties "$RAWOUT" "" "$OLDSPACE" "$objective" "$OLDVOXELS" "$OLDSIZE" "$scoreOLD" "" "$main_aligned_file"
   fi
 fi
+
 if [[ $INPUT1_GENDER == "m" ]]; then
   ########################################################################################################
   # oldVNC_FEMALE reformat
@@ -712,27 +718,29 @@ if [[ $INPUT1_GENDER == "m" ]]; then
 
   banner "oldVNC_FEMALE reformat for MALE"
   DEFFIELD="$oldFemale_JRC2018_VNC_MALE"
-  if [[ $testmode == 0 ]]; then
-    fn="REG_VNC2017_Female"
+  if [[ $testmode == "0" ]]; then
+    fn="REG_VNC2017F"
   else
-    fn="REG_VNC2017_Female_${inputfilename%.*}"
-fi
+    fn="REG_VNC2017F_${inputfilename%.*}"
+  fi
 
   sig=$OUTPUT"/"$fn
   TEMP="$VNC2017_Female"
 
-if [[ ! -e $sig"_01.nrrd" ]]; then
-  reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
-fi
-
-  scoreGen $sig"_01.nrrd" "$TEMP" "scoreOLD"
+  if [[ ! -e $sig"_01.nrrd" ]]; then
+    reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
+    scoreGen $sig"_01.nrrd" "$TEMP" "scoreOLD"
+  fi
 
   if [[ $testmode = "0" ]]; then
     writeProperties "$RAWOUT" "" "VNC2017_Female" "20x" "0.4612588x0.4612588x0.7" "512x1024x220" "" "" "$main_aligned_file"
   fi
-fi
+fi #if [[ $INPUT1_GENDER == "m" ]]; then
+
+rm -rf $OUTPUT"/images"
+
 # -------------------------------------------------------------------------------------------
-if [[ $testmode == 0 ]]; then
+if [[ $testmode == "0" ]]; then
   echo "Converting all v3draw files to v3dpbd format"
   compressAllRaw "$Vaa3D" "$OUTPUT"
 
