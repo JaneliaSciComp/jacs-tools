@@ -147,7 +147,7 @@ JRC2018_VNC_Female_63x=$TempDir"/JRC2018_VNC_FEMALE_63x.nrrd"
 JRC2018_VNC_Male_63x=$TempDir"/JRC2018_VNC_MALE_63x.nrrd"
 
 VNC2017_Female=$TempDir"/20x_flyVNCtemplate_Female_symmetric_16bit.nrrd"
-VNC2017_Male=$TempDir"/Male_VNC.nrrd"
+VNC2017_Male=$TempDir"/2017Male_VNC.nrrd"
 
 JRC2018_63x_CROPPED=$OUTPUT"/Temp.nrrd"
 
@@ -274,40 +274,42 @@ function reformatAll() {
     for ((i=1; i<=$INPUT1_CHANNELS; i++)); do
         GLOBAL_NRRD="${_gsig}_0${i}.nrrd"
         OUTPUT_NRRD="${_sig}_0${i}.nrrd"
-        echo "reformat; $GLOBAL_NRRD" "$_TEMP" "$_DEFFIELD" "$OUTPUT_NRRD" "$i" "ignore" "$opts"
-        reformat "$GLOBAL_NRRD" "$_TEMP" "$_DEFFIELD" "$OUTPUT_NRRD" "$i" "ignore"
 
+        if [[ -e "$GLOBAL_NRRD" ]]; then
+          echo "reformat; $GLOBAL_NRRD" "$_TEMP" "$_DEFFIELD" "$OUTPUT_NRRD" "$i" "ignore" "$opts"
+          reformat "$GLOBAL_NRRD" "$_TEMP" "$_DEFFIELD" "$OUTPUT_NRRD" "$i" "ignore"
 
-    if [[ $testmode == "0" ]]; then
-      genderfn="REG_JRC2018_"$genderT"_"$TRESOLUTION
-    else
-      genderfn="REG_JRC2018_${genderT}_${TRESOLUTION}_${inputfilename%.*}"
-    fi
-    echo "genderfn; $genderfn""  $_fn; "$_fn
-    if [[ $_fn = $genderfn ]]; then
+          if [[ $testmode == "0" ]]; then
+            genderfn="REG_JRC2018_"$genderT"_"$TRESOLUTION
+          else
+            genderfn="REG_JRC2018_${genderT}_${TRESOLUTION}_${inputfilename%.*}"
+          fi
+          echo "genderfn; $genderfn""  $_fn; "$_fn
+          if [[ $_fn = $genderfn ]]; then
+            echo "+----------------------------------------------------------------------+"
+            echo "| Rotation after registration"
+            echo "| $FIJI -macro $ROTATEAFTERWARP \"$OUTPUT/,$genderfn,$OUTPUT_NRRD,$TxtPath,$REFSCALE\""
+            echo "+----------------------------------------------------------------------+"
+            $FIJI -macro $ROTATEAFTERWARP "$OUTPUT/,$genderfn,$OUTPUT_NRRD,$TxtPath,$REFSCALE"
+          fi
+
           echo "+----------------------------------------------------------------------+"
-          echo "| Rotation after registration"
-          echo "| $FIJI -macro $ROTATEAFTERWARP \"$OUTPUT/,$genderfn,$OUTPUT_NRRD,$TxtPath,$REFSCALE\""
+          echo "| NRRD Compression"
+          echo "| $FIJI --headless -macro $NRRDCOMP \"$OUTPUT_NRRD\""
           echo "+----------------------------------------------------------------------+"
-        $FIJI -macro $ROTATEAFTERWARP "$OUTPUT/,$genderfn,$OUTPUT_NRRD,$TxtPath,$REFSCALE"
-    fi
+          $FIJI --headless -macro $NRRDCOMP "$OUTPUT_NRRD"
+        fi #if [[ -e "$GLOBAL_NRRD" ]]; then
 
-        echo "+----------------------------------------------------------------------+"
-        echo "| NRRD Compression"
-        echo "| $FIJI --headless -macro $NRRDCOMP \"$OUTPUT_NRRD\""
-        echo "+----------------------------------------------------------------------+"
-        $FIJI --headless -macro $NRRDCOMP "$OUTPUT_NRRD"
-
-         if [[ $testmode = "0" ]]; then
+        if [[ $testmode = "0" ]]; then
            echo "testmode; "$testmode
-          if (( i>1 )); then
+        if (( i>1 )); then
             # Add all signal channels to the final RAW file
             RAWCONVPARAM="$RAWCONVPARAM,$OUTPUT_NRRD"
-          else
+        else
             # Put reference channel last in RAW file
             RAWCONVSUFFIX="$OUTPUT_NRRD"
-          fi
         fi
+    fi
     done
     if [[ $testmode = "0" ]]; then
       # Create raw file
@@ -652,7 +654,13 @@ if [[ ! -e $sig"_01.nrrd" ]]; then
 fi #if [[ ! -e $sig ]]; then
 
 scoreGen $sig"_01.nrrd" $scoreT "score2018"
-rm rf $JRC2018_63x_CROPPED
+
+if [[ $testmode = "1" ]]; then
+  rm $OUTPUT"/Score_log_"$fn"_01.txt"
+  rm $OUTPUT"/JRC2018_VNC_${genderT}_63x_Score.property"
+fi
+
+#rm rf $JRC2018_63x_CROPPED
 
 ########################################################################################################
 # JRC2018 unisex reformat
@@ -732,12 +740,17 @@ if [[ $INPUT1_GENDER == "m" ]]; then
     scoreGen $sig"_01.nrrd" "$TEMP" "scoreOLD"
   fi
 
+if [[ $testmode = "1" ]]; then
+  rm $OUTPUT"/Score_log_"$fn"_01.txt"
+  rm $OUTPUT"/20x_flyVNCtemplate_Female_symmetric_16bit_Score.property"
+fi
+
   if [[ $testmode = "0" ]]; then
     writeProperties "$RAWOUT" "" "VNC2017_Female" "20x" "0.4612588x0.4612588x0.7" "512x1024x220" "" "" "$main_aligned_file"
   fi
 fi #if [[ $INPUT1_GENDER == "m" ]]; then
 
-rm -rf $OUTPUT"/images"
+#rm -rf $OUTPUT"/images"
 
 # -------------------------------------------------------------------------------------------
 if [[ $testmode == "0" ]]; then
