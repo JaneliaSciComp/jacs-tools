@@ -31,7 +31,7 @@ gender = args[8];// f or m
 resx=parseFloat(resx);//Change string to number
 resz=parseFloat(resz);//Change string to number
 
-tileposi = split(alltiles,"-");
+tileposi = split(alltiles,";");
 
 filepath=savedir+filename+"63x_VNC_pre_aligner_log.txt";
 

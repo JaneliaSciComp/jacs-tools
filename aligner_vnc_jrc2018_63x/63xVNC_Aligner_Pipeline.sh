@@ -70,10 +70,10 @@ echo "testmode; "$testmode
 if [[ $testmode == "1" ]]; then
   echo "Test mode ON"
 
-alltiles="prothoracic-mesothoracic"
+alltiles="mesothoracic;metathoracic;abdominal"
 INPUT1_GENDER="m"
 
-#prothoracic-mesothoracic-metathoracic-abdominal
+#prothoracic;mesothoracic;metathoracic;abdominal
 
   TempDir="/nrs/scicompsoft/otsuna/Masayoshi_63x/Template"
   Unaligned_Neuron_Separator_Result_V3DPBD="/Users/otsunah/Downloads/Workstation/BJD_124H07_AE_01/BJD_124H07_AE_01_20180629_62_C1_ConsolidatedLabel.v3dpbd"
@@ -130,7 +130,7 @@ MACRO_DIR=/Users/otsunah/Documents/jacs-tools/aligner_vnc_jrc2018_63x/aligner/fi
 
   INPUT1_FILE=$inputfilename;
 
-  INPUT1_CHANNELS=2
+  INPUT1_CHANNELS=4
   INPUT1_RESX=$RESX
   INPUT1_RESY=$RESX
   INPUT1_RESZ=$RESZ
@@ -553,7 +553,7 @@ echo "gloval_nc82_nrrd; "$gloval_nc82_nrrd
 echo ""
 
 # -------------------------------------------------------------------------------------------
-if [[ -e $registered_affine_xform ]]; then
+if [[ -e $registered_warp_xform ]]; then
     echo "Already exists: $registered_affine_xform"
 else
     echo "+---------------------------------------------------------------------------------------+"
@@ -662,7 +662,6 @@ if [[ $testmode = "1" ]]; then
   rm $OUTPUT"/JRC2018_VNC_${genderT}_63x_Score.property"
 fi
 
-rm rf $JRC2018_63x_CROPPED
 
 ########################################################################################################
 # JRC2018 unisex 63x reformat
@@ -786,6 +785,7 @@ fi
 fi #if [[ $INPUT1_GENDER == "m" ]]; then
 
 rm -rf $OUTPUT"/images"
+rm rf $JRC2018_63x_CROPPED
 
 # -------------------------------------------------------------------------------------------
 if [[ $testmode == "0" ]]; then
