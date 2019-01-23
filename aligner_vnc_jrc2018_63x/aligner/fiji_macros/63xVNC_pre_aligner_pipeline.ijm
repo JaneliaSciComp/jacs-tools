@@ -363,7 +363,8 @@ run("Canvas Size...", "width=2250 height=2350 position=Center zero");
 sampMIPst = getTitle();
 
 run("Merge Channels...", "c1="+tempMIPst+" c2="+sampMIPst+"  c3="+tempMIPst+"");
-saveAs("PNG", savedir+filename+"_TempP_SampG.png");
+//saveAs("PNG", savedir+filename+"_TempP_SampG.png");
+saveAs("Jpeg", savedir+filename+"_TempP_SampG.jpg");
 close();
 
 //a

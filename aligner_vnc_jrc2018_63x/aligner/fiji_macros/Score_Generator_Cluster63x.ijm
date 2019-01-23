@@ -325,7 +325,8 @@ if(endsWith(path,".tif") || endsWith(path,".h5j") || endsWith(path,".v3dpbd") ||
 	stack = getTitle();
 	
 	run("Z Project...", "projection=[Max Intensity]");
-	saveAs("PNG", savedir+truname+"_"+OBJscore+".png");
+//	saveAs("PNG", savedir+truname+"_"+OBJscore+".png");
+	saveAs("Jpeg", savedir+truname+"_"+OBJscore+".jpg");
 	close();
 	
 	selectWindow(stack);
