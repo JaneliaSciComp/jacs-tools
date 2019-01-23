@@ -4,7 +4,7 @@
 #
 
 testmode=1
-skip=1
+skip=0
 
 if [[ $testmode == 0 ]]; then
   DIR=$(cd "$(dirname "$0")"; pwd)
@@ -70,7 +70,7 @@ echo "testmode; "$testmode
 if [[ $testmode == "1" ]]; then
   echo "Test mode ON"
 
-alltiles="prothoracic"
+alltiles="prothoracic-mesothoracic"
 INPUT1_GENDER="m"
 
 #prothoracic-mesothoracic-metathoracic-abdominal
@@ -145,6 +145,7 @@ JRC2018_VNC_Unisex_Small=$TempDir"/JRC2018_VNC_UNISEX_447_G15.nrrd"
 JRC2018_VNC_Unisex_63x=$TempDir"/JRC2018_VNC_UNISEX_63x.nrrd"
 JRC2018_VNC_Female_63x=$TempDir"/JRC2018_VNC_FEMALE_63x.nrrd"
 JRC2018_VNC_Male_63x=$TempDir"/JRC2018_VNC_MALE_63x.nrrd"
+JRC2018_VNC_Unisex_20x=$TempDir"/JRC2018_VNC_UNISEX_447.nrrd"
 
 VNC2017_Female=$TempDir"/20x_flyVNCtemplate_Female_symmetric_16bit.nrrd"
 VNC2017_Male=$TempDir"/2017Male_VNC.nrrd"
@@ -613,7 +614,8 @@ else
     echo "cmtk_warping stop: $STOP"
 fi
 
-#rm -rf $registered_affine_xform
+rm -rf $registered_affine_xform
+rm -rf $OUTPUT"/Registration"
 
 if [[ $testmode == "0" ]]; then
   echo " "
@@ -660,13 +662,13 @@ if [[ $testmode = "1" ]]; then
   rm $OUTPUT"/JRC2018_VNC_${genderT}_63x_Score.property"
 fi
 
-#rm rf $JRC2018_63x_CROPPED
+rm rf $JRC2018_63x_CROPPED
 
 ########################################################################################################
-# JRC2018 unisex reformat
+# JRC2018 unisex 63x reformat
 ########################################################################################################
 
-banner "JRC2018 unisex reformat"
+banner "JRC2018 unisex 63x reformat"
 DEFFIELD="$reformat_JRC2018_to_Uni"
 if [[ $testmode == "0" ]]; then
   fn="REG_UNISEX_${TRESOLUTION}"
@@ -687,9 +689,37 @@ if [[ ! -e $sig"_01.nrrd" ]]; then
   
 
   if [[ $testmode = "0" ]]; then
-    writeProperties "$RAWOUT" "" "JRC2018_Unisex_${TRESOLUTION}" "$objective" "0.38x0.38x0.38" "1652x773x456" "" "" "$main_aligned_file"
+    writeProperties "$RAWOUT" "" "JRC2018_Unisex_${TRESOLUTION}" "$objective" "0.1882689x0.1882689x0.38" "1401x2740x402" "" "" "$main_aligned_file"
   fi
 fi
+
+########################################################################################################
+# JRC2018 unisex 20x reformat
+########################################################################################################
+
+banner "JRC2018 unisex 20x reformat"
+DEFFIELD="$reformat_JRC2018_to_Uni"
+if [[ $testmode == "0" ]]; then
+  fn="REG_UNISEX_20x"
+  gsig=$OUTPUT"/REG_JRC2018_${genderT}_${TRESOLUTION}"
+else
+  fn="REG_JRC2018_UNISEX_20x_${inputfilename%.*}"
+  gsig=$OUTPUT"/REG_JRC2018_${genderT}_${TRESOLUTION}_${inputfilename%.*}"
+fi
+sig=$OUTPUT"/"$fn
+
+
+TEMP="$JRC2018_VNC_Unisex_20x"
+
+if [[ ! -e $sig"_01.nrrd" ]]; then
+
+  reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
+
+  if [[ $testmode = "0" ]]; then
+    writeProperties "$RAWOUT" "" "JRC2018_Unisex_20x" "20x" "0.4611220x0.4611220x0.70" "573x1119x219" "" "" "$main_aligned_file"
+  fi
+fi
+
 
 ########################################################################################################
 # oldVNC_$genderT reformat
@@ -712,6 +742,11 @@ if [[ ! -e $sig"_01.nrrd" ]]; then
 
   if [[ $INPUT1_GENDER == "f" ]]; then
     scoreGen $sig"_01.nrrd" "$OLDTEMPPATH" "scoreOLD"
+  fi
+
+  if [[ $testmode = "1" ]]; then
+    rm $OUTPUT"/Score_log_"$fn"_01.txt"
+    rm $OUTPUT"/20x_flyVNCtemplate_Female_symmetric_16bit_Score.property"
   fi
 
   if [[ $testmode = "0" ]]; then
@@ -750,7 +785,7 @@ fi
   fi
 fi #if [[ $INPUT1_GENDER == "m" ]]; then
 
-#rm -rf $OUTPUT"/images"
+rm -rf $OUTPUT"/images"
 
 # -------------------------------------------------------------------------------------------
 if [[ $testmode == "0" ]]; then

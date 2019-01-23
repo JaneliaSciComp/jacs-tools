@@ -336,7 +336,7 @@ if(maxrotation!=0){
 	run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=microns pixel_width="+resx+" pixel_height="+resx+" voxel_depth="+resz+"");
 }//	if(maxrotation>0){
 
-padding=120;
+padding=200;
 
 
 if(VNCcrop==1)
