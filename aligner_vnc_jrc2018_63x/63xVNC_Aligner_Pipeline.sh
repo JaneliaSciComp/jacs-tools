@@ -662,6 +662,8 @@ if [[ $testmode = "1" ]]; then
   rm $OUTPUT"/JRC2018_VNC_${genderT}_63x_Score.property"
 fi
 
+rm -rf $OUTPUT"/images"
+rm $JRC2018_63x_CROPPED
 
 ########################################################################################################
 # JRC2018 unisex 63x reformat
@@ -784,8 +786,7 @@ fi
   fi
 fi #if [[ $INPUT1_GENDER == "m" ]]; then
 
-rm -rf $OUTPUT"/images"
-rm rf $JRC2018_63x_CROPPED
+
 
 # -------------------------------------------------------------------------------------------
 if [[ $testmode == "0" ]]; then
