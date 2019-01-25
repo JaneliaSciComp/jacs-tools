@@ -1,12 +1,12 @@
 #!/bin/bash
 #
-# 63x Brain aligner by Hideo Otsuna
+# 63x VNC aligner by Hideo Otsuna
 #
 
-testmode=1
+testmode=0
 skip=0
 
-if [[ $testmode == 0 ]]; then
+if [[ $testmode == "0" ]]; then
   DIR=$(cd "$(dirname "$0")"; pwd)
   . $DIR/common.sh
   parseParameters "$@"
@@ -27,6 +27,8 @@ fi
 #  $INPUT1_RESZ
 #  $NSLOTS
 #  alltiles
+
+#prothoracic;mesothoracic;metathoracic;abdominal
 
 export CMTK_WRITE_UNCOMPRESSED=1
 
@@ -55,7 +57,7 @@ if [[ $testmode == "0" ]]; then
 
   DEBUG_DIR=$FINALOUTPUT"/debug"
   mkdir -p $DEBUG_DIR
-fi
+fi #if [[ $testmode == "0" ]]; then
 
 glfilename="PRE_PROCESSED"
 inputfilename=$INPUT1_FILE
@@ -70,14 +72,13 @@ echo "testmode; "$testmode
 if [[ $testmode == "1" ]]; then
   echo "Test mode ON"
 
-alltiles="mesothoracic;metathoracic;abdominal"
-INPUT1_GENDER="m"
+  alltiles="mesothoracic;metathoracic;abdominal"
+  INPUT1_GENDER="m"
 
 #prothoracic;mesothoracic;metathoracic;abdominal
 
   TempDir="/nrs/scicompsoft/otsuna/Masayoshi_63x/Template"
-  Unaligned_Neuron_Separator_Result_V3DPBD="/Users/otsunah/Downloads/Workstation/BJD_124H07_AE_01/BJD_124H07_AE_01_20180629_62_C1_ConsolidatedLabel.v3dpbd"
-
+  
   OUTPUT=$1
   inputfilename=$2
 
@@ -87,7 +88,6 @@ INPUT1_GENDER="m"
 
   RESX=0.1882680
   RESZ=0.3794261
-  NSLOTS=6
   objective="63x"
   Path=$OUTPUT"/$inputfilename"
 
@@ -776,10 +776,10 @@ if [[ $INPUT1_GENDER == "m" ]]; then
     scoreGen $sig"_01.nrrd" "$TEMP" "scoreOLD"
   fi
 
-if [[ $testmode = "1" ]]; then
-  rm $OUTPUT"/Score_log_"$fn"_01.txt"
-  rm $OUTPUT"/20x_flyVNCtemplate_Female_symmetric_16bit_Score.property"
-fi
+  if [[ $testmode = "1" ]]; then
+    rm $OUTPUT"/Score_log_"$fn"_01.txt"
+    rm $OUTPUT"/20x_flyVNCtemplate_Female_symmetric_16bit_Score.property"
+  fi
 
   if [[ $testmode = "0" ]]; then
     writeProperties "$RAWOUT" "" "VNC2017_Female" "20x" "0.4612588x0.4612588x0.7" "512x1024x220" "" "" "$main_aligned_file"
