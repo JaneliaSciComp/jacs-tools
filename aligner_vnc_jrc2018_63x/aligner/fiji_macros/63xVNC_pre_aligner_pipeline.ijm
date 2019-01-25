@@ -7,7 +7,7 @@ run("Misc...", "divide=Infinity save");
 
 //argstr="/test/63xVNC_align/,test.nrrd,/test/63xVNC_align/samples/1_meta/JRC_SS27391_20160708_19_E6_.h5j,/test/63xVNC_align/template/,f,metathoracic,0.1882689,0.38,11";//single tile
 
-//setBatchMode(true);
+setBatchMode(true);
 
 if(argstr!=0)
 args = split(argstr,",");
