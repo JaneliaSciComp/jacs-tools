@@ -75,7 +75,7 @@ templateVNC="JRC2018_VNC_MALE_63x.nrrd";
 if(tilenum==1){
 	if(tileposi[0]=="prothoracic"){
 		
-		matchingimage="small_F_median_prothora.tif";//"small_F_MAX_pro.tif";//"small_F_median_prothra.tif";
+		matchingimage="small_F_median_prothora.tif";///"small_F_median_prothra.tif";
 		//	addX = 0;
 		addY = -65;
 		//	addRot = 45;
