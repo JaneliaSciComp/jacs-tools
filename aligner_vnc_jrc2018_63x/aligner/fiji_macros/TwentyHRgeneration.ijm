@@ -4,7 +4,7 @@ run("Misc...", "divide=Infinity save");
 testArg=0;
 
 //testArg="H:/Registration2/63x_align/reformatted/,Temp1_PRE_PROCESSED_01_warp_m0g80c8e1e-1x26r4.nrrd,H:/Registration2/63x_align/reformatted/Temp1_PRE_PROCESSED_01_warp_m0g80c8e1e-1x26r4.nrrd,N:/test_folder/JRC_SS23221_20160803_31_E5translation.txt,1";
-
+setBatchMode(true);
 
 if(testArg!=0)
 args = split(testArg,",");

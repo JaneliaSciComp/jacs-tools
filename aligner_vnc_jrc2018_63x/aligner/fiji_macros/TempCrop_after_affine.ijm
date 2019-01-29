@@ -4,7 +4,7 @@ run("Misc...", "divide=Infinity save");
 testArg=0;
 
 //testArg="/test/63x_align/Temp1.nrrd,/test/63x_align/images/PRE_PROCESSED_01.nrrd,11";
-
+setBatchMode(true);
 if(testArg!=0)
 args = split(testArg,",");
 else

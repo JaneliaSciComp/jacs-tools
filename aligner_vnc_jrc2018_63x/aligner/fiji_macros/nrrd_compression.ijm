@@ -1,6 +1,6 @@
 testArg=0;
 run("Misc...", "divide=Infinity save");
-
+setBatchMode(true);
 if(testArg!=0)
 args = split(testArg,",");
 else

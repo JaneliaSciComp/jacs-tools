@@ -2,7 +2,7 @@
 run("Misc...", "divide=Infinity save");
 
 testArg=0;
-
+setBatchMode(true);
 //testArg="H:/Registration2/63x_align/reformatted/,Temp1_PRE_PROCESSED_01_warp_m0g80c8e1e-1x26r4.nrrd,H:/Registration2/63x_align/reformatted/Temp1_PRE_PROCESSED_01_warp_m0g80c8e1e-1x26r4.nrrd,N:/test_folder/JRC_SS23221_20160803_31_E5translation.txt,1";
 //testArg="/test/63xVNC_align/samples/pro/,REG_JRC2018_FEMALE_63x_01.nrrd,/test/63xVNC_align/samples/pro/REG_JRC2018_FEMALE_63x_01.nrrd,/test/63xVNC_align/samples/pro/PRE_PROCESSED_translation.txt"
 
