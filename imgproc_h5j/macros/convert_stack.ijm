@@ -30,10 +30,11 @@ open(inputFile);
 title = getTitle();
 getDimensions(width, height, channels, slices, frames);
 
-if (splitChannels=="1") {
+if (splitChannels=="1" && channels>1) {
     run("Split Channels");
-    for(c=0; c<channels; c++) {
-        selectWindow("C"+(c+1)+"-"+title);
+    titles = getList("image.titles");
+    for(c=0; c<titles.length; c++) {
+        selectWindow(titles[c]);
         run("Grays");
         saveCurrentWindow(format, outDir+"/"+inputBasename+"_c"+c+"."+format);  
     }
@@ -51,15 +52,15 @@ function saveCurrentWindow(format, outfile) {
     if (format=='nrrd') {
         run("Nrrd Writer", "compressed nrrd="+outfile);
     }
-    else if (format=='tif' || format=='tiff') {
-        saveAs("Tiff", outfile);
-    }
     else if (format=='v3draw') {
         run("V3Draw...", "save=[" + outfile +"]");
     }
-    else if (format=='h5j') {
-        run("H5J Writer", "save="+outfile+" threads="+numThreads);
+    else if (format=='tif' || format=='tiff') {
+        saveAs("Tiff", outfile);
     }
+    else if (format=='zip') {
+    	saveAs("ZIP", outfile);
+	}
     else {
         print("Unsupported output format: "+format);
         run("Quit");
