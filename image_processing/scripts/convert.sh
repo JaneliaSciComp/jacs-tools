@@ -28,14 +28,17 @@ NUMPARAMS=$#
 if [ $NUMPARAMS -lt 3 ]
 then
     echo " "
-    echo " USAGE: sh $0 [input path] [output path] [split]"
+    echo " USAGE: sh $0 [input path] [output path] [split] <ref channels> <signal channels>"
     echo "   split: 1 if splitting, 0 if not splitting (default)"
+    echo "   The channel parameters are 1-indexed and comma-delimited, with no spaces. They are only necessary when converting to H5J format."
     exit
 fi
 
 INPUT_FILE=$1
 OUTPUT_FILE=$2
 SPLIT_CHANNELS=$3
+REF_CHAN=$4
+SIGNAL_CHAN=$5
 WORKING_DIR=`mktemp -d -p /dev/shm`
 cd $WORKING_DIR
 
@@ -50,6 +53,8 @@ echo "Working Dir: $WORKING_DIR"
 echo "Input file: $INPUT_FILE"
 echo "Output file: $OUTPUT_FILE"
 echo "Split channels: $SPLIT_CHANNELS"
+echo "Ref channels: $REF_CHAN"
+echo "Signal channels: $SIGNAL_CHAN"
 
 OUTPUT_FILE_EXT=${OUTPUT_FILE##*.}
 INPUT_FILE_EXT=${INPUT_FILE##*.}
@@ -93,6 +98,23 @@ else
             echo "~ Rsyncing $INPUT_FILE to $OUTPUT_FILE"
             rsync -av "$INPUT_FILE" "$OUTPUT_FILE"
         fi
+
+    elif [[ "$OUTPUT_FILE_EXT" = "h5j" ]]; then
+
+        echo "~ Converting $INPUT_FILE to $OUTPUT_FILE"
+        CMD="$Vaa3D -cmd image-loader -codecs $INPUT_FILE $OUTPUT_FILE"
+
+        if [[ ! -z $SIGNAL_CHAN ]]; then
+            CMD="$CMD $SIGNAL_CHAN:HEVC:crf=$SIGNAL_COMPRESSION:psy-rd=1.0"
+        fi
+
+        if [[ ! -z $REF_CHAN ]]; then
+            CMD="$CMD $REF_CHAN:HEVC:crf=$REF_COMPRESSION:psy-rd=1.0"
+        fi
+
+        echo "~ Executing: $CMD"
+        $CMD
+
     else
         # Must convert
         if [[ "$OUTPUT_FILE_EXT" == "v3dpbd" || "$OUTPUT_FILE_EXT" == "mp4" ]]; then
