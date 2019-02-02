@@ -2,7 +2,7 @@ Bootstrap: docker
 From: scientificlinux/sl:7
 
 % help
-Recipe for a Singularity container running Vaa3d and various wrapper scripts
+Recipe for a Singularity container running image processing and conversion using Fiji and Vaa3d
 
 %labels
 AUTHOR Konrad Rokicki
@@ -10,15 +10,54 @@ VERSION 1.0
 
 %files
 ./scripts /opt/scripts
+./fiji_macros /opt/fiji_macros
+./fiji_plugins /opt/fiji_plugins
 
 %post
 cd /opt # Install all software in /opt
 
-echo "Installing Vaa3d"
+echo "Installing Fiji"
+# Prereqs for Fiji
+yum install -y libXtst-devel libXrender
+# Install Fiji
+FIJI_FILE=fiji-1.52c.tgz
+curl -s http://workstation.int.janelia.org/files/fiji/{$FIJI_FILE} -o '#1'
+tar xvfz $FIJI_FILE && /bin/rm -rf $FIJI_FILE
+rm -rf Fiji
+mv Fiji.app Fiji
+
+echo "Installing Fiji plugins"
+PLUGINS_SOURCE=/opt/fiji_plugins
+FIJI_DIR=/opt/Fiji
+rm $FIJI_DIR/jars/ffmpeg-*.jar \
+    && rm $FIJI_DIR/jars/javacpp-*.jar \
+    && rm $FIJI_DIR/jars/linux64/ffmpeg-* \
+    && rm $FIJI_DIR/plugins/H5J*
+mv $PLUGINS_SOURCE/ffmpeg-*-linux-x86_64.jar $FIJI_DIR/jars/linux64
+mv $PLUGINS_SOURCE/ffmpeg-*.jar $FIJI_DIR/jars
+mv $PLUGINS_SOURCE/javacpp-*.jar $FIJI_DIR/jars
+mv $PLUGINS_SOURCE/H5* $FIJI_DIR/plugins
+mv $PLUGINS_SOURCE/ffmpeg $FIJI_DIR/plugins
+mv $PLUGINS_SOURCE/*.class $FIJI_DIR/plugins
+
+echo "Install Python dependencies"
+# install anaconda
+if [ ! -d /usr/local/anaconda ]; then
+     curl https://repo.continuum.io/miniconda/Miniconda3-4.3.14-Linux-x86_64.sh -o ~/anaconda.sh && \
+     bash ~/anaconda.sh -b -p /usr/local/anaconda && \
+     rm ~/anaconda.sh
+fi
+# set anaconda path
+PATH="/usr/local/anaconda/bin:$PATH"
+conda update conda -y
+conda create -n py3 python=3 h5py=2.8.0 PyYAML=3.13 -y
+conda clean --tarballs
+
+VAA3D_VERSION=mark13
+echo "Installing Vaa3d version '$VAA3D_VERSION'"
 # Prereqs for Vaa3d
 yum install -y mesa-libGLU qt qt-x11 libXv numactl-libs
 # Install Vaa3d
-VAA3D_VERSION=mark12
 VAA3D_FILE=vaa3d-redhat-$VAA3D_VERSION.tgz
 curl -s http://workstation.int.janelia.org/files/tools/{$VAA3D_FILE} -o '#1'
 tar xvf $VAA3D_FILE && /bin/rm -f $VAA3D_FILE
@@ -37,25 +76,33 @@ chmod -R g+r /opt/*
 %apprun vaa3d
 /opt/Vaa3d/vaa3d "$@"
 %apphelp vaa3d
-Invoke vaa3d
+Run the Vaa3d application
+
+%apprun fiji
+/opt/Fiji/ImageJ-linux64 "$@"
+%apphelp fiji
+Run the Fiji application
 
 %apprun channelMap
-/opt/scripts/channelMap.sh "$@"
+/opt/scripts/channel_map.sh "$@"
 %apphelp channelMap
 Wrapper for mapchannels Vaa3d command
+
+%apprun flip_z
+/opt/scripts/flip_z.sh "$@"
+%apphelp flipZ
+Flip an image stack, like a pancake, around its center vertical
+
+%apprun h5j_metadata
+export PATH="/usr/local/anaconda/bin:$PATH"
+source activate py3
+/opt/scripts/h5j_metadata.py "$@"
+%apphelp h5j_metadata
+Read or write H5J metadata on an existing H5J file.
 
 %apprun convert
 /opt/scripts/convert.sh "$@"
 %apphelp convert
-Convert file format, including handling bz/pbzip2 extensions
-
-%apprun flipZ
-/opt/scripts/flipZ.sh "$@"
-%apphelp flipZ
-Flip stack around the diagonal from the upper left to the lower right
-
-%apprun splitChannels
-/opt/scripts/splitChannels.sh "$@"
-%apphelp splitChannels
-Take single stack input and create an output file for each channel
+Convert the input file given by the first parameter into the file(s) specified by the second parameter.
+The third (optional) parameter is a 1 or 0 indicating whether or not the channels should be split.
 
