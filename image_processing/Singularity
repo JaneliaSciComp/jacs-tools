@@ -83,14 +83,14 @@ Run the Vaa3d application
 %apphelp fiji
 Run the Fiji application
 
-%apprun channelMap
+%apprun channel_map
 /opt/scripts/channel_map.sh "$@"
-%apphelp channelMap
+%apphelp channel_map
 Wrapper for mapchannels Vaa3d command
 
 %apprun flip_z
 /opt/scripts/flip_z.sh "$@"
-%apphelp flipZ
+%apphelp flip_z
 Flip an image stack, like a pancake, around its center vertical
 
 %apprun h5j_metadata
