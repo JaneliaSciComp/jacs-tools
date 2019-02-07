@@ -18,6 +18,7 @@ print("inputFilename: "+inputFilename);
 print("inputBasename: "+inputBasename);
 
 outputFilename = File.getName(outputFile);
+outputBasename = substring(outputFilename, 0, indexOf(outputFilename, "."));
 outDir = substring(outputFile, 0, lastIndexOf(outputFile, "/"));
 format = substring(outputFilename, indexOf(outputFilename, ".")+1);
 print("outputFile: "+outputFile);
@@ -30,17 +31,19 @@ open(inputFile);
 title = getTitle();
 getDimensions(width, height, channels, slices, frames);
 
-if (splitChannels=="1" && channels>1) {
-    run("Split Channels");
+if (splitChannels=="1") {
+    if (channels>1) {
+        run("Split Channels");
+    }
     titles = getList("image.titles");
     for(c=0; c<titles.length; c++) {
         selectWindow(titles[c]);
         run("Grays");
-        saveCurrentWindow(format, outDir+"/"+inputBasename+"_c"+c+"."+format);  
+        saveCurrentWindow(format, outDir+"/"+outputBasename+"_c"+c+"."+format);  
     }
 }
 else {
-    saveCurrentWindow(format, outDir+"/"+inputBasename+"."+format);
+    saveCurrentWindow(format, outDir+"/"+outputBasename+"."+format);
 }
 
 print("Done");
@@ -59,8 +62,8 @@ function saveCurrentWindow(format, outfile) {
         saveAs("Tiff", outfile);
     }
     else if (format=='zip') {
-    	saveAs("ZIP", outfile);
-	}
+        saveAs("ZIP", outfile);
+    }
     else {
         print("Unsupported output format: "+format);
         run("Quit");

@@ -16,6 +16,24 @@ VERSION 1.0
 %post
 cd /opt # Install all software in /opt
 
+echo "Installing Vaa3d"
+# Prereqs for Vaa3d
+yum install -y mesa-libGLU qt qt-x11 libXv numactl-libs
+# Install Vaa3d
+VAA3D_VERSION=mark13
+VAA3D_FILE=vaa3d-redhat-$VAA3D_VERSION.tgz
+curl -s http://workstation.int.janelia.org/files/tools/{$VAA3D_FILE} -o '#1'
+tar xvf $VAA3D_FILE && /bin/rm -f $VAA3D_FILE
+ln -s /opt/vaa3d-redhat-$VAA3D_VERSION /opt/Vaa3D
+
+echo "Installing utilities"
+EPEL_FILE=epel-release-latest-7.noarch.rpm
+#EPEL_MIRROR=dl.fedoraproject.org
+EPEL_MIRROR=mirror.chpc.utah.edu
+curl -s http://${EPEL_MIRROR}/pub/epel/{$EPEL_FILE} -o '#1'
+rpm -ivh $EPEL_FILE && /bin/rm -f $EPEL_FILE
+yum install -y pbzip2 rsync prelink
+
 echo "Installing Fiji"
 # Prereqs for Fiji
 yum install -y libXtst-devel libXrender
@@ -23,7 +41,6 @@ yum install -y libXtst-devel libXrender
 FIJI_FILE=fiji-1.52c.tgz
 curl -s http://workstation.int.janelia.org/files/fiji/{$FIJI_FILE} -o '#1'
 tar xvfz $FIJI_FILE && /bin/rm -rf $FIJI_FILE
-rm -rf Fiji
 mv Fiji.app Fiji
 
 echo "Installing Fiji plugins"
@@ -39,6 +56,11 @@ mv $PLUGINS_SOURCE/javacpp-*.jar $FIJI_DIR/jars
 mv $PLUGINS_SOURCE/H5* $FIJI_DIR/plugins
 mv $PLUGINS_SOURCE/ffmpeg $FIJI_DIR/plugins
 mv $PLUGINS_SOURCE/*.class $FIJI_DIR/plugins
+rm -rf $PLUGINS_SOURCE
+
+echo "Fixing permissions"
+chown -R root:root /opt/*
+chmod -R g+r /opt/*
 
 echo "Install Python dependencies"
 # install anaconda
@@ -53,28 +75,8 @@ conda update conda -y
 conda create -n py3 python=3 h5py=2.8.0 PyYAML=3.13 -y
 conda clean --tarballs
 
-VAA3D_VERSION=mark13
-echo "Installing Vaa3d version '$VAA3D_VERSION'"
-# Prereqs for Vaa3d
-yum install -y mesa-libGLU qt qt-x11 libXv numactl-libs
-# Install Vaa3d
-VAA3D_FILE=vaa3d-redhat-$VAA3D_VERSION.tgz
-curl -s http://workstation.int.janelia.org/files/tools/{$VAA3D_FILE} -o '#1'
-tar xvf $VAA3D_FILE && /bin/rm -f $VAA3D_FILE
-ln -s /opt/vaa3d-redhat-$VAA3D_VERSION Vaa3D
-
-echo "Installing other dependencies"
-EPEL_FILE=epel-release-latest-7.noarch.rpm
-curl -s http://dl.fedoraproject.org/pub/epel/{$EPEL_FILE} -o '#1'
-rpm -ivh $EPEL_FILE && /bin/rm -f $EPEL_FILE
-yum install -y pbzip2
-
-echo "Fixing permissions"
-chown -R root:root /opt/*
-chmod -R g+r /opt/*
-
 %apprun vaa3d
-/opt/Vaa3d/vaa3d "$@"
+/opt/Vaa3D/vaa3d "$@"
 %apphelp vaa3d
 Run the Vaa3d application
 

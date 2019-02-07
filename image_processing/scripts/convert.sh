@@ -20,7 +20,7 @@
 DIR=$(cd "$(dirname "$0")"; pwd)
 . $DIR/common.sh
 
-Vaa3D="/opt/Vaa3d/vaa3d"
+Vaa3D="/opt/Vaa3D/vaa3d"
 Fiji="/opt/Fiji/ImageJ-linux64"
 export TMPDIR=""
 
@@ -48,6 +48,10 @@ function cleanWorkingDir {
 }
 trap cleanWorkingDir EXIT
 
+# This is needed to ensure that there are no collisions on the cluster. 
+# By default, Javacpp caches to ~/.javacpp/cache and the java.io.tmpdir is /tmp
+JAVA_OPTS="-Dorg.bytedeco.javacpp.cachedir=$WORKING_DIR -Djava.io.tmpdir=$WORKING_DIR"
+
 echo "Run Dir: $DIR"
 echo "Working Dir: $WORKING_DIR"
 echo "Input file: $INPUT_FILE"
@@ -55,6 +59,7 @@ echo "Output file: $OUTPUT_FILE"
 echo "Split channels: $SPLIT_CHANNELS"
 echo "Ref channels: $REF_CHAN"
 echo "Signal channels: $SIGNAL_CHAN"
+echo "Java options: $JAVA_OPTS"
 
 OUTPUT_FILE_EXT=${OUTPUT_FILE##*.}
 INPUT_FILE_EXT=${INPUT_FILE##*.}
@@ -120,12 +125,27 @@ else
         if [[ "$OUTPUT_FILE_EXT" == "v3dpbd" || "$OUTPUT_FILE_EXT" == "mp4" ]]; then
             TEMP_FILE=$WORKING_DIR/temp.v3draw
             echo "~ Converting $INPUT_FILE to $TEMP_FILE using Fiji"
-            $Fiji --headless -macro /opt/fiji_macros/convert_stack.ijm "$INPUT_FILE,$OUTPUT_FILE,$SPLIT_CHANNELS"
-            echo "~ Converting $TEMP_FILE to $OUTPUT_FILE using Vaa3d"
-            $Vaa3D -cmd image-loader -convert "$TEMP_FILE" "$OUTPUT_FILE" && rm -f $TEMP_FILE
+            $Fiji $JAVA_OPTS --headless -macro /opt/fiji_macros/convert_stack.ijm "$INPUT_FILE,$TEMP_FILE,$SPLIT_CHANNELS"
+
+            if [[ "$SPLIT_CHANNELS" == "1" ]]; then
+                shopt -s nullglob
+                # Compress all temporary v3draw files
+                for fin in $(find . -name "$WORKING_DIR/temp*.v3draw"); do
+                    inbase=${fin%.v3draw}
+                    ch=${inbase##*_}
+                    fout=${OUTPUT_FILE%%.*}"_"${ch}"."${OUTPUT_FILE//*.}
+                    echo "~ Converting $fin to $fout using Vaa3d"
+                    $_Vaa3D -cmd image-loader -convert $fin $fout && rm -f $fin
+                done
+                shopt -u nullglob
+
+            else
+                echo "~ Converting $TEMP_FILE to $OUTPUT_FILE using Vaa3d"
+                $Vaa3D -cmd image-loader -convert "$TEMP_FILE" "$OUTPUT_FILE" && rm -f $TEMP_FILE
+            fi
         else 
             echo "~ Converting $INPUT_FILE to $OUTPUT_FILE using Fiji"
-            $Fiji --headless -macro /opt/fiji_macros/convert_stack.ijm "$INPUT_FILE,$OUTPUT_FILE,$SPLIT_CHANNELS"
+            $Fiji $JAVA_OPTS --headless -macro /opt/fiji_macros/convert_stack.ijm "$INPUT_FILE,$OUTPUT_FILE,$SPLIT_CHANNELS"
         fi
         # Compress in place, if necessary
         if [ "$bz2Output" = true ]; then
