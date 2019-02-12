@@ -6,12 +6,7 @@
 testmode=0
 skip=0
 
-if [[ $testmode == "0" ]]; then
-  DIR=$(cd "$(dirname "$0")"; pwd)
-  . $DIR/common.sh
-  parseParameters "$@"
-fi
-
+export CMTK_WRITE_UNCOMPRESSED=1
 
 # Available input variables:
 #  $TEMPLATE_DIR
@@ -26,13 +21,23 @@ fi
 #  $INPUT1_RESY
 #  $INPUT1_RESZ
 #  $NSLOTS
-#  alltiles
+#  alltiles e.g. "prothoracic;mesothoracic;metathoracic;abdominal"
 
-#prothoracic;mesothoracic;metathoracic;abdominal
-
-export CMTK_WRITE_UNCOMPRESSED=1
+echo "testmode; "$testmode
 
 if [[ $testmode == "0" ]]; then
+
+  DIR=$(cd "$(dirname "$0")"; pwd)
+  . $DIR/common.sh
+  parseParameters "$@"
+  # refomat scale; 0; full only, 2; HFonly
+  REFSCALE=$3
+
+  # Remove all special characters and convert to lower case
+  TILES=`echo $INPUT1_TILES | tr -dc '[:alnum:]\n\r' | tr '[:upper:]' '[:lower:]' | tr ',' ';'`
+  echo "Tiles; $TILES"
+  alltiles=$TILES
+
   # Tools
   CMTK=/opt/CMTK/bin
   CMTKM=$CMTK/munger
@@ -43,43 +48,35 @@ if [[ $testmode == "0" ]]; then
   # Fiji macros
   NRRDCONV=$MACRO_DIR"/nrrd2v3draw.ijm"
   NRRDCOMP=$MACRO_DIR"/nrrd_compression.ijm"
-  PREPROCIMG=$MACRO_DIR"/63x_tile_aligner_Pipeline_TempRotate.ijm"
+  PREPROCIMG=$MACRO_DIR"/63xVNC_pre_aligner_pipeline.ijm"
   SCOREGENERATION=$MACRO_DIR"/Score_Generator_Cluster63x.ijm"
   TWELVEBITCONV=$MACRO_DIR"/12bit_Conversion.ijm"
   REGCROP=$MACRO_DIR"/TempCrop_after_affine.ijm"
   ROTATEAFTERWARP=$MACRO_DIR"/Rotation_AfterReg.ijm"
+
+  glfilename="PRE_PROCESSED"
+  inputfilename=$INPUT1_FILE
   Path=$INPUT1_FILE
   objective=$INPUT1_OBJECTIVE
   OUTPUT=$WORK_DIR"/Output"
   FINALOUTPUT=$WORK_DIR"/FinalOutputs"
-  TempDir=`realpath $TEMPLATE_DIR/jrc2018_63x_templates`
-  Unaligned_Neuron_Separator_Result_V3DPBD=$INPUT1_NEURONS
+  TempDir=`realpath $TEMPLATE_DIR/vnc2018_63x_templates`
 
   DEBUG_DIR=$FINALOUTPUT"/debug"
   mkdir -p $DEBUG_DIR
-fi #if [[ $testmode == "0" ]]; then
 
-glfilename="PRE_PROCESSED"
-inputfilename=$INPUT1_FILE
+else
 
-
-
-
-
-
-echo "testmode; "$testmode
-# For TEST ############################################
-if [[ $testmode == "1" ]]; then
   echo "Test mode ON"
 
   alltiles="mesothoracic;metathoracic;abdominal"
   INPUT1_GENDER="m"
-
-#prothoracic;mesothoracic;metathoracic;abdominal
+  #prothoracic;mesothoracic;metathoracic;abdominal
 
   TempDir="/nrs/scicompsoft/otsuna/Masayoshi_63x/Template"
-  
+
   OUTPUT=$1
+  glfilename="PRE_PROCESSED"
   inputfilename=$2
 
   echo "OUTPUT "$OUTPUT
@@ -106,11 +103,9 @@ if [[ $testmode == "1" ]]; then
   PREPROCIMG="/Users/hideVMware/Dropbox/Hideo_Daily_Coding/63x_tile_aligner_Pipeline.ijm"
   NRRDCOMP="/Users/hideVMware/Dropbox/Hideo_Daily_Coding/nrrd_compression.ijm"
   SCOREGENERATION="/Users/hideVMware/Dropbox/Hideo_Daily_Coding/Score_Generator_Cluster63x.ijm"
-  reformat_JRC2018U_to_JFRC2010="/Volumes/Registration2/63x_align/Template/Deformation_Fields/JFRC2010_JRC2018_UNISEX"
-  reformat_JRC2018U_to_JFRC2013="/Volumes/Registration2/63x_align/Template/Deformation_Fields/JFRC2013_JRC2018_UNISEX"
 
-#for MacBookPro
-MACRO_DIR=/Users/otsunah/Documents/jacs-tools/aligner_vnc_jrc2018_63x/aligner/fiji_macros
+  #for MacBookPro
+  MACRO_DIR=/Users/otsunah/Documents/jacs-tools/aligner_vnc_jrc2018_63x/aligner/fiji_macros
   TempDir="/test/63xVNC_align/template"
   CMTK="/Applications/FijizOLD.app/bin/cmtk"
   CMTKM="/Applications/FijizOLD.app/bin/cmtk/munger"
@@ -124,8 +119,6 @@ MACRO_DIR=/Users/otsunah/Documents/jacs-tools/aligner_vnc_jrc2018_63x/aligner/fi
   NRRDCOMP="$MACRO_DIR/nrrd_compression.ijm"
  // FINALOUTPUT=$OUTPUT"/FinalOutputs"
 
-
-  
   NRRDCONV=/Users/otsunah/Documents/otsunah/jacs-tools/aligner_vnc2017_20x/aligner/scripts/VNC_preImageProcessing_Plugins_pipeline/nrrd2v3draw_MCFO.ijm
 
   INPUT1_FILE=$inputfilename;
@@ -137,7 +130,6 @@ MACRO_DIR=/Users/otsunah/Documents/jacs-tools/aligner_vnc_jrc2018_63x/aligner/fi
 
 fi #if [[ $testmode == "1" ]]
 
-INTPUT_FILENAME=`basename $INPUT1_FILE`
 TxtPath=$OUTPUT/"${glfilename}_translation.txt"
 
 # "-------------------Template----------------------"
@@ -272,7 +264,7 @@ function reformatAll() {
     RAWCONVSUFFIX=""
 
     # Reformat each channel
-    for ((i=1; i<=$INPUT1_CHANNELS; i++)); do
+    for ((i=1; i<=INPUT1_CHANNELS; i++)); do
         GLOBAL_NRRD="${_gsig}_0${i}.nrrd"
         OUTPUT_NRRD="${_sig}_0${i}.nrrd"
 
@@ -286,7 +278,7 @@ function reformatAll() {
             genderfn="REG_JRC2018_${genderT}_${TRESOLUTION}_${inputfilename%.*}"
           fi
           echo "genderfn; $genderfn""  $_fn; "$_fn
-          if [[ $_fn = $genderfn ]]; then
+          if [[ $_fn = "$genderfn" ]]; then
             echo "+----------------------------------------------------------------------+"
             echo "| Rotation after registration"
             echo "| $FIJI -macro $ROTATEAFTERWARP \"$OUTPUT/,$genderfn,$OUTPUT_NRRD,$TxtPath,$REFSCALE\""
@@ -452,16 +444,12 @@ if [[ ! -e $FIJI ]]; then
     exit 1
 fi
 
-Global_Aligned_Separator_Result=$OUTPUT"/ConsolidatedLabel.nrrd"
-
 TRESOLUTION="63x"
-
 
 if [[ $INPUT1_GENDER == "f" ]]; then
     genderT="FEMALE"
     reformat_JRC2018_to_oldVNC=$TempDir"/Deformation_Fields/oldFemale_JRC2018_VNC_FEMALE"
     reformat_JRC2018_to_Uni=$TempDir"/Deformation_Fields/JRC2018_VNC_Unisex_JRC2018_FEMALE"
-    TEMPNAME="JRC2018_VNC_Female_63x"
     OLDTEMPPATH=$VNC2017_Female
     OLDSPACE="VNC2017F"
     iniT=${JRC2018_VNC_Female_63x}
@@ -480,7 +468,6 @@ elif [[ $INPUT1_GENDER == "m" ]]; then
     genderT="MALE"
     reformat_JRC2018_to_oldVNC=$TempDir"/Deformation_Fields/oldMale_JRC2018_VNC_MALE"
     reformat_JRC2018_to_Uni=$TempDir"/Deformation_Fields/JRC2018_VNC_Unisex_JRC2018_MALE"
-    TEMPNAME="JRC2018_VNC_Male_63x"
     OLDTEMPPATH=$VNC2017_Male
     OLDSPACE="VNC2017M"
     iniT=${JRC2018_VNC_Male_63x}
@@ -503,10 +490,6 @@ echo "genderT; "$genderT
 echo "OLDSPACE; "$OLDSPACE
 echo "OLDTEMPPATH; "$OLDTEMPPATH
 echo "reformat_JRC2018_to_oldVNC; "$reformat_JRC2018_to_oldVNC
-
-# Remove all special characters and convert to lower case
-TILES=`echo $INPUT1_TILES | tr -dc '[:alnum:]\n\r' | tr '[:upper:]' '[:lower:]'`
-echo "Tiles; $TILES"
 
 if [[ $skip = 0 ]]; then
 
@@ -591,7 +574,6 @@ else
     rm -rf $sig
 fi
 
-
 # CMTK warping
 if [[ -e $registered_warp_xform ]]; then
     echo "Already exists: $registered_warp_xform"
@@ -645,10 +627,7 @@ TEMP="$JRC2018_63x_CROPPED"
 gsig=$OUTPUT"/images/"$glfilename
 
 if [[ ! -e $sig"_01.nrrd" ]]; then
-
   reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
-
- 
 
   if [[ $testmode = "0" ]]; then
     writeProperties "$RAWOUT" "" "JRC2018_${genderT}_${TRESOLUTION}" "$objective" "$JRC2018RESO" "$JRC2018SIZE" "$score2018" "" ""
@@ -684,10 +663,7 @@ sig=$OUTPUT"/"$fn
 TEMP="$JRC2018_VNC_Unisex_63x"
 
 if [[ ! -e $sig"_01.nrrd" ]]; then
-
-
     reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
-  
 
   if [[ $testmode = "0" ]]; then
     writeProperties "$RAWOUT" "" "JRC2018_Unisex_${TRESOLUTION}" "$objective" "0.1882689x0.1882689x0.38" "1401x2740x402" "" "" "$main_aligned_file"
