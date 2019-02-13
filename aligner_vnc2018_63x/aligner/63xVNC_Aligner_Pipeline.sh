@@ -133,7 +133,6 @@ fi #if [[ $testmode == "1" ]]
 TxtPath=$OUTPUT/"${glfilename}_translation.txt"
 
 # "-------------------Template----------------------"
-JRC2018_VNC_Unisex_Small=$TempDir"/JRC2018_VNC_UNISEX_447_G15.nrrd"
 JRC2018_VNC_Unisex_63x=$TempDir"/JRC2018_VNC_UNISEX_63x.nrrd"
 JRC2018_VNC_Female_63x=$TempDir"/JRC2018_VNC_FEMALE_63x.nrrd"
 JRC2018_VNC_Male_63x=$TempDir"/JRC2018_VNC_MALE_63x.nrrd"
@@ -147,9 +146,9 @@ JRC2018_63x_CROPPED=$OUTPUT"/Temp.nrrd"
 # "-------------------Global aligned files----------------------"
 GLOUTPUT=$OUTPUT/images
 gloval_nc82_nrrd="$GLOUTPUT/"$glfilename"_01.nrrd"
-gloval_signalNrrd1="$GLOUTPUT/"$glfilename"_02.nrrd"
-gloval_signalNrrd2="$GLOUTPUT/"$glfilename"_03.nrrd"
-gloval_signalNrrd3="$GLOUTPUT/"$glfilename"_04.nrrd"
+#gloval_signalNrrd1="$GLOUTPUT/"$glfilename"_02.nrrd"
+#gloval_signalNrrd2="$GLOUTPUT/"$glfilename"_03.nrrd"
+#gloval_signalNrrd3="$GLOUTPUT/"$glfilename"_04.nrrd"
 
 # "-------------------Deformation fields----------------------"
 registered_affine_xform=$OUTPUT"/Registration/affine/Temp_PRE_PROCESSED_01_9dof.list"
@@ -451,7 +450,7 @@ if [[ $INPUT1_GENDER == "f" ]]; then
     reformat_JRC2018_to_oldVNC=$TempDir"/Deformation_Fields/oldFemale_JRC2018_VNC_FEMALE"
     reformat_JRC2018_to_Uni=$TempDir"/Deformation_Fields/JRC2018_VNC_Unisex_JRC2018_FEMALE"
     OLDTEMPPATH=$VNC2017_Female
-    OLDSPACE="VNC2017F"
+    OLDSPACE="FemaleVNCSymmetric2017_20x"
     iniT=${JRC2018_VNC_Female_63x}
 
 
@@ -469,7 +468,7 @@ elif [[ $INPUT1_GENDER == "m" ]]; then
     reformat_JRC2018_to_oldVNC=$TempDir"/Deformation_Fields/oldMale_JRC2018_VNC_MALE"
     reformat_JRC2018_to_Uni=$TempDir"/Deformation_Fields/JRC2018_VNC_Unisex_JRC2018_MALE"
     OLDTEMPPATH=$VNC2017_Male
-    OLDSPACE="VNC2017M"
+    OLDSPACE="MaleVNC2016_20x"
     iniT=${JRC2018_VNC_Male_63x}
 
     scoreT=${JRC2018_VNC_Male_63x}
@@ -617,9 +616,9 @@ fi # skip
 banner "JRC2018 $genderT reformat"
 DEFFIELD=$registered_warp_xform
 if [[ $testmode == "0" ]]; then
-  fn="REG_JRC2018_${genderT}_${TRESOLUTION}"
+  fn="REG_JRC2018_${genderT}_VNC_${TRESOLUTION}"
 else
-  fn="REG_JRC2018_${genderT}_${TRESOLUTION}_${inputfilename%.*}"
+  fn="REG_JRC2018_${genderT}_VNC_${TRESOLUTION}_${inputfilename%.*}"
 fi
 main_aligned_file=${fn}".v3draw"
 sig=$OUTPUT"/"$fn
@@ -629,12 +628,12 @@ gsig=$OUTPUT"/images/"$glfilename
 if [[ ! -e $sig"_01.nrrd" ]]; then
   reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
 
+  scoreGen $sig"_01.nrrd" $scoreT "score2018"
+
   if [[ $testmode = "0" ]]; then
-    writeProperties "$RAWOUT" "" "JRC2018_${genderT}_${TRESOLUTION}" "$objective" "$JRC2018RESO" "$JRC2018SIZE" "$score2018" "" ""
+    writeProperties "$RAWOUT" "" "JRC2018_${genderT}_VNC_${TRESOLUTION}" "$objective" "$JRC2018RESO" "$JRC2018SIZE" "$score2018" "" ""
   fi
 fi #if [[ ! -e $sig ]]; then
-
-scoreGen $sig"_01.nrrd" $scoreT "score2018"
 
 if [[ $testmode = "1" ]]; then
   rm $OUTPUT"/Score_log_"$fn"_01.txt"
@@ -651,11 +650,11 @@ rm $JRC2018_63x_CROPPED
 banner "JRC2018 unisex 63x reformat"
 DEFFIELD="$reformat_JRC2018_to_Uni"
 if [[ $testmode == "0" ]]; then
-  fn="REG_UNISEX_${TRESOLUTION}"
-  gsig=$OUTPUT"/REG_JRC2018_${genderT}_${TRESOLUTION}"
+  fn="REG_UNISEX_VNC_${TRESOLUTION}"
+  gsig=$OUTPUT"/REG_JRC2018_${genderT}_VNC_${TRESOLUTION}"
 else
   fn="REG_JRC2018_UNISEX_${TRESOLUTION}_${inputfilename%.*}"
-  gsig=$OUTPUT"/REG_JRC2018_${genderT}_${TRESOLUTION}_${inputfilename%.*}"
+  gsig=$OUTPUT"/REG_JRC2018_${genderT}_VNC_${TRESOLUTION}_${inputfilename%.*}"
 fi
 sig=$OUTPUT"/"$fn
 
@@ -666,7 +665,7 @@ if [[ ! -e $sig"_01.nrrd" ]]; then
     reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
 
   if [[ $testmode = "0" ]]; then
-    writeProperties "$RAWOUT" "" "JRC2018_Unisex_${TRESOLUTION}" "$objective" "0.1882689x0.1882689x0.38" "1401x2740x402" "" "" "$main_aligned_file"
+    writeProperties "$RAWOUT" "" "JRC2018_Unisex_VNC_${TRESOLUTION}" "$objective" "0.1882689x0.1882689x0.38" "1401x2740x402" "" "" "$main_aligned_file"
   fi
 fi
 
@@ -677,11 +676,11 @@ fi
 banner "JRC2018 unisex 20x reformat"
 DEFFIELD="$reformat_JRC2018_to_Uni"
 if [[ $testmode == "0" ]]; then
-  fn="REG_UNISEX_20x"
-  gsig=$OUTPUT"/REG_JRC2018_${genderT}_${TRESOLUTION}"
+  fn="REG_UNISEX_VNC_20x"
+  gsig=$OUTPUT"/REG_JRC2018_${genderT}_VNC_${TRESOLUTION}"
 else
   fn="REG_JRC2018_UNISEX_20x_${inputfilename%.*}"
-  gsig=$OUTPUT"/REG_JRC2018_${genderT}_${TRESOLUTION}_${inputfilename%.*}"
+  gsig=$OUTPUT"/REG_JRC2018_${genderT}_VNC_${TRESOLUTION}_${inputfilename%.*}"
 fi
 sig=$OUTPUT"/"$fn
 
@@ -693,7 +692,7 @@ if [[ ! -e $sig"_01.nrrd" ]]; then
   reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
 
   if [[ $testmode = "0" ]]; then
-    writeProperties "$RAWOUT" "" "JRC2018_Unisex_20x" "20x" "0.4611220x0.4611220x0.70" "573x1119x219" "" "" "$main_aligned_file"
+    writeProperties "$RAWOUT" "" "JRC2018_Unisex_VNC_20x" "20x" "0.4611220x0.4611220x0.70" "573x1119x219" "" "" "$main_aligned_file"
   fi
 fi
 
@@ -702,13 +701,13 @@ fi
 # oldVNC_$genderT reformat
 ########################################################################################################
 
-banner "$OLDSPACE reformat"
+banner "oldVNC $genderT reformat"
 #"--inverse takes 1.5h / channel for reformatting"
 DEFFIELD="$reformat_JRC2018_to_oldVNC"
 if [[ $testmode == "0" ]]; then
-  fn="REG_$OLDSPACE"
+  fn="REG_oldVNC_$genderT"
 else
-  fn="REG_${OLDSPACE}_${inputfilename%.*}"
+  fn="REG_oldVNC_$genderT_${inputfilename%.*}"
 fi
 
 sig=$OUTPUT"/"$fn
@@ -739,9 +738,9 @@ if [[ $INPUT1_GENDER == "m" ]]; then
   banner "oldVNC_FEMALE reformat for MALE"
   DEFFIELD="$oldFemale_JRC2018_VNC_MALE"
   if [[ $testmode == "0" ]]; then
-    fn="REG_VNC2017F"
+    fn="REG_oldVNC_FEMALE"
   else
-    fn="REG_VNC2017F_${inputfilename%.*}"
+    fn="REG_oldVNC_FEMALE_${inputfilename%.*}"
   fi
 
   sig=$OUTPUT"/"$fn
@@ -758,19 +757,14 @@ if [[ $INPUT1_GENDER == "m" ]]; then
   fi
 
   if [[ $testmode = "0" ]]; then
-    writeProperties "$RAWOUT" "" "VNC2017_Female" "20x" "0.4612588x0.4612588x0.7" "512x1024x220" "" "" "$main_aligned_file"
+    writeProperties "$RAWOUT" "" "FemaleVNCSymmetric2017_20x" "20x" "0.4612588x0.4612588x0.7" "512x1024x220" "" "" "$main_aligned_file"
   fi
 fi #if [[ $INPUT1_GENDER == "m" ]]; then
-
-
 
 # -------------------------------------------------------------------------------------------
 if [[ $testmode == "0" ]]; then
   echo "Converting all v3draw files to v3dpbd format"
   compressAllRaw "$Vaa3D" "$OUTPUT"
-
-
-  # -------------------------------------------------------------------------------------------
 
   echo "+----------------------------------------------------------------------+"
   echo "| Copying files to final destination"
