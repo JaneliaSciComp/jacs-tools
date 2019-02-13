@@ -757,7 +757,7 @@ if [[ $INPUT1_GENDER == "m" ]]; then
   fi
 
   if [[ $testmode = "0" ]]; then
-    writeProperties "$RAWOUT" "" "FemaleVNCSymmetric2017_20x" "20x" "0.4612588x0.4612588x0.7" "512x1024x220" "" "" "$main_aligned_file"
+    writeProperties "$RAWOUT" "" "FemaleVNCSymmetric2017_20x" "20x" "0.4612588x0.4612588x0.7" "512x1024x220" "$scoreOLD" "" "$main_aligned_file"
   fi
 fi #if [[ $INPUT1_GENDER == "m" ]]; then
 
@@ -769,7 +769,7 @@ if [[ $testmode == "0" ]]; then
   echo "+----------------------------------------------------------------------+"
   echo "| Copying files to final destination"
   echo "+----------------------------------------------------------------------+"
-  cp $OUTPUT/*.{png,log,txt} $DEBUG_DIR
+  cp $OUTPUT/*.{png,jpg,log,txt} $DEBUG_DIR
   cp -R $OUTPUT/*.xform $DEBUG_DIR
   cp $OUTPUT/REG*.v3dpbd $FINALOUTPUT
   cp $OUTPUT/REG*.properties $FINALOUTPUT
