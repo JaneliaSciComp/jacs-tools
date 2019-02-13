@@ -50,7 +50,7 @@ def write_metadata(filename, data):
     """ Take attributes in the dictionary provided and add them to the HDF5 file.
     """
     if DEBUG: print("Read input from YAML:\n%s"%yaml.dump(data, indent=2))
-    h5_file = File(filename, mode='a')
+    h5_file = File(filename, mode='r+')
     root = h5_file['/']
     if DEBUG: print("Would write attributes to %s as follows:" % filename)
     write_attrs(root, data)
