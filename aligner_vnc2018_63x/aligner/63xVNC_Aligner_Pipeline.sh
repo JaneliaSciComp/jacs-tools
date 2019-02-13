@@ -133,7 +133,6 @@ fi #if [[ $testmode == "1" ]]
 TxtPath=$OUTPUT/"${glfilename}_translation.txt"
 
 # "-------------------Template----------------------"
-JRC2018_VNC_Unisex_Small=$TempDir"/JRC2018_VNC_UNISEX_447_G15.nrrd"
 JRC2018_VNC_Unisex_63x=$TempDir"/JRC2018_VNC_UNISEX_63x.nrrd"
 JRC2018_VNC_Female_63x=$TempDir"/JRC2018_VNC_FEMALE_63x.nrrd"
 JRC2018_VNC_Male_63x=$TempDir"/JRC2018_VNC_MALE_63x.nrrd"
@@ -147,9 +146,9 @@ JRC2018_63x_CROPPED=$OUTPUT"/Temp.nrrd"
 # "-------------------Global aligned files----------------------"
 GLOUTPUT=$OUTPUT/images
 gloval_nc82_nrrd="$GLOUTPUT/"$glfilename"_01.nrrd"
-gloval_signalNrrd1="$GLOUTPUT/"$glfilename"_02.nrrd"
-gloval_signalNrrd2="$GLOUTPUT/"$glfilename"_03.nrrd"
-gloval_signalNrrd3="$GLOUTPUT/"$glfilename"_04.nrrd"
+#gloval_signalNrrd1="$GLOUTPUT/"$glfilename"_02.nrrd"
+#gloval_signalNrrd2="$GLOUTPUT/"$glfilename"_03.nrrd"
+#gloval_signalNrrd3="$GLOUTPUT/"$glfilename"_04.nrrd"
 
 # "-------------------Deformation fields----------------------"
 registered_affine_xform=$OUTPUT"/Registration/affine/Temp_PRE_PROCESSED_01_9dof.list"
