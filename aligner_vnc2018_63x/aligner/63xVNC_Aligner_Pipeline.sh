@@ -595,8 +595,10 @@ else
     echo "cmtk_warping stop: $STOP"
 fi
 
-rm -rf $registered_affine_xform
-rm -rf $OUTPUT"/Registration"
+if [[ $testmode == "1" ]]; then
+  rm -rf $registered_affine_xform
+  rm -rf $OUTPUT"/Registration"
+fi
 
 if [[ $testmode == "0" ]]; then
   echo " "
@@ -638,10 +640,9 @@ fi #if [[ ! -e $sig ]]; then
 if [[ $testmode = "1" ]]; then
   rm $OUTPUT"/Score_log_"$fn"_01.txt"
   rm $OUTPUT"/JRC2018_VNC_${genderT}_63x_Score.property"
+  rm -rf $OUTPUT"/images"
+  rm $JRC2018_63x_CROPPED
 fi
-
-rm -rf $OUTPUT"/images"
-rm $JRC2018_63x_CROPPED
 
 ########################################################################################################
 # JRC2018 unisex 63x reformat
