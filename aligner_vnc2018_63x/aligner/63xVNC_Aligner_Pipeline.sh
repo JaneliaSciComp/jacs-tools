@@ -451,6 +451,7 @@ if [[ $INPUT1_GENDER == "f" ]]; then
     reformat_JRC2018_to_Uni=$TempDir"/Deformation_Fields/JRC2018_VNC_Unisex_JRC2018_FEMALE"
     OLDTEMPPATH=$VNC2017_Female
     OLDSPACE="VNC2017F"
+    OLDSPACEWS="FemaleVNCSymmetric2017_20x"
     iniT=${JRC2018_VNC_Female_63x}
 
 
@@ -469,6 +470,7 @@ elif [[ $INPUT1_GENDER == "m" ]]; then
     reformat_JRC2018_to_Uni=$TempDir"/Deformation_Fields/JRC2018_VNC_Unisex_JRC2018_MALE"
     OLDTEMPPATH=$VNC2017_Male
     OLDSPACE="VNC2017M"
+    OLDSPACEWS="MaleVNC2016_20x"
     iniT=${JRC2018_VNC_Male_63x}
 
     scoreT=${JRC2018_VNC_Male_63x}
@@ -631,7 +633,7 @@ if [[ ! -e $sig"_01.nrrd" ]]; then
   reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
 
   if [[ $testmode = "0" ]]; then
-    writeProperties "$RAWOUT" "" "JRC2018_${genderT}_${TRESOLUTION}" "$objective" "$JRC2018RESO" "$JRC2018SIZE" "$score2018" "" ""
+    writeProperties "$RAWOUT" "" "JRC2018_${genderT}_VNC_${TRESOLUTION}" "$objective" "$JRC2018RESO" "$JRC2018SIZE" "$score2018" "" ""
   fi
 fi #if [[ ! -e $sig ]]; then
 
@@ -666,7 +668,7 @@ if [[ ! -e $sig"_01.nrrd" ]]; then
     reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
 
   if [[ $testmode = "0" ]]; then
-    writeProperties "$RAWOUT" "" "JRC2018_Unisex_${TRESOLUTION}" "$objective" "0.1882689x0.1882689x0.38" "1401x2740x402" "" "" "$main_aligned_file"
+    writeProperties "$RAWOUT" "" "JRC2018_Unisex_VNC_${TRESOLUTION}" "$objective" "0.1882689x0.1882689x0.38" "1401x2740x402" "" "" "$main_aligned_file"
   fi
 fi
 
@@ -693,7 +695,7 @@ if [[ ! -e $sig"_01.nrrd" ]]; then
   reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
 
   if [[ $testmode = "0" ]]; then
-    writeProperties "$RAWOUT" "" "JRC2018_Unisex_20x" "20x" "0.4611220x0.4611220x0.70" "573x1119x219" "" "" "$main_aligned_file"
+    writeProperties "$RAWOUT" "" "JRC2018_Unisex_VNC_20x" "20x" "0.4611220x0.4611220x0.70" "573x1119x219" "" "" "$main_aligned_file"
   fi
 fi
 
@@ -727,7 +729,7 @@ if [[ ! -e $sig"_01.nrrd" ]]; then
   fi
 
   if [[ $testmode = "0" ]]; then
-    writeProperties "$RAWOUT" "" "$OLDSPACE" "$objective" "$OLDVOXELS" "$OLDSIZE" "$scoreOLD" "" "$main_aligned_file"
+    writeProperties "$RAWOUT" "" "$OLDSPACEWS" "$objective" "$OLDVOXELS" "$OLDSIZE" "$scoreOLD" "" "$main_aligned_file"
   fi
 fi
 

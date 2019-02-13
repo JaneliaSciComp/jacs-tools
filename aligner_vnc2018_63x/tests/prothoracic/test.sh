@@ -33,11 +33,11 @@ fi
 
 . $TOOLS_DIR/scripts/asserts.sh $OUT
 echo "TEST COMPLETE. CHECK OUTPUT MANUALLY IN $OUT"
-assertExists REG_JRC2018_MALE_VNC_63x.v3dpbd
-assertExists REG_UNISEX_VNC_20x.v3dpbd
-assertExists REG_UNISEX_VNC_63x.v3dpbd
-assertExists REG_oldVNC_FEMALE.v3dpbd
-assertExists REG_oldVNC_MALE.v3dpbd
+assertExists REG_JRC2018_MALE_63x.v3dpbd
+assertExists REG_UNISEX_20x.v3dpbd
+assertExists REG_UNISEX_63x.v3dpbd
+assertExists REG_VNC2017F.v3dpbd
+assertExists REG_VNC2017M.v3dpbd
 #assertContains REG_JFRC2010_40x.properties "alignment.image.size=1024x512x218"
 #assertContains REG_JFRC2010_40x.properties "alignment.resolution.voxels=0.62x0.62x1.00"
 #assertContains REG_JFRC2013_40x.properties "alignment.image.size=1184x592x218"
