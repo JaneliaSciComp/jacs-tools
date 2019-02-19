@@ -606,9 +606,9 @@ if [[ $testmode == "0" ]]; then
   echo " "
   echo "+----------------------------------------------------------------------+"
   echo "| 12-bit conversion"
-  echo "| $FIJI -macro $TWELVEBITCONV \"${OUTPUT}/,${glfilename}_01.nrrd,${gloval_nc82_nrrd}\""
+  echo "| $FIJI -macro $TWELVEBITCONV \"${GLOUTPUT}/,${glfilename}_01.nrrd,${gloval_nc82_nrrd}\""
   echo "+----------------------------------------------------------------------+"
-  $FIJI --headless -macro $TWELVEBITCONV "${OUTPUT}/,${glfilename}_01.nrrd,${gloval_nc82_nrrd}" > $DEBUG_DIR/conv12bit.log 2>&1
+  $FIJI --headless -macro $TWELVEBITCONV "${GLOUTPUT}/,${glfilename}_01.nrrd,${gloval_nc82_nrrd}" > $DEBUG_DIR/conv12bit.log 2>&1
 fi
 fi # skip
 
@@ -627,7 +627,7 @@ fi
 main_aligned_file=${fn}".v3draw"
 sig=$OUTPUT"/"$fn
 TEMP="$JRC2018_63x_CROPPED"
-gsig=$OUTPUT"/images/"$glfilename
+gsig=$GLOUTPUT"/"$glfilename
 
 if [[ ! -e $sig"_01.nrrd" ]]; then
   reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
@@ -642,7 +642,7 @@ scoreGen $sig"_01.nrrd" $scoreT "score2018"
 if [[ $testmode = "1" ]]; then
   rm $OUTPUT"/Score_log_"$fn"_01.txt"
   rm $OUTPUT"/JRC2018_VNC_${genderT}_63x_Score.property"
-  rm -rf $OUTPUT"/images"
+  rm -rf $GLOUTPUT
   rm $JRC2018_63x_CROPPED
 fi
 
