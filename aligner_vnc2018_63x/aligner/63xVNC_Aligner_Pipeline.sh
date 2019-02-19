@@ -34,7 +34,7 @@ if [[ $testmode == "0" ]]; then
   REFSCALE=$3
 
   # Remove all special characters and convert to lower case
-  TILES=`echo $INPUT1_TILES | tr -dc '[:alnum:]\n\r' | tr '[:upper:]' '[:lower:]' | tr ',' ';'`
+  TILES=$(echo $INPUT1_TILES | tr -dc '[:alnum:],' | tr '[:upper:]' '[:lower:]' | tr ',' ';')
   echo "Tiles; $TILES"
   alltiles=$TILES
 
