@@ -365,7 +365,7 @@ function writeProperties() {
     if [[ -f "$_raw_aligned" ]]; then
         META="${OUTPUT}/${prefix}.properties"
         echo "alignment.stack.filename="${raw_filename} > $META
-        echo "alignment.image.area=Brain" >> $META
+        echo "alignment.image.area=VNC" >> $META
         echo "alignment.image.channels=$INPUT1_CHANNELS" >> $META
         echo "alignment.image.refchan=$INPUT1_REF" >> $META
         echo "alignment.space.name=$_alignment_space" >> $META
@@ -400,7 +400,7 @@ function writeErrorProperties() {
 
     META="${FINALOUTPUT}/${_prefix}.properties"
     echo "alignment.error="${_error} > $META
-    echo "alignment.image.area=Brain" >> $META
+    echo "alignment.image.area=VNC" >> $META
     echo "alignment.space.name=$_alignment_space" >> $META
     echo "alignment.objective=$_objective" >> $META
 }
