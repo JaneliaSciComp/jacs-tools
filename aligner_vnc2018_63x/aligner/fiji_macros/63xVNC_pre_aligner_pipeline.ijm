@@ -26,8 +26,6 @@ alltiles = args[7];// tile position
 gender = args[8];// f or m
 
 
-
-
 resx=parseFloat(resx);//Change string to number
 resz=parseFloat(resz);//Change string to number
 
@@ -84,7 +82,7 @@ if(tilenum==1){
 		
 		matchingimage="small_F_median_mesothora.tif";
 		
-	}else if(tileposi[0]=="metathoracic"){
+	}else if(tileposi[0]=="metathoracic" || tileposi[0]=="abdominal"){
 		
 		addY = 60;
 		matchingimage="small_F_median_metathora.tif";
