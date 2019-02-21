@@ -5,7 +5,7 @@ run("Misc...", "divide=Infinity save");
 
 //argstr="/test/63xVNC_align/,test.nrrd,/test/63xVNC_align/samples/pro/JRC_SS42707_20180608_22_E1_.h5j,/test/63xVNC_align/template/,f,mesothoracic-metathoracic-abdominal,0.1882689,0.38,11";
 
-//argstr="/test/63xVNC_align/,test.nrrd,/test/63xVNC_align/samples/1_meta/JRC_SS27391_20160708_19_E6_.h5j,/test/63xVNC_align/template/,f,metathoracic,0.1882689,0.38,11";//single tile
+//argstr="/test/63xVNC_align/,test.nrrd,/test/63x_align/Sample/JRC_SS34451_20180412_20_D5_stitched-2527224927166136418_m.h5j,/test/63xVNC_align/template/,0.1882689,0.38,11,mesothoracic;metathoracic;abdominal,m";//single tile
 
 setBatchMode(true);
 
@@ -127,6 +127,8 @@ open(MatchingDir+templateVNC);
 getDimensions(tempCanvasWidth, tempCanvasHeight, tempchannels, tempslices, tempframes);
 //split channels & assign channels to array ////
 
+print("tempCanvasWidth; "+tempCanvasWidth+"   tempCanvasHeight; "+tempCanvasHeight+"   tempslices; "+tempslices);
+
 open(MatchingDir+matchingimage);
 rename("smalltemp.tif");
 getDimensions(smalltempW, smalltempH, smalltempC, smalltempS, smalltempF);
@@ -152,7 +154,7 @@ bitd=bitDepth();
 getDimensions(sampW, sampH, channels, slices, frames);
 SampleTitle=getTitle();
 
-print("Channels; "+channels+"  slices; "+nSlices()/channels);
+print("Channels; "+channels+"  slices; "+nSlices()/channels+"  sampW; "+sampW+"   sampH; "+sampH);
 run("Properties...", "channels="+channels+" slices="+nSlices()/channels+" frames=1 unit=microns pixel_width="+resx+" pixel_height="+resx+" voxel_depth="+resz+"");
 
 logsum=getInfo("log");
@@ -310,11 +312,11 @@ if(addY!=0)
 maxY=addY+maxY;
 
 if(sampW<2000 && sampH<2000){
-	sampleLongLengthW=round(tempCanvasWidth*1.6);//round(sqrt(sampH*sampH+sampW*sampW)*2);
+	sampleLongLengthW=round(tempCanvasWidth*1.8);//round(sqrt(sampH*sampH+sampW*sampW)*2);
 	sampleLongLengthH=round(tempCanvasHeight);//round(sqrt(sampH*sampH+sampW*sampW));
 }else{
-	sampleLongLengthW=round(tempCanvasWidth*1.4);//round(sqrt(sampH*sampH+sampW*sampW)*2);
-	sampleLongLengthH=round(tempCanvasHeight*2.1);//round(sqrt(sampH*sampH+sampW*sampW));
+	sampleLongLengthW=round(tempCanvasWidth*1.8);//round(sqrt(sampH*sampH+sampW*sampW)*2);
+	sampleLongLengthH=round(tempCanvasHeight*1.6);//round(sqrt(sampH*sampH+sampW*sampW));
 }
 
 print("maxY; "+maxY+"   maxX; "+maxX+"  addX; "+addX+"  addY; "+addY+"  maxrotation; "+maxrotation);
@@ -326,13 +328,17 @@ tempYranslation=round((maxY*resizefactor)*-1);
 
 run("Translate...", "x="+round(tempXranslation)+" y="+round(tempYranslation)+" interpolation=None stack");
 print("Translated template line 230; X; "+tempXranslation+"   Y; "+tempYranslation);
-
+print("temp rotate W; "+sampleLongLengthW+"  H; "+sampleLongLengthH);
 if(maxrotation!=0){
 	run("Canvas Size...", "width="+sampleLongLengthW+" height="+sampleLongLengthH+" position=Center zero");
 	
 	run("Rotation Hideo", "rotate="+maxrotation*-1+" 3d in=InMacro");
 	run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=microns pixel_width="+resx+" pixel_height="+resx+" voxel_depth="+resz+"");
 }//	if(maxrotation>0){
+
+//setBatchMode(false);
+	//updateDisplay();
+	//a
 
 padding=200;
 
