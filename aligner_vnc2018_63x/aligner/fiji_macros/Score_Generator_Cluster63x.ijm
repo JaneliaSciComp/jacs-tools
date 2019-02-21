@@ -331,8 +331,10 @@ if(endsWith(path,".tif") || endsWith(path,".h5j") || endsWith(path,".v3dpbd") ||
 	
 	selectWindow(stack);
 	run("Size...", "width=512 height="+round((getWidth/512)*getHeight)+" depth="+nSlices+" constrain average interpolation=Bicubic");
-
 	
+	if(getHeight!=1024)
+	run("Canvas Size...", "width=512 height=1024 position=Center zero");
+
 	
 	if(movieEx!=0){
 		if(scorePosi=="Bottom"){
