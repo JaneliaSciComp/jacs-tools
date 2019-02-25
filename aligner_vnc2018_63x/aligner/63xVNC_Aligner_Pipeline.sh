@@ -315,8 +315,11 @@ function scoreGen() {
     local _outpath="$1"
     local _scoretemp="$2"
     local _result_var="$3"
+    local _movie_var="$4"
 
+    outfilename=`basename $_outpath`
     tempfilename=`basename $_scoretemp`
+    outname=${outfilename%%.*}
     tempname=${tempfilename%%.*}
     scorepath="$OUTPUT/${tempname}_Score.property"
 
@@ -330,14 +333,13 @@ function scoreGen() {
 
         START=`date '+%F %T'`
         # Expect to take far less than 1 hour
-	# Alignment Score generation:ZNCC, does not need Xvfb
-
+        # Alignment Score generation:ZNCC, does not need Xvfb
         if [[ $testmode = "0" ]]; then
-        $FIJI --headless -macro $SCOREGENERATION $OUTPUT/,$_outpath,$NSLOTS,$_scoretemp >$DEBUG_DIR/${tempname}_scoregen.log 2>&1
-         else
+          $FIJI --headless -macro $SCOREGENERATION $OUTPUT/,$_outpath,$NSLOTS,$_scoretemp >$DEBUG_DIR/${tempname}_scoregen.log 2>&1
+        else
           $FIJI --headless -macro $SCOREGENERATION $OUTPUT/,$_outpath,$NSLOTS,$_scoretemp
         fi
-STOP=`date '+%F %T'`
+        STOP=`date '+%F %T'`
 
         echo "ZNCC JRC2018 score generation start: $START"
         echo "ZNCC JRC2018 score generation stop: $STOP"
@@ -345,6 +347,20 @@ STOP=`date '+%F %T'`
 
     score=`cat $scorepath`
     eval $_result_var="'$score'"
+    echo "returning score: $_score"
+
+    verifyname="${outname}"
+    verifypath="$OUTPUT/${verifyname}.avi"
+
+    echo "Check for verification movie: $verifypath"
+    # Is there an alignment verification movie?
+    if [[ -e "$verifypath" ]]; then
+        verifymp4="${verifyname}.mp4"
+        echo "Converting $verifypath to MP4"
+        ffmpeg -y -r 7 -i "$verifypath" -vcodec libx264 -b:v 2000000 -preset slow -tune film -pix_fmt yuv420p "$OUTPUT/$verifymp4" && rm $verifypath
+        eval $_movie_var="'$verifymp4'"
+        echo "returning movie: $verifymp4"
+    fi
 }
 
 # write output properties for JACS
@@ -358,6 +374,7 @@ function writeProperties() {
     local _ncc_score="$7"
     local _pearson_coeff="$8"
     local _bridged_from="$9"
+    local _verify_movie="${10}"
 
     raw_filename=`basename ${_raw_aligned}`
     prefix=${raw_filename%%.*}
@@ -372,6 +389,9 @@ function writeProperties() {
         echo "alignment.image.size=$_image_size" >> $META
         echo "alignment.resolution.voxels=$_voxel_size" >> $META
         echo "alignment.objective=$_objective" >> $META
+        if [[ ! -z "$_verify_movie" ]]; then
+            echo "alignment.verify.filename=$_verify_movie" >> $META
+        fi
         if [[ ! -z "$_ncc_score" ]]; then
             echo "alignment.quality.score.ncc=$_ncc_score" >> $META
         fi
@@ -632,12 +652,12 @@ gsig=$GLOUTPUT"/"$glfilename
 if [[ ! -e $sig"_01.nrrd" ]]; then
   reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
 
+  scoreGen $sig"_01.nrrd" $scoreT "score2018" "verify2018"
+
   if [[ $testmode = "0" ]]; then
-    writeProperties "$RAWOUT" "" "JRC2018_${genderT}_VNC_${TRESOLUTION}" "$objective" "$JRC2018RESO" "$JRC2018SIZE" "$score2018" "" ""
+    writeProperties "$RAWOUT" "" "JRC2018_${genderT}_VNC_${TRESOLUTION}" "$objective" "$JRC2018RESO" "$JRC2018SIZE" "$score2018" "" "" "$verify2018"
   fi
 fi #if [[ ! -e $sig ]]; then
-
-scoreGen $sig"_01.nrrd" $scoreT "score2018"
 
 if [[ $testmode = "1" ]]; then
   rm $OUTPUT"/Score_log_"$fn"_01.txt"
@@ -720,7 +740,7 @@ if [[ ! -e $sig"_01.nrrd" ]]; then
   reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
 
   if [[ $INPUT1_GENDER == "f" ]]; then
-    scoreGen $sig"_01.nrrd" "$OLDTEMPPATH" "scoreOLD"
+    scoreGen $sig"_01.nrrd" "$OLDTEMPPATH" "scoreOLD" "verifyOLD"
   fi
 
   if [[ $testmode = "1" ]]; then
