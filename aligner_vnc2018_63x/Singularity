@@ -60,6 +60,12 @@ rpm -ivh $EPEL_FILE && /bin/rm -f $EPEL_FILE
 yum install -y python-pip jq bc
 pip install yq
 
+echo "Install ffmpeg"
+# From https://www.vultr.com/docs/how-to-install-ffmpeg-on-centos
+rpm --import http://li.nux.ro/download/nux/RPM-GPG-KEY-nux.ro
+rpm -Uvh http://li.nux.ro/download/nux/dextop/el7/x86_64/nux-dextop-release-0-5.el7.nux.noarch.rpm
+yum install -y ffmpeg ffmpeg-devel
+
 echo "Fixing permissions"
 chown -R root:root /opt/*
 chmod -R g+r /opt/*
