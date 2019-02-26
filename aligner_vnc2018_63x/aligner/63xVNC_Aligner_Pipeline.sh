@@ -771,7 +771,7 @@ if [[ $INPUT1_GENDER == "m" ]]; then
 
   if [[ ! -e $sig"_01.nrrd" ]]; then
     reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
-    scoreGen $sig"_01.nrrd" "$TEMP" "scoreOLD"
+    scoreGen $sig"_01.nrrd" "$TEMP" "scoreOLD" "verifyOLD"
   fi
 
   if [[ $testmode = "1" ]]; then
@@ -799,8 +799,7 @@ if [[ $testmode == "0" ]]; then
   echo "+----------------------------------------------------------------------+"
   cp $OUTPUT/*.{png,jpg,log,txt} $DEBUG_DIR
   cp -R $OUTPUT/*.xform $DEBUG_DIR
-  cp $OUTPUT/REG*.v3dpbd $FINALOUTPUT
-  cp $OUTPUT/REG*.properties $FINALOUTPUT
+  cp $OUTPUT/REG*.{v3dpbd,properties,mp4} $FINALOUTPUT
 
   echo "$0 done"
 fi
