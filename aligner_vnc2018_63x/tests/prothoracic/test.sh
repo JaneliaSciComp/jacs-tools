@@ -33,19 +33,21 @@ fi
 
 . $TOOLS_DIR/scripts/asserts.sh $OUT
 echo "TEST COMPLETE. CHECK OUTPUT MANUALLY IN $OUT"
+# Check for output stacks
 assertExists REG_JRC2018_MALE_63x.v3dpbd
 assertExists REG_UNISEX_20x.v3dpbd
 assertExists REG_UNISEX_63x.v3dpbd
 assertExists REG_VNC2017F.v3dpbd
 assertExists REG_VNC2017M.v3dpbd
-#assertContains REG_JFRC2010_40x.properties "alignment.image.size=1024x512x218"
-#assertContains REG_JFRC2010_40x.properties "alignment.resolution.voxels=0.62x0.62x1.00"
-#assertContains REG_JFRC2013_40x.properties "alignment.image.size=1184x592x218"
-#assertContains REG_JFRC2013_40x.properties "alignment.resolution.voxels=0.4653716x0.4653716x0.76"
-#assertContains REG_JRC2018_FEMALE_40x.properties "alignment.image.size=1427x664x413"
-#assertContains REG_JRC2018_FEMALE_40x.properties "alignment.resolution.voxels=0.44x0.44x0.44"
-#assertContains REG_UNISEX_40x.properties "alignment.image.size=1427x668x394"
-#assertContains REG_UNISEX_40x.properties "alignment.resolution.voxels=0.44x0.44x0.44"
-#assertContains REG_UNISEX_ColorMIP_HR.properties "alignment.image.size=1210x566x174"
-#assertContains REG_UNISEX_ColorMIP_HR.properties "alignment.resolution.voxels=0.5189161x0.5189161x1.0"
+# Check for properties files
+assertExists REG_JRC2018_MALE_63x.properties
+assertExists REG_UNISEX_20x.properties
+assertExists REG_UNISEX_63x.properties
+assertExists REG_VNC2017F.properties
+assertExists REG_VNC2017M.properties
+# Check for verification movie
+assertExists REG_JRC2018_MALE_63x_01.mp4
+assertContains REG_JRC2018_MALE_63x.properties "alignment.verify.filename=REG_JRC2018_MALE_63x_01.mp4"
+# Check for specific properties
+assertContains REG_JRC2018_MALE_63x.properties "alignment.resolution.voxels=0.1882689x0.1882689x0.38"
 
