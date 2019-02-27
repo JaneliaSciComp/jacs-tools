@@ -357,7 +357,7 @@ function scoreGen() {
     if [[ -e "$verifypath" ]]; then
         verifymp4="${verifyname}.mp4"
         echo "Converting $verifypath to MP4"
-        ffmpeg -y -r 7 -i "$verifypath" -vcodec libx264 -b:v 2000000 -preset slow -tune film -pix_fmt yuv420p "$OUTPUT/$verifymp4" && rm $verifypath
+        ffmpeg -y -r 30 -i "$verifypath" -vcodec libx264 -b:v 2000000 -preset slow -tune film -pix_fmt yuv420p "$OUTPUT/$verifymp4" && rm $verifypath
         eval $_movie_var="'$verifymp4'"
         echo "returning movie: $verifymp4"
     fi
