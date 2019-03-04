@@ -1,7 +1,5 @@
 #!/bin/bash
-#
-# 63x VNC aligner by Hideo Otsuna
-#
+# # 63x VNC aligner by Hideo Otsuna #
 
 testmode=0
 skip=0
@@ -70,20 +68,13 @@ else
   echo "Test mode ON"
 
   INPUT1_GENDER="m"
-<<<<<<< Updated upstream:aligner_vnc2018_63x/aligner/63xVNC_Aligner_Pipeline.sh
-  #prothoracic;mesothoracic;metathoracic;abdominal
-=======
-
-
->>>>>>> Stashed changes:aligner_vnc_jrc2018_63x/63xVNC_Aligner_Pipeline.sh
-
   TempDir="/nrs/scicompsoft/otsuna/Masayoshi_63x/Template"
 
   OUTPUT=$1
   glfilename="PRE_PROCESSED"
   inputfilename=$2
   alltiles=$3
-#prothoracic;mesothoracic;metathoracic;abdominal
+  #prothoracic;mesothoracic;metathoracic;abdominal
 
   echo "OUTPUT "$OUTPUT
   echo "inputfilename "$inputfilename
@@ -125,12 +116,9 @@ else
   NRRDCOMP="$MACRO_DIR/nrrd_compression.ijm"
  // FINALOUTPUT=$OUTPUT"/FinalOutputs"
 
-<<<<<<< Updated upstream:aligner_vnc2018_63x/aligner/63xVNC_Aligner_Pipeline.sh
-=======
-filename=${inputfilename%.*}
-INPUT1_GENDER=${filename##*_}
+  filename=${inputfilename%.*}
+  INPUT1_GENDER=${filename##*_}
 
->>>>>>> Stashed changes:aligner_vnc_jrc2018_63x/63xVNC_Aligner_Pipeline.sh
   NRRDCONV=/Users/otsunah/Documents/otsunah/jacs-tools/aligner_vnc2017_20x/aligner/scripts/VNC_preImageProcessing_Plugins_pipeline/nrrd2v3draw_MCFO.ijm
 
   INPUT1_FILE=$inputfilename;
