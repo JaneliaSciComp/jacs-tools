@@ -1,0 +1,13 @@
+! TYPEDSTREAM 2.4
+
+registration {
+	reference_study "/test/63xVNC_align/template/JRC2018_VNC_UNISEX_447.nrrd"
+	floating_study "/test/63xVNC_align/template/JRC2018_VNC_UNISEX_447.nrrd"
+	affine_xform {
+		xlate 0 0 0 
+		rotate 0 0 0 
+		scale 1 1 1 
+		shear 0 0 0 
+		center 131.880892 257.767198 76.3 
+	}
+}

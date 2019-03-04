@@ -69,15 +69,21 @@ else
 
   echo "Test mode ON"
 
-  alltiles="mesothoracic;metathoracic;abdominal"
   INPUT1_GENDER="m"
+<<<<<<< Updated upstream:aligner_vnc2018_63x/aligner/63xVNC_Aligner_Pipeline.sh
   #prothoracic;mesothoracic;metathoracic;abdominal
+=======
+
+
+>>>>>>> Stashed changes:aligner_vnc_jrc2018_63x/63xVNC_Aligner_Pipeline.sh
 
   TempDir="/nrs/scicompsoft/otsuna/Masayoshi_63x/Template"
 
   OUTPUT=$1
   glfilename="PRE_PROCESSED"
   inputfilename=$2
+  alltiles=$3
+#prothoracic;mesothoracic;metathoracic;abdominal
 
   echo "OUTPUT "$OUTPUT
   echo "inputfilename "$inputfilename
@@ -119,6 +125,12 @@ else
   NRRDCOMP="$MACRO_DIR/nrrd_compression.ijm"
  // FINALOUTPUT=$OUTPUT"/FinalOutputs"
 
+<<<<<<< Updated upstream:aligner_vnc2018_63x/aligner/63xVNC_Aligner_Pipeline.sh
+=======
+filename=${inputfilename%.*}
+INPUT1_GENDER=${filename##*_}
+
+>>>>>>> Stashed changes:aligner_vnc_jrc2018_63x/63xVNC_Aligner_Pipeline.sh
   NRRDCONV=/Users/otsunah/Documents/otsunah/jacs-tools/aligner_vnc2017_20x/aligner/scripts/VNC_preImageProcessing_Plugins_pipeline/nrrd2v3draw_MCFO.ijm
 
   INPUT1_FILE=$inputfilename;
@@ -131,7 +143,7 @@ else
 fi #if [[ $testmode == "1" ]]
 
 TxtPath=$OUTPUT/"${glfilename}_translation.txt"
-
+UTxtPath=$OUTPUT/"${glfilename}_U_translation.txt"
 # "-------------------Template----------------------"
 JRC2018_VNC_Unisex_63x=$TempDir"/JRC2018_VNC_UNISEX_63x.nrrd"
 JRC2018_VNC_Female_63x=$TempDir"/JRC2018_VNC_FEMALE_63x.nrrd"
@@ -142,6 +154,7 @@ VNC2017_Female=$TempDir"/20x_flyVNCtemplate_Female_symmetric_16bit.nrrd"
 VNC2017_Male=$TempDir"/2017Male_VNC.nrrd"
 
 JRC2018_63x_CROPPED=$OUTPUT"/Temp.nrrd"
+JRC2018_63x_UNISEX_CROPPED=$OUTPUT"/TempUnisex.nrrd"
 
 # "-------------------Global aligned files----------------------"
 GLOUTPUT=$OUTPUT/images
@@ -153,7 +166,13 @@ gloval_nc82_nrrd="$GLOUTPUT/"$glfilename"_01.nrrd"
 # "-------------------Deformation fields----------------------"
 registered_affine_xform=$OUTPUT"/Registration/affine/Temp_PRE_PROCESSED_01_9dof.list"
 registered_warp_xform=$OUTPUT"/warp.xform"
+
+registered_affine_unisex_xform=$OUTPUT"/Registration/affine/TempUnisex_PRE_PROCESSED_01_9dof.list"
+registered_warp_unisex_xform=$OUTPUT"/warp_unisex.xform"
+
 oldFemale_JRC2018_VNC_MALE=$TempDir"/Deformation_Fields/oldFemale_JRC2018_VNC_MALE"
+UNISEX_RESIZE=$TempDir"/Deformation_Fields/JRC2018U_VNC_resize"
+
 #
 # Expand resolutions from TMOG
 #
@@ -285,6 +304,19 @@ function reformatAll() {
             $FIJI -macro $ROTATEAFTERWARP "$OUTPUT/,$genderfn,$OUTPUT_NRRD,$TxtPath,$REFSCALE"
           fi
 
+          if [[ $testmode == "0" ]]; then
+            unisexfn="REG_UNISEX_"$TRESOLUTION
+          else
+            unisexfn="REG_JRC2018_UNISEX_${TRESOLUTION}_${inputfilename%.*}"
+          fi
+          echo "unisexfn; $unisexfn""  $_fn; "$_fn
+          if [[ $_fn = "$unisexfn" ]]; then
+            echo "+----------------------------------------------------------------------+"
+            echo "| Rotation after registration Unisex"
+            echo "| $FIJI -macro $ROTATEAFTERWARP \"$OUTPUT/,$unisexfn,$OUTPUT_NRRD,$TxtPath,$REFSCALE\""
+            echo "+----------------------------------------------------------------------+"
+            $FIJI -macro $ROTATEAFTERWARP "$OUTPUT/,$unisexfn,$OUTPUT_NRRD,$UTxtPath,$REFSCALE"
+          fi
           echo "+----------------------------------------------------------------------+"
           echo "| NRRD Compression"
           echo "| $FIJI --headless -macro $NRRDCOMP \"$OUTPUT_NRRD\""
@@ -569,6 +601,7 @@ else
 
     cd "$OUTPUT"
     $CMTKM -b "$CMTK" -a -X 26 -C 8 -G 80 -R 4 -A '--accuracy 0.8' -W '--accuracy 0.8'  -T $NSLOTS -s "$JRC2018_63x_CROPPED" images
+    $CMTKM -b "$CMTK" -a -X 26 -C 8 -G 80 -R 4 -A '--accuracy 0.8' -W '--accuracy 0.8'  -T $NSLOTS -s "$JRC2018_63x_UNISEX_CROPPED" images
 
     STOP=`date '+%F %T'`
     if [[ ! -e $registered_affine_xform ]]; then
@@ -590,9 +623,18 @@ else
     gsig="$GLOUTPUT/"$glfilename"_01.nrrd"
 
     $CMTK/reformatx -o "$sig" --floating $gsig $TEMP $DEFFIELD
-
     $FIJI -macro $REGCROP "$TEMP,$sig,$NSLOTS"
     rm -rf $sig
+
+    sig=$OUTPUT"/Affine_${inputfilename%.*}_01.nrrd"
+    DEFFIELD=$registered_affine_unisex_xform
+    TEMP="$JRC2018_63x_UNISEX_CROPPED"
+    gsig="$GLOUTPUT/"$glfilename"_01.nrrd"
+
+    $CMTK/reformatx -o "$sig" --floating $gsig $TEMP $DEFFIELD
+    $FIJI -macro $REGCROP "$TEMP,$sig,$NSLOTS"
+    rm -rf $sig
+
 fi
 
 # CMTK warping
@@ -607,6 +649,7 @@ else
     START=`date '+%F %T'`
 
     $CMTK/warp --threads $NSLOTS -v --registration-metric nmi --jacobian-weight 0 --fast -e 26 --grid-spacing 80 --energy-weight 1e-1 --refine 4 --coarsest 8 --ic-weight 0 --output-intermediate --accuracy 0.8 -o $registered_warp_xform $registered_affine_xform
+    $CMTK/warp --threads $NSLOTS -v --registration-metric nmi --jacobian-weight 0 --fast -e 26 --grid-spacing 80 --energy-weight 1e-1 --refine 4 --coarsest 8 --ic-weight 0 --output-intermediate --accuracy 0.8 -o $registered_warp_unisex_xform $registered_affine_unisex_xform
 
     STOP=`date '+%F %T'`
     if [[ ! -e $registered_warp_xform ]]; then
@@ -659,30 +702,24 @@ if [[ ! -e $sig"_01.nrrd" ]]; then
   fi
 fi #if [[ ! -e $sig ]]; then
 
-if [[ $testmode = "1" ]]; then
-  rm $OUTPUT"/Score_log_"$fn"_01.txt"
-  rm $OUTPUT"/JRC2018_VNC_${genderT}_63x_Score.property"
-  rm -rf $GLOUTPUT
-  rm $JRC2018_63x_CROPPED
-fi
 
 ########################################################################################################
 # JRC2018 unisex 63x reformat
 ########################################################################################################
 
 banner "JRC2018 unisex 63x reformat"
-DEFFIELD="$reformat_JRC2018_to_Uni"
+DEFFIELD="$registered_warp_unisex_xform"
 if [[ $testmode == "0" ]]; then
   fn="REG_UNISEX_${TRESOLUTION}"
-  gsig=$OUTPUT"/REG_JRC2018_${genderT}_${TRESOLUTION}"
+  gsig=$GLOUTPUT"/"$glfilename
 else
   fn="REG_JRC2018_UNISEX_${TRESOLUTION}_${inputfilename%.*}"
-  gsig=$OUTPUT"/REG_JRC2018_${genderT}_${TRESOLUTION}_${inputfilename%.*}"
+  gsig=$GLOUTPUT"/"$glfilename
 fi
 sig=$OUTPUT"/"$fn
 
 
-TEMP="$JRC2018_VNC_Unisex_63x"
+TEMP="$JRC2018_63x_UNISEX_CROPPED"
 
 if [[ ! -e $sig"_01.nrrd" ]]; then
     reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
@@ -697,16 +734,15 @@ fi
 ########################################################################################################
 
 banner "JRC2018 unisex 20x reformat"
-DEFFIELD="$reformat_JRC2018_to_Uni"
+DEFFIELD="$UNISEX_RESIZE"
 if [[ $testmode == "0" ]]; then
   fn="REG_UNISEX_20x"
-  gsig=$OUTPUT"/REG_JRC2018_${genderT}_${TRESOLUTION}"
+  gsig=$OUTPUT"/REG_UNISEX_${TRESOLUTION}"
 else
   fn="REG_JRC2018_UNISEX_20x_${inputfilename%.*}"
-  gsig=$OUTPUT"/REG_JRC2018_${genderT}_${TRESOLUTION}_${inputfilename%.*}"
+  gsig=$OUTPUT"/REG_JRC2018_UNISEX_${TRESOLUTION}_${inputfilename%.*}"
 fi
 sig=$OUTPUT"/"$fn
-
 
 TEMP="$JRC2018_VNC_Unisex_20x"
 
@@ -719,6 +755,13 @@ if [[ ! -e $sig"_01.nrrd" ]]; then
   fi
 fi
 
+if [[ $testmode = "1" ]]; then
+  rm $OUTPUT"/Score_log_"$fn"_01.txt"
+  rm $OUTPUT"/JRC2018_VNC_${genderT}_63x_Score.property"
+  rm -rf $GLOUTPUT
+  rm $JRC2018_63x_CROPPED
+  rm $JRC2018_63x_UNISEX_CROPPED
+fi
 
 ########################################################################################################
 # oldVNC_$genderT reformat
