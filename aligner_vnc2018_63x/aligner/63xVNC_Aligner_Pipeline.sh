@@ -1,7 +1,7 @@
 #!/bin/bash
 # # 63x VNC aligner by Hideo Otsuna #
 
-testmode=0
+testmode=1
 skip=0
 
 export CMTK_WRITE_UNCOMPRESSED=1
@@ -68,7 +68,7 @@ else
   echo "Test mode ON"
 
   INPUT1_GENDER="m"
-  TempDir="/nrs/scicompsoft/otsuna/Masayoshi_63x/Template"
+  NSLOTS=3
 
   OUTPUT=$1
   glfilename="PRE_PROCESSED"
@@ -85,15 +85,23 @@ else
   objective="63x"
   Path=$OUTPUT"/$inputfilename"
 
-  FIJI=/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx
-  TempDir="/Volumes/otsuna/Masayoshi_63x/Template"
-  CMTK=/Applications/Fiji.app/bin/cmtk
-  PREPROCIMG="/Volumes/otsuna/Masayoshi_63x/63x_tile_aligner_Pipeline.ijm"
-  NRRDCOMP="/Volumes/otsuna/Masayoshi_63x/nrrd_compression.ijm"
-  SCOREGENERATION="/Volumes/otsuna/Masayoshi_63x/Score_Generator_Cluster63x.ijm"
-  NSLOTS=11
+  # for LSF cluster
+  MACRO_DIR=/nrs/scicompsoft/otsuna/63x_VNC/aligner_vnc_jrc2018_63x/aligner/fiji_macros 
+  TempDir="/nrs/scicompsoft/otsuna/template/63x_VNC"
 
-  # for VMware windows
+  CMTK=/nrs/scicompsoft/otsuna/CMTK_new2019
+  CMTKM="/nrs/scicompsoft/otsuna/CMTK_new2019/munger"
+  PREPROCIMG="$MACRO_DIR/63xVNC_pre_aligner_pipeline.ijm"
+  FIJI="/groups/terraincognita/home/otsunah/Desktop/Fiji.app/ImageJ-linux64"
+  NRRDCOMP="$MACRO_DIR/nrrd_compression.ijm "
+  SCOREGENERATION="$MACRO_DIR/Score_Generator_Cluster63x.ijm"
+
+  REGCROP="$MACRO_DIR/TempCrop_after_affine.ijm"
+  ROTATEAFTERWARP="$MACRO_DIR/Rotation_AfterReg.ijm"
+  NRRDCOMP="$MACRO_DIR/nrrd_compression.ijm"
+
+
+# for VMware windows
   FIJI=/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx
   TempDir="/Volumes/Registration2/63x_align/Template"
   CMTK=/Applications/Fiji.app/bin/cmtk
@@ -101,8 +109,8 @@ else
   NRRDCOMP="/Users/hideVMware/Dropbox/Hideo_Daily_Coding/nrrd_compression.ijm"
   SCOREGENERATION="/Users/hideVMware/Dropbox/Hideo_Daily_Coding/Score_Generator_Cluster63x.ijm"
 
-  #for MacBookPro
-  MACRO_DIR=/Users/otsunah/Documents/jacs-tools/aligner_vnc_jrc2018_63x/aligner/fiji_macros
+#for MacBookPro
+  MACRO_DIR=/Users/otsunah/Documents/jacs-tools/aligner_vnc2018_63x/aligner/fiji_macros
   TempDir="/test/63xVNC_align/template"
   CMTK="/Applications/FijizOLD.app/bin/cmtk"
   CMTKM="/Applications/FijizOLD.app/bin/cmtk/munger"
@@ -136,23 +144,30 @@ UTxtPath=$OUTPUT/"${glfilename}_U_translation.txt"
 JRC2018_VNC_Unisex_63x=$TempDir"/JRC2018_VNC_UNISEX_63x.nrrd"
 JRC2018_VNC_Female_63x=$TempDir"/JRC2018_VNC_FEMALE_63x.nrrd"
 JRC2018_VNC_Male_63x=$TempDir"/JRC2018_VNC_MALE_63x.nrrd"
-JRC2018_VNC_Unisex_20x=$TempDir"/JRC2018_VNC_UNISEX_447.nrrd"
+
+JRC2018_VNC_Unisex_40x=$TempDir"/JRC2018_VNC_UNISEX_447.nrrd"
+JRC2018_VNC_Female_40x=$TempDir"/JRC2018_VNC_FEMALE_447.nrrd"
+JRC2018_VNC_Male_40x=$TempDir"/JRC2018_VNC_MALE_447.nrrd"
 
 VNC2017_Female=$TempDir"/20x_flyVNCtemplate_Female_symmetric_16bit.nrrd"
 VNC2017_Male=$TempDir"/2017Male_VNC.nrrd"
 
-JRC2018_63x_CROPPED=$OUTPUT"/Temp.nrrd"
+#JRC2018_63x_CROPPED=$OUTPUT"/Temp.nrrd"
+JRC2018_63xDW_CROPPED=$OUTPUT"/TempDW.nrrd"
+
 JRC2018_63x_UNISEX_CROPPED=$OUTPUT"/TempUnisex.nrrd"
+#JRC2018_63xDW_UNISEX_CROPPED=$OUTPUT"/TempUnisexDW.nrrd"
 
 # "-------------------Global aligned files----------------------"
 GLOUTPUT=$OUTPUT/images
 gloval_nc82_nrrd="$GLOUTPUT/"$glfilename"_01.nrrd"
+gloval_nc82_DW_nrrd="$OUTPUT/"$glfilename"_DW_01.nrrd"
 #gloval_signalNrrd1="$GLOUTPUT/"$glfilename"_02.nrrd"
 #gloval_signalNrrd2="$GLOUTPUT/"$glfilename"_03.nrrd"
 #gloval_signalNrrd3="$GLOUTPUT/"$glfilename"_04.nrrd"
 
 # "-------------------Deformation fields----------------------"
-registered_affine_xform=$OUTPUT"/Registration/affine/Temp_PRE_PROCESSED_01_9dof.list"
+registered_affine_xform=$OUTPUT"/Registration/affine/TempDW_PRE_PROCESSED_01_9dof.list"
 registered_warp_xform=$OUTPUT"/warp.xform"
 
 registered_affine_unisex_xform=$OUTPUT"/Registration/affine/TempUnisex_PRE_PROCESSED_01_9dof.list"
@@ -273,8 +288,9 @@ function reformatAll() {
     for ((i=1; i<=INPUT1_CHANNELS; i++)); do
         GLOBAL_NRRD="${_gsig}_0${i}.nrrd"
         OUTPUT_NRRD="${_sig}_0${i}.nrrd"
-
-        if [[ -e "$GLOBAL_NRRD" ]]; then
+        NRRDCOMPNEED=1
+	
+       if [[ -e "$GLOBAL_NRRD" ]]; then
           echo "reformat; $GLOBAL_NRRD" "$_TEMP" "$_DEFFIELD" "$OUTPUT_NRRD" "$i" "ignore" "$opts"
           reformat "$GLOBAL_NRRD" "$_TEMP" "$_DEFFIELD" "$OUTPUT_NRRD" "$i" "ignore"
 
@@ -290,6 +306,7 @@ function reformatAll() {
             echo "| $FIJI -macro $ROTATEAFTERWARP \"$OUTPUT/,$genderfn,$OUTPUT_NRRD,$TxtPath,$REFSCALE\""
             echo "+----------------------------------------------------------------------+"
             $FIJI -macro $ROTATEAFTERWARP "$OUTPUT/,$genderfn,$OUTPUT_NRRD,$TxtPath,$REFSCALE"
+            NRRDCOMPNEED=0
           fi
 
           if [[ $testmode == "0" ]]; then
@@ -304,13 +321,17 @@ function reformatAll() {
             echo "| $FIJI -macro $ROTATEAFTERWARP \"$OUTPUT/,$unisexfn,$OUTPUT_NRRD,$TxtPath,$REFSCALE\""
             echo "+----------------------------------------------------------------------+"
             $FIJI -macro $ROTATEAFTERWARP "$OUTPUT/,$unisexfn,$OUTPUT_NRRD,$UTxtPath,$REFSCALE"
+            NRRDCOMPNEED=0
           fi
-          echo "+----------------------------------------------------------------------+"
-          echo "| NRRD Compression"
-          echo "| $FIJI --headless -macro $NRRDCOMP \"$OUTPUT_NRRD\""
-          echo "+----------------------------------------------------------------------+"
-          $FIJI --headless -macro $NRRDCOMP "$OUTPUT_NRRD"
-        fi #if [[ -e "$GLOBAL_NRRD" ]]; then
+
+          if [[ $NRRDCOMPNEED = 1 ]];then
+            echo "+----------------------------------------------------------------------+"
+            echo "| NRRD Compression"
+            echo "| $FIJI --headless -macro $NRRDCOMP \"$OUTPUT_NRRD\""
+            echo "+----------------------------------------------------------------------+"
+            $FIJI --headless -macro $NRRDCOMP "$OUTPUT_NRRD"
+            fi
+          fi #if [[ -e "$GLOBAL_NRRD" ]]; then
 
         if [[ $testmode = "0" ]]; then
            echo "testmode; "$testmode
@@ -488,16 +509,15 @@ TRESOLUTION="63x"
 if [[ $INPUT1_GENDER == "f" ]]; then
     genderT="FEMALE"
     reformat_JRC2018_to_oldVNC=$TempDir"/Deformation_Fields/oldFemale_JRC2018_VNC_FEMALE"
-    reformat_JRC2018_to_Uni=$TempDir"/Deformation_Fields/JRC2018_VNC_Unisex_JRC2018_FEMALE"
     OLDTEMPPATH=$VNC2017_Female
     OLDSPACE="VNC2017F"
     OLDSPACEWS="FemaleVNCSymmetric2017_20x"
     iniT=${JRC2018_VNC_Female_63x}
 
 
-    scoreT=${JRC2018_VNC_Female_63x}
-    JRC2018RESO="0.1882689x0.1882689x0.38"
-    JRC2018SIZE="1402x2851x377"
+    scoreT=${JRC2018_VNC_Female_40x}
+    JRC2018RESO="0.4611220x0.4611220x0.7"
+    JRC2018SIZE="573x1164x205"
 
 
     OLDVOXELS="0.4612588x0.4612588x0.7"
@@ -507,15 +527,14 @@ elif [[ $INPUT1_GENDER == "m" ]]; then
 
     genderT="MALE"
     reformat_JRC2018_to_oldVNC=$TempDir"/Deformation_Fields/oldMale_JRC2018_VNC_MALE"
-    reformat_JRC2018_to_Uni=$TempDir"/Deformation_Fields/JRC2018_VNC_Unisex_JRC2018_MALE"
     OLDTEMPPATH=$VNC2017_Male
     OLDSPACE="VNC2017M"
     OLDSPACEWS="MaleVNC2016_20x"
     iniT=${JRC2018_VNC_Male_63x}
 
-    scoreT=${JRC2018_VNC_Male_63x}
-    JRC2018RESO="0.1882689x0.1882689x0.38"
-    JRC2018SIZE="1401x2851x422"
+    scoreT=${JRC2018_VNC_Male_40x}
+    JRC2018RESO="0.4611220x0.4611220x0.7"
+    JRC2018SIZE="572x1164x229"
 
     OLDVOXELS="0.4611222x0.4611222x0.7"
     OLDSIZE="512x1100x220"
@@ -578,26 +597,26 @@ echo ""
 
 # -------------------------------------------------------------------------------------------
 if [[ -e $registered_warp_xform ]]; then
-    echo "Already exists: $registered_affine_xform"
+    echo "Already exists: $registered_warp_xform"
 else
     echo "+---------------------------------------------------------------------------------------+"
     echo "| Running CMTK registration"
     echo "| OUTPUT; $OUTPUT"
-    echo "| $CMTKM -b $CMTK -a -X 26 -C 8 -G 80 -R 4 -A '--accuracy 0.8' -W '--accuracy 0.8' -T $NSLOTS -s \"$JRC2018_63x_CROPPED\" images"
+    echo "| $CMTKM -b $CMTK -a -X 26 -C 8 -G 80 -R 4 -A '--accuracy 0.8' -W '--accuracy 0.8' -T $NSLOTS -s \"$JRC2018_63xDW_CROPPED\" images"
     echo "+---------------------------------------------------------------------------------------+"
     START=`date '+%F %T'`
 
     cd "$OUTPUT"
-    $CMTKM -b "$CMTK" -a -X 26 -C 8 -G 80 -R 4 -A '--accuracy 0.8' -W '--accuracy 0.8'  -T $NSLOTS -s "$JRC2018_63x_CROPPED" images
-    $CMTKM -b "$CMTK" -a -X 26 -C 8 -G 80 -R 4 -A '--accuracy 0.8' -W '--accuracy 0.8'  -T $NSLOTS -s "$JRC2018_63x_UNISEX_CROPPED" images
+    #$CMTKM -b "$CMTK" -a -X 26 -C 8 -G 80 -R 4 -A '--accuracy 0.8' -W '--accuracy 0.8'  -T $NSLOTS -s "$JRC2018_63xDW_CROPPED" images
+    $CMTK/registration -i -v --dofs 6 --dofs 9 --accuracy 0.8 -o Registration/affine/TempDW_PRE_PROCESSED_01_9dof.list ${JRC2018_63xDW_CROPPED} ${gloval_nc82_DW_nrrd}
 
     STOP=`date '+%F %T'`
-    if [[ ! -e $registered_affine_xform ]]; then
+    if [[ ! -e ${registered_affine_xform} ]]; then
         echo -e "Error: CMTK registration failed"
         exit -1
     fi
-    echo "cmtk_registration start: $START"
-    echo "cmtk_registration stop: $STOP"
+    echo "cmtk_gender_registration start: $START"
+    echo "cmtk_gender_registration stop: $STOP"
 
     echo " "
     echo "------------------------------------------------------------"
@@ -607,12 +626,27 @@ else
     sig=$OUTPUT"/Affine_${inputfilename%.*}_01.nrrd"
     DEFFIELD=$registered_affine_xform
     TSTRING="JRC2018 63X"
-    TEMP="$JRC2018_63x_CROPPED"
-    gsig="$GLOUTPUT/"$glfilename"_01.nrrd"
+    TEMP="$JRC2018_63xDW_CROPPED"
+    gsig="${gloval_nc82_DW_nrrd}"
 
     $CMTK/reformatx -o "$sig" --floating $gsig $TEMP $DEFFIELD
     $FIJI -macro $REGCROP "$TEMP,$sig,$NSLOTS"
     rm -rf $sig
+
+    START=`date '+%F %T'`
+
+    cd "$OUTPUT"
+    $CMTKM -b "$CMTK" -a -X 26 -C 8 -G 80 -R 4 -A '--accuracy 0.8' -W '--accuracy 0.8'  -T $NSLOTS -s "$JRC2018_63x_UNISEX_CROPPED" images
+    #$CMTK/registration -i -v --dofs 6 --dofs 9 --accuracy 0.8 -o Registration/affine/TempUnisex_PRE_PROCESSED_01_9dof.list ${JRC2018_63x_UNISEX_CROPPED} images/PRE_PROCESSED_01.nrrd
+
+    STOP=`date '+%F %T'`
+    if [[ ! -e ${registered_affine_xform} ]]; then
+        echo -e "Error: CMTK registration failed"
+        exit -1
+    fi
+    echo "cmtk_unisex_registration start: $START"
+    echo "cmtk_unisex_registration stop: $STOP"
+
 
     sig=$OUTPUT"/Affine_${inputfilename%.*}_01.nrrd"
     DEFFIELD=$registered_affine_unisex_xform
@@ -635,23 +669,29 @@ else
     echo "| $CMTK/warp --threads $NSLOTS -v --registration-metric nmi --jacobian-weight 0 --fast -e 26 --grid-spacing 80 --energy-weight 1e-1 --refine 4 --coarsest 8 --ic-weight 0 --output-intermediate --accuracy 0.8 -o $registered_warp_xform $registered_affine_xform"
     echo "+----------------------------------------------------------------------+"
     START=`date '+%F %T'`
+    
+$CMTK/warp --threads $NSLOTS -v --registration-metric nmi --jacobian-weight 0 --fast -e 26 --grid-spacing 80 --energy-weight 1e-1 --refine 4 --coarsest 8 --ic-weight 0 --output-intermediate --accuracy 0.8 -o $registered_warp_xform --initial ${registered_affine_xform} ${JRC2018_63xDW_CROPPED} ${gloval_nc82_DW_nrrd}
+    STOP=`date '+%F %T'`
 
-    $CMTK/warp --threads $NSLOTS -v --registration-metric nmi --jacobian-weight 0 --fast -e 26 --grid-spacing 80 --energy-weight 1e-1 --refine 4 --coarsest 8 --ic-weight 0 --output-intermediate --accuracy 0.8 -o $registered_warp_xform $registered_affine_xform
-    $CMTK/warp --threads $NSLOTS -v --registration-metric nmi --jacobian-weight 0 --fast -e 26 --grid-spacing 80 --energy-weight 1e-1 --refine 4 --coarsest 8 --ic-weight 0 --output-intermediate --accuracy 0.8 -o $registered_warp_unisex_xform $registered_affine_unisex_xform
+    echo "cmtk_gender_warping start: $START"
+    echo "cmtk_gender_warping stop: $STOP"
+
+    START=`date '+%F %T'`
+    $CMTK/warp --threads $NSLOTS -v --registration-metric nmi --jacobian-weight 0 --fast -e 26 --grid-spacing 80 --energy-weight 1e-1 --refine 4 --coarsest 8 --ic-weight 0 --output-intermediate --accuracy 0.8 -o $registered_warp_unisex_xform --initial $registered_affine_unisex_xform ${JRC2018_63x_UNISEX_CROPPED} ${gloval_nc82_nrrd}
 
     STOP=`date '+%F %T'`
     if [[ ! -e $registered_warp_xform ]]; then
         echo -e "Error: CMTK warping failed"
         exit -1
     fi
-    echo "cmtk_warping start: $START"
-    echo "cmtk_warping stop: $STOP"
+    echo "cmtk_unisex_warping start: $START"
+    echo "cmtk_unisex_warping stop: $STOP"
 fi
 
-if [[ $testmode == "1" ]]; then
-  rm -rf $registered_affine_xform
-  rm -rf $OUTPUT"/Registration"
-fi
+#if [[ $testmode == "1" ]]; then
+#  rm -rf $registered_affine_xform
+#  rm -rf $OUTPUT"/Registration"
+#fi
 
 if [[ $testmode == "0" ]]; then
   echo " "
@@ -677,7 +717,7 @@ else
 fi
 main_aligned_file=${fn}".v3draw"
 sig=$OUTPUT"/"$fn
-TEMP="$JRC2018_63x_CROPPED"
+TEMP="${JRC2018_63xDW_CROPPED}"
 gsig=$GLOUTPUT"/"$glfilename
 
 if [[ ! -e $sig"_01.nrrd" ]]; then
@@ -732,7 +772,7 @@ else
 fi
 sig=$OUTPUT"/"$fn
 
-TEMP="$JRC2018_VNC_Unisex_20x"
+TEMP="$JRC2018_VNC_Unisex_40x"
 
 if [[ ! -e $sig"_01.nrrd" ]]; then
 
@@ -746,9 +786,9 @@ fi
 if [[ $testmode = "1" ]]; then
   rm $OUTPUT"/Score_log_"$fn"_01.txt"
   rm $OUTPUT"/JRC2018_VNC_${genderT}_63x_Score.property"
-  rm -rf $GLOUTPUT
-  rm $JRC2018_63x_CROPPED
-  rm $JRC2018_63x_UNISEX_CROPPED
+#  rm -rf $GLOUTPUT
+#  rm $JRC2018_63x_CROPPED
+#  rm $JRC2018_63x_UNISEX_CROPPED
 fi
 
 ########################################################################################################
@@ -762,6 +802,12 @@ if [[ $testmode == "0" ]]; then
   fn="REG_$OLDSPACE"
 else
   fn="REG_${OLDSPACE}_${inputfilename%.*}"
+fi
+
+if [[ $testmode == "0" ]]; then
+    gsig="REG_JRC2018_${genderT}_${TRESOLUTION}"
+else
+    gsig="REG_JRC2018_${genderT}_${TRESOLUTION}_${inputfilename%.*}"
 fi
 
 sig=$OUTPUT"/"$fn
