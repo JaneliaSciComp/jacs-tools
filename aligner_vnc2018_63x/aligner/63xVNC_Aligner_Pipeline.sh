@@ -1,7 +1,7 @@
 #!/bin/bash
 # # 63x VNC aligner by Hideo Otsuna #
 
-testmode=1
+testmode=0
 skip=0
 
 export CMTK_WRITE_UNCOMPRESSED=1
@@ -300,15 +300,18 @@ function reformatAll() {
             genderfn="REG_JRC2018_${genderT}_${TRESOLUTION}_${inputfilename%.*}"
           fi
           echo "genderfn; $genderfn""  $_fn; "$_fn
-          if [[ $_fn = "$genderfn" ]]; then
-            echo "+----------------------------------------------------------------------+"
-            echo "| Rotation after registration"
-            echo "| $FIJI -macro $ROTATEAFTERWARP \"$OUTPUT/,$genderfn,$OUTPUT_NRRD,$TxtPath,$REFSCALE\""
-            echo "+----------------------------------------------------------------------+"
-            $FIJI -macro $ROTATEAFTERWARP "$OUTPUT/,$genderfn,$OUTPUT_NRRD,$TxtPath,$REFSCALE"
-            NRRDCOMPNEED=0
-          fi
 
+          if [[ $_fn = "$genderfn" ]]; then
+            if [[ -e "$TxtPath" ]]; then
+              echo "+----------------------------------------------------------------------+"
+              echo "| Rotation after registration"
+              echo "| $FIJI -macro $ROTATEAFTERWARP \"$OUTPUT/,$genderfn,$OUTPUT_NRRD,$TxtPath,$REFSCALE\""
+              echo "+----------------------------------------------------------------------+"
+              $FIJI -macro $ROTATEAFTERWARP "$OUTPUT/,$genderfn,$OUTPUT_NRRD,$TxtPath,$REFSCALE"
+              NRRDCOMPNEED=0
+            fi
+          fi
+	
           if [[ $testmode == "0" ]]; then
             unisexfn="REG_UNISEX_"$TRESOLUTION
           else
@@ -316,14 +319,16 @@ function reformatAll() {
           fi
           echo "unisexfn; $unisexfn""  $_fn; "$_fn
           if [[ $_fn = "$unisexfn" ]]; then
-            echo "+----------------------------------------------------------------------+"
-            echo "| Rotation after registration Unisex"
-            echo "| $FIJI -macro $ROTATEAFTERWARP \"$OUTPUT/,$unisexfn,$OUTPUT_NRRD,$TxtPath,$REFSCALE\""
-            echo "+----------------------------------------------------------------------+"
-            $FIJI -macro $ROTATEAFTERWARP "$OUTPUT/,$unisexfn,$OUTPUT_NRRD,$UTxtPath,$REFSCALE"
-            NRRDCOMPNEED=0
+            if [[ -e "$UTxtPath" ]]; then
+              echo "+----------------------------------------------------------------------+"
+              echo "| Rotation after registration Unisex"
+              echo "| $FIJI -macro $ROTATEAFTERWARP \"$OUTPUT/,$unisexfn,$OUTPUT_NRRD,$TxtPath,$REFSCALE\""
+              echo "+----------------------------------------------------------------------+"
+              $FIJI -macro $ROTATEAFTERWARP "$OUTPUT/,$unisexfn,$OUTPUT_NRRD,$UTxtPath,$REFSCALE"
+              NRRDCOMPNEED=0
+            fi
           fi
-
+	
           if [[ $NRRDCOMPNEED = 1 ]];then
             echo "+----------------------------------------------------------------------+"
             echo "| NRRD Compression"
@@ -551,7 +556,6 @@ echo "OLDSPACE; "$OLDSPACE
 echo "OLDTEMPPATH; "$OLDTEMPPATH
 echo "reformat_JRC2018_to_oldVNC; "$reformat_JRC2018_to_oldVNC
 
-if [[ $skip = 0 ]]; then
 
 LOGFILE="${OUTPUT}/PRE_PROCESSED63x_VNC_pre_aligner_log.txt"
 if [[ -e $LOGFILE ]]; then
@@ -585,6 +589,12 @@ else
     fi
 fi
 
+if [[ ! -e $TxtPath ]]; then
+    JRC2018_63xDW_CROPPED=$scoreT
+    registered_affine_unisex_xform=$OUTPUT"/Registration/affine/JRC2018_PRE_PROCESSED_01_9dof.list"
+    JRC2018_63x_UNISEX_CROPPED=$JRC2018_VNC_Unisex_63x
+fi
+
 # For TEST ############################################
 #if [[ $testmode == "1" ]]; then
  # gloval_nc82_nrrd=$OUTPUT"/JRC2018MALE_JFRC2014_63x_DistCorrected_01_warp.nrrd"
@@ -596,7 +606,7 @@ echo "gloval_nc82_nrrd; "$gloval_nc82_nrrd
 echo ""
 
 # -------------------------------------------------------------------------------------------
-if [[ -e $registered_warp_xform ]]; then
+if [[ -e ${registered_warp_xform} ]]; then
     echo "Already exists: $registered_warp_xform"
 else
     echo "+---------------------------------------------------------------------------------------+"
@@ -618,45 +628,46 @@ else
     echo "cmtk_gender_registration start: $START"
     echo "cmtk_gender_registration stop: $STOP"
 
-    echo " "
-    echo "------------------------------------------------------------"
-    echo "Template cropping by an affine registered brain "
-    echo "------------------------------------------------------------"
+    if [[ -e $TxtPath ]]; then
+        echo " "
+        echo "------------------------------------------------------------"
+        echo "Template cropping by an affine registered brain "
+        echo "------------------------------------------------------------"
 
-    sig=$OUTPUT"/Affine_${inputfilename%.*}_01.nrrd"
-    DEFFIELD=$registered_affine_xform
-    TSTRING="JRC2018 63X"
-    TEMP="$JRC2018_63xDW_CROPPED"
-    gsig="${gloval_nc82_DW_nrrd}"
+        sig=$OUTPUT"/Affine_${inputfilename%.*}_01.nrrd"
+        DEFFIELD=$registered_affine_xform
+        TSTRING="JRC2018 63X"
+        TEMP="$JRC2018_63xDW_CROPPED"
+        gsig="${gloval_nc82_DW_nrrd}"
 
-    $CMTK/reformatx -o "$sig" --floating $gsig $TEMP $DEFFIELD
-    $FIJI -macro $REGCROP "$TEMP,$sig,$NSLOTS"
-    rm -rf $sig
-
+        $CMTK/reformatx -o "$sig" --floating $gsig $TEMP $DEFFIELD
+        $FIJI -macro $REGCROP "$TEMP,$sig,$NSLOTS"
+        rm -rf $sig
+    fi
     START=`date '+%F %T'`
 
-    cd "$OUTPUT"
-    $CMTKM -b "$CMTK" -a -X 26 -C 8 -G 80 -R 4 -A '--accuracy 0.8' -W '--accuracy 0.8'  -T $NSLOTS -s "$JRC2018_63x_UNISEX_CROPPED" images
-    #$CMTK/registration -i -v --dofs 6 --dofs 9 --accuracy 0.8 -o Registration/affine/TempUnisex_PRE_PROCESSED_01_9dof.list ${JRC2018_63x_UNISEX_CROPPED} images/PRE_PROCESSED_01.nrrd
+        cd "$OUTPUT"
+        $CMTKM -b "$CMTK" -a -X 26 -C 8 -G 80 -R 4 -A '--accuracy 0.8' -W '--accuracy 0.8'  -T $NSLOTS -s "$JRC2018_63x_UNISEX_CROPPED" images
+        #$CMTK/registration -i -v --dofs 6 --dofs 9 --accuracy 0.8 -o Registration/affine/TempUnisex_PRE_PROCESSED_01_9dof.list ${JRC2018_63x_UNISEX_CROPPED} images/PRE_PROCESSED_01.nrrd
 
-    STOP=`date '+%F %T'`
-    if [[ ! -e ${registered_affine_xform} ]]; then
-        echo -e "Error: CMTK registration failed"
-        exit -1
+        STOP=`date '+%F %T'`
+       if [[ ! -e ${registered_affine_xform} ]]; then
+            echo -e "Error: CMTK registration failed"
+            exit -1
+        fi
+        echo "cmtk_unisex_registration start: $START"
+        echo "cmtk_unisex_registration stop: $STOP"
+
+    if [[ -e $TxtPath ]]; then
+        sig=$OUTPUT"/Affine_${inputfilename%.*}_01.nrrd"
+        DEFFIELD=$registered_affine_unisex_xform
+        TEMP="$JRC2018_63x_UNISEX_CROPPED"
+        gsig="$GLOUTPUT/"$glfilename"_01.nrrd"
+
+        $CMTK/reformatx -o "$sig" --floating $gsig $TEMP $DEFFIELD
+        $FIJI -macro $REGCROP "$TEMP,$sig,$NSLOTS"
+        rm -rf $sig
     fi
-    echo "cmtk_unisex_registration start: $START"
-    echo "cmtk_unisex_registration stop: $STOP"
-
-
-    sig=$OUTPUT"/Affine_${inputfilename%.*}_01.nrrd"
-    DEFFIELD=$registered_affine_unisex_xform
-    TEMP="$JRC2018_63x_UNISEX_CROPPED"
-    gsig="$GLOUTPUT/"$glfilename"_01.nrrd"
-
-    $CMTK/reformatx -o "$sig" --floating $gsig $TEMP $DEFFIELD
-    $FIJI -macro $REGCROP "$TEMP,$sig,$NSLOTS"
-    rm -rf $sig
-
 fi
 
 # CMTK warping
@@ -670,7 +681,7 @@ else
     echo "+----------------------------------------------------------------------+"
     START=`date '+%F %T'`
     
-$CMTK/warp --threads $NSLOTS -v --registration-metric nmi --jacobian-weight 0 --fast -e 26 --grid-spacing 80 --energy-weight 1e-1 --refine 4 --coarsest 8 --ic-weight 0 --output-intermediate --accuracy 0.8 -o $registered_warp_xform --initial ${registered_affine_xform} ${JRC2018_63xDW_CROPPED} ${gloval_nc82_DW_nrrd}
+    $CMTK/warp --threads $NSLOTS -v --registration-metric nmi --jacobian-weight 0 --fast -e 26 --grid-spacing 80 --energy-weight 1e-1 --refine 4 --coarsest 8 --ic-weight 0 --output-intermediate --accuracy 0.8 -o $registered_warp_xform --initial ${registered_affine_xform} ${JRC2018_63xDW_CROPPED} ${gloval_nc82_DW_nrrd}
     STOP=`date '+%F %T'`
 
     echo "cmtk_gender_warping start: $START"
@@ -680,12 +691,14 @@ $CMTK/warp --threads $NSLOTS -v --registration-metric nmi --jacobian-weight 0 --
     $CMTK/warp --threads $NSLOTS -v --registration-metric nmi --jacobian-weight 0 --fast -e 26 --grid-spacing 80 --energy-weight 1e-1 --refine 4 --coarsest 8 --ic-weight 0 --output-intermediate --accuracy 0.8 -o $registered_warp_unisex_xform --initial $registered_affine_unisex_xform ${JRC2018_63x_UNISEX_CROPPED} ${gloval_nc82_nrrd}
 
     STOP=`date '+%F %T'`
+
+    echo "cmtk_unisex_warping start: $START"
+    echo "cmtk_unisex_warping stop: $STOP"
     if [[ ! -e $registered_warp_xform ]]; then
         echo -e "Error: CMTK warping failed"
         exit -1
     fi
-    echo "cmtk_unisex_warping start: $START"
-    echo "cmtk_unisex_warping stop: $STOP"
+
 fi
 
 #if [[ $testmode == "1" ]]; then
@@ -701,7 +714,7 @@ if [[ $testmode == "0" ]]; then
   echo "+----------------------------------------------------------------------+"
   $FIJI --headless -macro $TWELVEBITCONV "${GLOUTPUT}/,${glfilename}_01.nrrd,${gloval_nc82_nrrd}" > $DEBUG_DIR/conv12bit.log 2>&1
 fi
-fi # skip
+
 
 
 ########################################################################################################
@@ -746,8 +759,11 @@ else
 fi
 sig=$OUTPUT"/"$fn
 
-
-TEMP="$JRC2018_63x_UNISEX_CROPPED"
+if [[ -e $TxtPath ]]; then
+    TEMP="$JRC2018_63x_UNISEX_CROPPED"
+else
+    TEMP="$JRC2018_VNC_Unisex_63x"
+fi
 
 if [[ ! -e $sig"_01.nrrd" ]]; then
     reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"

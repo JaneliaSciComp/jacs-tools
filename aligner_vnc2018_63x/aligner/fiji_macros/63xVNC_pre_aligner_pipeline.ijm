@@ -2,8 +2,9 @@
 argstr=0;
 Rev=0;//reverse stack is 1
 run("Misc...", "divide=Infinity save");
+rotatetemplate=1;
 
-//argstr="/test/63xVNC_align/,GMR_36E12_AE_01_20161028_27_A1__m.h5j,/test/63xVNC_align/Failed/GMR_36E12_AE_01_20161028_27_A1__m.h5j,/test/63xVNC_align/template/,0.1882689,0.38,11,mesothoracic;metathoracic;abdominal,m";
+//argstr="/test/63xVNC_align/,GMR_36E12_AE_01_20161028_27_A1__m.h5j,/test/63xVNC_align/Failed/GMR_36E12_AE_01_20161028_27_A1__m.h5j,/test/63xVNC_align/template/,0.1882689,0.38,11,prothoracic;mesothoracic;metathoracic,m";
 
 //argstr="/test/63xVNC_align/,JRC_SS42707_20180608_22_E1_f.h5j,/test/63xVNC_align/Failed/JRC_SS42707_20180608_22_E1_f.h5j,/test/63xVNC_align/template/,0.1882689,0.38,11,prothoracic,f";
 
@@ -29,7 +30,12 @@ gender = args[8];// f or m
 resx=parseFloat(resx);//Change string to number
 resz=parseFloat(resz);//Change string to number
 
+DoubleIndex=indexOf(alltiles,";");
+
+if(DoubleIndex!=-1)
 tileposi = split(alltiles,";");
+else
+tileposi = split(alltiles,"-");
 
 filepath=savedir+filename+"63x_VNC_pre_aligner_log.txt";
 
@@ -121,11 +127,46 @@ if(tilenum==1){
 	
 	matchingimage="small_F.tif";
 	
+	if(tilenum==4)
+	rotatetemplate=0;
+	
+	if(tilenum==3){
+		ProEXT=-1; MetaEXT=-1; MesoEXT=-1; AbEXT=-1;
+		ProEXT2=-1; MetaEXT2=-1; MesoEXT2=-1;
+		
+		for(itile=0; itile<tileposi.length; itile++){
+			
+			ProEXT=indexOf (tileposi[itile],"prothoracic");
+			MetaEXT=indexOf (tileposi[itile],"metathoracic");
+			MesoEXT=indexOf (tileposi[itile],"mesothoracic");
+			AbEXT=indexOf (tileposi[itile],"abdominal");
+			
+			if(AbEXT!=-1){
+				itile=tileposi.length;
+				break;
+			}else{
+				
+				if(ProEXT!=-1)
+				ProEXT2=1;
+				
+				if(MetaEXT!=-1)
+				MetaEXT2=1;
+				
+				if(MesoEXT!=-1)
+				MesoEXT2=1;
+				
+				if(MesoEXT2==1 && MetaEXT2==1 && ProEXT2==1)
+				rotatetemplate=0;
+			}
+		}
+	}//	if(tilenum==3){
 	prot=55;
 	mrot=55;
 	
 	VNCcrop=0;
 }
+print("--rotatetemplate; "+rotatetemplate);
+
 open(MatchingDir+matchingimage);
 rename("smalltemp.tif");
 getDimensions(smalltempW, smalltempH, smalltempC, smalltempS, smalltempF);
@@ -138,13 +179,13 @@ open(path);
 
 titlelistAfter=getList("image.titles");
 
+
 if(titlelistOri.length == titlelistAfter.length){
 	print("PreAlignerError: The file cannot open; "+path);
 	logsum=getInfo("log");
 	File.saveString(logsum, filepath);
 	
 	run("Quit");
-	
 }
 
 bitd=bitDepth();
@@ -223,14 +264,16 @@ if(channels>1){
 	run("Quit");
 }//if(channels>1){
 
-for(ineuron=1; ineuron<=channels-1; ineuron++){
-	selectWindow(neuronST[ineuron]);
-	
-	if(tilenum==3 || tilenum==4)
-	run("Canvas Size...", "width="+sampW+100+" height="+sampH+100+" position=Center zero");
-	
-	run("Nrrd Writer", "compressed nrrd="+savedir+"images/PRE_PROCESSED_0"+ineuron+1+".nrrd");
-	close();
+if(rotatetemplate==1){
+	for(ineuron=1; ineuron<=channels-1; ineuron++){
+		selectWindow(neuronST[ineuron]);
+		
+		if(tilenum==3 || tilenum==4)
+		run("Canvas Size...", "width="+sampW+100+" height="+sampH+100+" position=Center zero");
+		
+		run("Nrrd Writer", "compressed nrrd="+savedir+"images/PRE_PROCESSED_0"+ineuron+1+".nrrd");
+		close();
+	}
 }
 
 CLEAR_MEMORY();
@@ -322,9 +365,31 @@ maxY=addY+maxY;
 
 padding=200;
 
+selectWindow("nc82ori.tif");
+run("Gamma ", "gamma=1.4 in=InMacro cpu="+NSLOTS+"");
+gammaup=getTitle();
+
+while(isOpen("nc82ori.tif")){
+	selectWindow("nc82ori.tif");
+	close();
+}
+CLEAR_MEMORY();
+
+selectWindow(gammaup);
+rename("nc82ori.tif");
 /////////////// Unisex temp //////////////////////////////
-open(MatchingDir+templateVNCunisex);
-getDimensions(UtempCanvasWidth, UtempCanvasHeight, Utempchannels, Utempslices, Utempframes);
+
+if(rotatetemplate==1){
+	open(MatchingDir+templateVNCunisex);
+	getDimensions(UtempCanvasWidth, UtempCanvasHeight, Utempchannels, Utempslices, Utempframes);
+}else{
+	UtempCanvasWidth=1401;
+	UtempCanvasHeight=2740;
+	Utempslices=402;
+	open(MatchingDir+"MAX_JRC2018_VNC_UNISEX_63x.png");
+	templateVNCunisex=getTitle();
+	print("Opened temp MIP");
+}
 
 print("UtempCanvasWidth; "+UtempCanvasWidth+"   UtempCanvasHeight; "+UtempCanvasHeight+"   Utempslices; "+Utempslices);
 
@@ -341,107 +406,138 @@ if(sampW<2000 && sampH<2000){
 }
 
 tempYranslation=tempYranslation+52;
+TempRotationArray= newArray(UtempCanvasWidth, UtempCanvasHeight, Utempslices, rotatetemplate);
 
 temptype="Unisex";
-TempRotation (tempXranslation,tempYranslation,sampleLongLengthW+padding,sampleLongLengthH,maxrotation,resx,resz,VNCcrop,sampW,sampH,padding,temptype,smallerchangeratio);
+if(rotatetemplate==1){
+	
+	TempRotation (tempXranslation,tempYranslation,sampleLongLengthW+padding,sampleLongLengthH,maxrotation,resx,resz,VNCcrop,sampW,sampH,padding,temptype,smallerchangeratio,TempRotationArray);
+	
+	selectWindow(templateVNCunisex);
+	
+	TempMIPcreation (VNCcrop,sampW,padding,sampH,savedir,filename,temptype,rotatetemplate,templateVNCunisex);
+	
+	selectWindow(templateVNCunisex);
+	run("Nrrd Writer", "compressed nrrd="+savedir+"TempUnisex.nrrd");
+	
+	selectWindow("nc82ori.tif");
+	if(tilenum==3 || tilenum==4)
+	run("Canvas Size...", "width="+sampW+100+" height="+sampH+100+" position=Center zero");
+	run("Nrrd Writer", "compressed nrrd="+savedir+"images/PRE_PROCESSED_01.nrrd");
+	rename("nc82ori.tif");
+	File.saveString(UtempCanvasWidth+"\n"+UtempCanvasHeight+"\n"+Utempslices+"\n"+maxrotation+"\n"+tempXranslation*-1+"\n"+tempYranslation*-1+"\n"+resizefactor, savedir+filename+"_U_translation.txt");
+}//if(rotatetemplate==1){
 
-selectWindow(templateVNCunisex);
-
-TempMIPcreation (VNCcrop,sampW,padding,sampH,savedir,filename,temptype);
-
-selectWindow(templateVNCunisex);
-run("Nrrd Writer", "compressed nrrd="+savedir+"TempUnisex.nrrd");
+if(rotatetemplate==0){
+	tempXranslation=tempXranslation*-1;
+	tempYranslation=tempYranslation*-1;
+	maxrotation=maxrotation*-1;
+	
+	for(isample=1; isample<=channels; isample++){
+		if(isample<channels)
+		selectWindow(neuronST[isample]);
+		else
+		selectWindow("nc82ori.tif");
+		
+		objectrotate=getTitle();
+		
+		TempRotation (tempXranslation,tempYranslation,sampleLongLengthW+padding,sampleLongLengthH,maxrotation,resx,resz,VNCcrop,sampW,sampH,padding,temptype,smallerchangeratio,TempRotationArray);
+		
+		selectWindow(objectrotate);
+		
+		if(isample==channels)
+		TempMIPcreation (VNCcrop,sampW,padding,sampH,savedir,filename,temptype,rotatetemplate,templateVNCunisex);
+		
+		selectWindow(objectrotate);
+		
+		if(isample<channels){
+			run("Nrrd Writer", "compressed nrrd="+savedir+"images/PRE_PROCESSED_0"+isample+1+".nrrd");
+			close();
+		}else
+		run("Nrrd Writer", "compressed nrrd="+savedir+"images/PRE_PROCESSED_01.nrrd");
+	
+	}
+	File.saveString(UtempCanvasWidth+"\n"+UtempCanvasHeight+"\n"+Utempslices+"\n"+maxrotation+"\n"+tempXranslation*-1+"\n"+tempYranslation*-1+"\n"+resizefactor, savedir+filename+"_U_samptranslation.txt");
+}
 
 while(isOpen(templateVNCunisex)){
 	selectWindow(templateVNCunisex);
 	close();
 	print(templateVNCunisex+" closed");
 }
-File.saveString(UtempCanvasWidth+"\n"+UtempCanvasHeight+"\n"+Utempslices+"\n"+maxrotation+"\n"+tempXranslation*-1+"\n"+tempYranslation*-1+"\n"+resizefactor, savedir+filename+"_U_translation.txt");
+
+
+if(rotatetemplate==1)
 CLEAR_MEMORY();
 
-selectWindow("nc82ori.tif");
-run("Gamma ", "gamma=1.4 in=InMacro cpu="+NSLOTS+"");
-gammaup=getTitle();
-
-while(isOpen("nc82ori.tif")){
-	selectWindow("nc82ori.tif");
-	close();
-}
-CLEAR_MEMORY();
-
-selectWindow(gammaup);
-
-if(tilenum==3 || tilenum==4)
-run("Canvas Size...", "width="+sampW+100+" height="+sampH+100+" position=Center zero");
-run("Nrrd Writer", "compressed nrrd="+savedir+"images/PRE_PROCESSED_01.nrrd");
-rename("nc82ori.tif");
 
 /// resize sample for smaller VNC ////////////////////////////
 smallerchangeratio=resx/0.4611220;
 smallerchangeratioZ=resz/1;
 resizefactor = 1.7892/0.4611220;
 
+selectWindow("nc82ori.tif");
 run("Size...", "width="+round(sampW*smallerchangeratio)+" height="+round(sampH*smallerchangeratio)+" depth="+round(slices*smallerchangeratioZ)+" constrain average interpolation=Bilinear");
 getDimensions(sampW, sampH, channels, slices, frames);
 run("Nrrd Writer", "compressed nrrd="+savedir+"PRE_PROCESSED_DW_01.nrrd");
 
 print("");
 /////////////// Gender template ///////////////////////////////
-open(MatchingDir+templateVNC);
-getDimensions(tempCanvasWidth, tempCanvasHeight, tempchannels, tempslices, tempframes);
-getVoxelSize(tempVxWidth, tempVxHeight, tempVxDepth, VxUnit);
-
-print("tempCanvasWidth; "+tempCanvasWidth+"   tempCanvasHeight; "+tempCanvasHeight+"   tempslices; "+tempslices);
-print("tempVxWidth; "+tempVxWidth+"  tempVxHeight; "+tempVxHeight+"  tempVxDepth; "+tempVxDepth);
-
-if(sampW<2000 && sampH<2000){
-	sampleLongLengthW=round(tempCanvasWidth*2);//round(sqrt(sampH*sampH+sampW*sampW)*2);
-	sampleLongLengthH=round(tempCanvasHeight);//round(sqrt(sampH*sampH+sampW*sampW));
-}else{
-	sampleLongLengthW=round(tempCanvasWidth*1.8);//round(sqrt(sampH*sampH+sampW*sampW)*2);
-	sampleLongLengthH=round(tempCanvasHeight*1.2);//round(sqrt(sampH*sampH+sampW*sampW));
-}
-
-print("maxY; "+maxY+"   maxX; "+maxX+"  addX; "+addX+"  addY; "+addY+"  maxrotation; "+maxrotation);
-/// template rotation /////////////
-
-
-
-selectWindow(templateVNC);
-
-tempXranslation=round((maxX*resizefactor)*-1);
-tempYranslation=round((maxY*resizefactor)*-1);
-
-padding=round(padding*smallerchangeratio);
-temptype="Gender";
-
-TempRotation (tempXranslation,tempYranslation,sampleLongLengthW+padding,sampleLongLengthH,maxrotation,resx,resz,VNCcrop,sampW,sampH,padding,temptype,smallerchangeratio);
-
-selectWindow(templateVNC);
-
-run("Nrrd Writer", "compressed nrrd="+savedir+"TempDW.nrrd");
-TempMIPcreation (VNCcrop,sampW,padding,sampH,savedir,filename,temptype);
-
-//selectWindow(templateVNC);
-//getDimensions(TempRotW, TempRotH, TempRotCH, TempRotSlice, TempRotF);
-//run("Size...", "width="+round(TempRotW/2)+" height="+round(TempRotH/2)+" depth="+TempRotSlice+" constrain average interpolation=Bilinear");
-
-//setBatchMode(false);
-//updateDisplay();
-//a
-
-//run("Nrrd Writer", "compressed nrrd="+savedir+"TempDW.nrrd");
-
+if(rotatetemplate==1){
+	open(MatchingDir+templateVNC);
+	getDimensions(tempCanvasWidth, tempCanvasHeight, tempchannels, tempslices, tempframes);
+	getVoxelSize(tempVxWidth, tempVxHeight, tempVxDepth, VxUnit);
+	
+	
+	print("tempCanvasWidth; "+tempCanvasWidth+"   tempCanvasHeight; "+tempCanvasHeight+"   tempslices; "+tempslices);
+	print("tempVxWidth; "+tempVxWidth+"  tempVxHeight; "+tempVxHeight+"  tempVxDepth; "+tempVxDepth);
+	
+	if(sampW<2000 && sampH<2000){
+		sampleLongLengthW=round(tempCanvasWidth*2);//round(sqrt(sampH*sampH+sampW*sampW)*2);
+		sampleLongLengthH=round(tempCanvasHeight);//round(sqrt(sampH*sampH+sampW*sampW));
+	}else{
+		sampleLongLengthW=round(tempCanvasWidth*1.8);//round(sqrt(sampH*sampH+sampW*sampW)*2);
+		sampleLongLengthH=round(tempCanvasHeight*1.2);//round(sqrt(sampH*sampH+sampW*sampW));
+	}
+	
+	print("maxY; "+maxY+"   maxX; "+maxX+"  addX; "+addX+"  addY; "+addY+"  maxrotation; "+maxrotation);
+	/// template rotation /////////////
+	
+	selectWindow(templateVNC);
+	
+	tempXranslation=round((maxX*resizefactor)*-1);
+	tempYranslation=round((maxY*resizefactor)*-1);
+	
+	padding=round(padding*smallerchangeratio);
+	temptype="Gender";
+	
+	TempRotation (tempXranslation,tempYranslation,sampleLongLengthW+padding,sampleLongLengthH,maxrotation,resx,resz,VNCcrop,sampW,sampH,padding,temptype,smallerchangeratio,rotatetemplate);
+	
+	selectWindow(templateVNC);
+	
+	run("Nrrd Writer", "compressed nrrd="+savedir+"TempDW.nrrd");
+	TempMIPcreation (VNCcrop,sampW,padding,sampH,savedir,filename,temptype,rotatetemplate,templateVNC);
+	
+	//selectWindow(templateVNC);
+	//getDimensions(TempRotW, TempRotH, TempRotCH, TempRotSlice, TempRotF);
+	//run("Size...", "width="+round(TempRotW/2)+" height="+round(TempRotH/2)+" depth="+TempRotSlice+" constrain average interpolation=Bilinear");
+	
+	//setBatchMode(false);
+	//updateDisplay();
+	//a
+	
+	while(isOpen(templateVNC)){
+		selectWindow(templateVNC);
+		close();
+	}
+	//run("Nrrd Writer", "compressed nrrd="+savedir+"TempDW.nrrd");
+	File.saveString(tempCanvasWidth+"\n"+tempCanvasHeight+"\n"+tempslices+"\n"+maxrotation+"\n"+tempXranslation*-1+"\n"+tempYranslation*-1+"\n"+resizefactor, savedir+filename+"_translation.txt");
+}//if(rotatetemplate==0){
 logsum=getInfo("log");
 File.saveString(logsum, filepath);
 
-while(isOpen(templateVNC)){
-	selectWindow(templateVNC);
-	close();
-}
 
-File.saveString(tempCanvasWidth+"\n"+tempCanvasHeight+"\n"+tempslices+"\n"+maxrotation+"\n"+tempXranslation*-1+"\n"+tempYranslation*-1+"\n"+resizefactor, savedir+filename+"_translation.txt");
+
 
 
 
@@ -453,7 +549,12 @@ run("Close All");
 run("Quit");
 
 
-function TempRotation (tempXranslation,tempYranslation,sampleLongLengthW,sampleLongLengthH,maxrotation,resx,resz,VNCcrop,sampW,sampH,padding,temptype,smallerchangeratio) {
+function TempRotation (tempXranslation,tempYranslation,sampleLongLengthW,sampleLongLengthH,maxrotation,resx,resz,VNCcrop,sampW,sampH,padding,temptype,smallerchangeratio,TempRotationArray) {
+	
+	tempCanvasWidth=TempRotationArray[0];
+	tempCanvasHeight=TempRotationArray[1];
+	tempslices=TempRotationArray[2];
+	rotatetemplate=TempRotationArray[3];
 	
 	run("Canvas Size...", "width="+sampleLongLengthW+" height="+sampleLongLengthH+" position=Center zero");
 	
@@ -466,32 +567,53 @@ function TempRotation (tempXranslation,tempYranslation,sampleLongLengthW,sampleL
 		run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=microns pixel_width="+VxWidth+" pixel_height="+VxHeight+" voxel_depth="+VxDepth+"");
 	}//	if(maxrotation>0){
 	
-	if(VNCcrop==1)
-	run("Canvas Size...", "width="+sampW+padding+" height="+sampH+padding+" position=Center zero");
-	else if (temptype=="Unisex")
-	run("Canvas Size...", "width=2550 height=2350 position=Center zero");
-	else
-	run("Canvas Size...", "width="+round(2550*smallerchangeratio)+" height="+round(2350*smallerchangeratio)+" position=Center zero");
-	
+	if(rotatetemplate==1){
+		if(VNCcrop==1)
+		run("Canvas Size...", "width="+sampW+padding+" height="+sampH+padding+" position=Center zero");
+		else if (temptype=="Unisex")
+		run("Canvas Size...", "width=2550 height=2350 position=Center zero");
+		else
+		run("Canvas Size...", "width="+round(2550*smallerchangeratio)+" height="+round(2350*smallerchangeratio)+" position=Center zero");
+	}else{
+		run("Canvas Size...", "width="+tempCanvasWidth+padding+" height="+tempCanvasHeight+padding+" position=Center zero");
+	}
 }//function TempRotation (tempXranslation,tempYranslation,sampleLongLengthW,sampleLongLengthH,maxrotation,resx,resz,VNCcrop,sampW,sampH) {
 
-function TempMIPcreation (VNCcrop,sampW,padding,sampH,savedir,filename,temptype){
-	run("Z Project...", "projection=[Max Intensity]");
-	tempMIP = getImageID();
-	tempMIPst = getTitle();
+function TempMIPcreation (VNCcrop,sampW,padding,sampH,savedir,filename,temptype,rotatetemplate,tempname){
 	
-	selectWindow("nc82ori.tif");
 	run("Z Project...", "projection=[Max Intensity]");
 	
-	if(VNCcrop==1)
-	run("Canvas Size...", "width="+sampW+padding+" height="+sampH+padding+" position=Center zero");
-	else if (temptype=="Unisex")
-	run("Canvas Size...", "width=2550 height=2350 position=Center zero");
-	else
-	run("Canvas Size...", "width="+round(2550*smallerchangeratio)+" height="+round(2350*smallerchangeratio)+" position=Center zero");
-	
-	sampMIPst = getTitle();
-	
+	if(rotatetemplate==1){
+		
+		tempMIP = getImageID();
+		tempMIPst = getTitle();
+		
+		selectWindow("nc82ori.tif");
+		run("Z Project...", "projection=[Max Intensity]");
+		
+		if(VNCcrop==1)
+		run("Canvas Size...", "width="+sampW+padding+" height="+sampH+padding+" position=Center zero");
+		else if (temptype=="Unisex")
+		run("Canvas Size...", "width=2550 height=2350 position=Center zero");
+		else
+		run("Canvas Size...", "width="+round(2550*smallerchangeratio)+" height="+round(2350*smallerchangeratio)+" position=Center zero");
+		
+		sampMIPst = getTitle();
+	}else{
+		
+		sampMIPst = getTitle();
+		
+		selectWindow(tempname);
+		run("16-bit");
+		setMinAndMax(0, 255);
+		run("Apply LUT");
+		getDimensions(TEMwidth, TEMheight, channels, TEMslices, frames);
+		tempMIPst = getTitle();
+		
+		selectWindow(sampMIPst);
+		run("Canvas Size...", "width="+TEMwidth+" height="+TEMheight+" position=Center zero");
+		
+	}
 	run("Merge Channels...", "c1="+tempMIPst+" c2="+sampMIPst+"  c3="+tempMIPst+"");
 	//saveAs("PNG", savedir+filename+"_TempP_SampG.png");
 	
