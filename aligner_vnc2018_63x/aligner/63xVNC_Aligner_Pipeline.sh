@@ -794,8 +794,16 @@ if [[ ! -e $sig"_01.nrrd" ]]; then
 
   reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
 
+    scoreGen $sig"_01.nrrd" "$TEMP" "score2018U" "2018Umovie"
+
+
+  if [[ $testmode = "1" ]]; then
+    rm $OUTPUT"/Score_log_"$fn"_01.txt"
+    rm $OUTPUT"/JRC2018_VNC_UNISEX_447_Score.property"
+  fi
+
   if [[ $testmode = "0" ]]; then
-    writeProperties "$RAWOUT" "" "JRC2018_Unisex_VNC_20x" "20x" "0.4611220x0.4611220x0.70" "573x1119x219" "" "" "$main_aligned_file"
+    writeProperties "$RAWOUT" "" "JRC2018_Unisex_VNC_20x" "20x" "0.4611220x0.4611220x0.70" "573x1119x219" "$score2018U" "" "$main_aligned_file" "$2018Umovie"
   fi
 fi
 
@@ -832,17 +840,9 @@ TEMP="$OLDTEMPPATH"
 if [[ ! -e $sig"_01.nrrd" ]]; then
   reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
 
-  if [[ $INPUT1_GENDER == "f" ]]; then
-    scoreGen $sig"_01.nrrd" "$OLDTEMPPATH" "scoreOLD" "verifyOLD"
-  fi
-
-  if [[ $testmode = "1" ]]; then
-    rm $OUTPUT"/Score_log_"$fn"_01.txt"
-    rm $OUTPUT"/20x_flyVNCtemplate_Female_symmetric_16bit_Score.property"
-  fi
 
   if [[ $testmode = "0" ]]; then
-    writeProperties "$RAWOUT" "" "$OLDSPACEWS" "$objective" "$OLDVOXELS" "$OLDSIZE" "$scoreOLD" "" "$main_aligned_file"
+    writeProperties "$RAWOUT" "" "$OLDSPACEWS" "$objective" "$OLDVOXELS" "$OLDSIZE" "" "" "$main_aligned_file"
   fi
 fi
 
@@ -859,21 +859,8 @@ if [[ $INPUT1_GENDER == "m" ]]; then
     fn="REG_VNC2017F_${inputfilename%.*}"
   fi
 
-  sig=$OUTPUT"/"$fn
-  TEMP="$VNC2017_Female"
-
-  if [[ ! -e $sig"_01.nrrd" ]]; then
-    reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
-    scoreGen $sig"_01.nrrd" "$TEMP" "scoreOLD" "verifyOLD"
-  fi
-
-  if [[ $testmode = "1" ]]; then
-    rm $OUTPUT"/Score_log_"$fn"_01.txt"
-    rm $OUTPUT"/20x_flyVNCtemplate_Female_symmetric_16bit_Score.property"
-  fi
-
   if [[ $testmode = "0" ]]; then
-    writeProperties "$RAWOUT" "" "FemaleVNCSymmetric2017_20x" "20x" "0.4612588x0.4612588x0.7" "512x1024x220" "$scoreOLD" "" "$main_aligned_file"
+    writeProperties "$RAWOUT" "" "FemaleVNCSymmetric2017_20x" "20x" "0.4612588x0.4612588x0.7" "512x1024x220" "" "" "$main_aligned_file"
   fi
 fi #if [[ $INPUT1_GENDER == "m" ]]; then
 

@@ -6,7 +6,7 @@ rotatetemplate=1;
 
 //argstr="/test/63xVNC_align/,GMR_36E12_AE_01_20161028_27_A1__m.h5j,/test/63xVNC_align/Failed/GMR_36E12_AE_01_20161028_27_A1__m.h5j,/test/63xVNC_align/template/,0.1882689,0.38,11,prothoracic;mesothoracic;metathoracic,m";
 
-//argstr="/test/63xVNC_align/,JRC_SS42707_20180608_22_E1_f.h5j,/test/63xVNC_align/Failed/JRC_SS42707_20180608_22_E1_f.h5j,/test/63xVNC_align/template/,0.1882689,0.38,11,prothoracic,f";
+//argstr="/test/63xVNC_align/samples/1_pro/,JRC_SS42707_20180608_22_E1_.h5j,/test/63xVNC_align/samples/1_pro/JRC_SS42707_20180608_22_E1_.h5j,/test/63xVNC_align/template/,0.1882689,0.38,11,prothoracic,f";
 
 setBatchMode(true);
 
@@ -455,7 +455,7 @@ if(rotatetemplate==0){
 			close();
 		}else
 		run("Nrrd Writer", "compressed nrrd="+savedir+"images/PRE_PROCESSED_01.nrrd");
-	
+		
 	}
 	File.saveString(UtempCanvasWidth+"\n"+UtempCanvasHeight+"\n"+Utempslices+"\n"+maxrotation+"\n"+tempXranslation*-1+"\n"+tempYranslation*-1+"\n"+resizefactor, savedir+filename+"_U_samptranslation.txt");
 }
@@ -488,7 +488,7 @@ if(rotatetemplate==1){
 	getDimensions(tempCanvasWidth, tempCanvasHeight, tempchannels, tempslices, tempframes);
 	getVoxelSize(tempVxWidth, tempVxHeight, tempVxDepth, VxUnit);
 	
-	
+	TempRotationArray= newArray(tempCanvasWidth, tempCanvasHeight, tempslices, rotatetemplate);
 	print("tempCanvasWidth; "+tempCanvasWidth+"   tempCanvasHeight; "+tempCanvasHeight+"   tempslices; "+tempslices);
 	print("tempVxWidth; "+tempVxWidth+"  tempVxHeight; "+tempVxHeight+"  tempVxDepth; "+tempVxDepth);
 	
@@ -511,7 +511,7 @@ if(rotatetemplate==1){
 	padding=round(padding*smallerchangeratio);
 	temptype="Gender";
 	
-	TempRotation (tempXranslation,tempYranslation,sampleLongLengthW+padding,sampleLongLengthH,maxrotation,resx,resz,VNCcrop,sampW,sampH,padding,temptype,smallerchangeratio,rotatetemplate);
+	TempRotation (tempXranslation,tempYranslation,sampleLongLengthW+padding,sampleLongLengthH,maxrotation,resx,resz,VNCcrop,sampW,sampH,padding,temptype,smallerchangeratio,TempRotationArray);
 	
 	selectWindow(templateVNC);
 	
@@ -558,14 +558,29 @@ function TempRotation (tempXranslation,tempYranslation,sampleLongLengthW,sampleL
 	
 	run("Canvas Size...", "width="+sampleLongLengthW+" height="+sampleLongLengthH+" position=Center zero");
 	
-	run("Translate...", "x="+round(tempXranslation)+" y="+round(tempYranslation)+" interpolation=None stack");
-	print("Translated template line 230; X; "+tempXranslation+"   Y; "+tempYranslation);
-	print("temp rotate W; "+sampleLongLengthW+"  H; "+sampleLongLengthH);
-	if(maxrotation!=0){
-		getVoxelSize(VxWidth, VxHeight, VxDepth, VxUnit);
-		run("Rotation Hideo", "rotate="+maxrotation*-1+" 3d in=InMacro");
-		run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=microns pixel_width="+VxWidth+" pixel_height="+VxHeight+" voxel_depth="+VxDepth+"");
-	}//	if(maxrotation>0){
+	if(rotatetemplate==1){
+		run("Translate...", "x="+round(tempXranslation)+" y="+round(tempYranslation)+" interpolation=None stack");
+		print("Translated template line 230; X; "+tempXranslation+"   Y; "+tempYranslation);
+		print("temp rotate W; "+sampleLongLengthW+"  H; "+sampleLongLengthH);
+		if(maxrotation!=0){
+			getVoxelSize(VxWidth, VxHeight, VxDepth, VxUnit);
+			run("Rotation Hideo", "rotate="+maxrotation*-1+" 3d in=InMacro");
+			run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=microns pixel_width="+VxWidth+" pixel_height="+VxHeight+" voxel_depth="+VxDepth+"");
+		}//	if(maxrotation>0){
+	}else{
+		
+		if(maxrotation!=0){
+			getVoxelSize(VxWidth, VxHeight, VxDepth, VxUnit);
+			run("Rotation Hideo", "rotate="+maxrotation*-1+" 3d in=InMacro");
+			run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=microns pixel_width="+VxWidth+" pixel_height="+VxHeight+" voxel_depth="+VxDepth+"");
+		}//	if(maxrotation>0){
+		run("Translate...", "x="+round(tempXranslation)+" y="+round(tempYranslation)+" interpolation=None stack");
+		print("Translated template line 578; X; "+tempXranslation+"   Y; "+tempYranslation);
+		print("temp rotate W; "+sampleLongLengthW+"  H; "+sampleLongLengthH);
+		
+	}
+	
+	
 	
 	if(rotatetemplate==1){
 		if(VNCcrop==1)
