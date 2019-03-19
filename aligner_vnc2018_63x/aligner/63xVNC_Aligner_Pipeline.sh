@@ -857,6 +857,13 @@ if [[ $INPUT1_GENDER == "m" ]]; then
     fn="REG_VNC2017F_${inputfilename%.*}"
   fi
 
+  sig=$OUTPUT"/"$fn
+  TEMP="$VNC2017_Female"
+
+  if [[ ! -e $sig"_01.nrrd" ]]; then
+    reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
+  fi
+
   if [[ $testmode = "0" ]]; then
     writeProperties "$RAWOUT" "" "FemaleVNCSymmetric2017_20x" "20x" "0.4612588x0.4612588x0.7" "512x1024x220" "" "" "$main_aligned_file"
   fi
