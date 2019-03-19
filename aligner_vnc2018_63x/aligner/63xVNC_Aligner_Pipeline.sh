@@ -2,7 +2,6 @@
 # # 63x VNC aligner by Hideo Otsuna #
 
 testmode=0
-skip=0
 
 export CMTK_WRITE_UNCOMPRESSED=1
 
@@ -794,8 +793,7 @@ if [[ ! -e $sig"_01.nrrd" ]]; then
 
   reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
 
-    scoreGen $sig"_01.nrrd" "$TEMP" "score2018U" "2018Umovie"
-
+  scoreGen $sig"_01.nrrd" "$TEMP" "score2018U" "verify2018U"
 
   if [[ $testmode = "1" ]]; then
     rm $OUTPUT"/Score_log_"$fn"_01.txt"
@@ -803,7 +801,7 @@ if [[ ! -e $sig"_01.nrrd" ]]; then
   fi
 
   if [[ $testmode = "0" ]]; then
-    writeProperties "$RAWOUT" "" "JRC2018_Unisex_VNC_20x" "20x" "0.4611220x0.4611220x0.70" "573x1119x219" "$score2018U" "" "$main_aligned_file" "$2018Umovie"
+    writeProperties "$RAWOUT" "" "JRC2018_Unisex_VNC_20x" "20x" "0.4611220x0.4611220x0.70" "573x1119x219" "$score2018U" "" "$main_aligned_file" "$verify2018U"
   fi
 fi
 
