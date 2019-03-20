@@ -49,5 +49,5 @@ assertExists REG_VNC2017M.properties
 assertExists REG_JRC2018_MALE_63x_01.mp4
 assertContains REG_JRC2018_MALE_63x.properties "alignment.verify.filename=REG_JRC2018_MALE_63x_01.mp4"
 # Check for specific properties
-assertContains REG_JRC2018_MALE_63x.properties "alignment.resolution.voxels=0.1882689x0.1882689x0.38"
+assertContains REG_JRC2018_MALE_63x.properties "alignment.resolution.voxels=0.4611220x0.4611220x0.7"
 
