@@ -4,7 +4,7 @@ Rev=0;//reverse stack is 1
 run("Misc...", "divide=Infinity save");
 rotatetemplate=1;
 
-//argstr="/test/63xVNC_align/,GMR_36E12_AE_01_20161028_27_A1__m.h5j,/test/63xVNC_align/Failed/GMR_36E12_AE_01_20161028_27_A1__m.h5j,/test/63xVNC_align/template/,0.1882689,0.38,11,prothoracic;mesothoracic;metathoracic,m";
+//argstr="/test/63xVNC_align/,stitched-2530559394974793826.v3draw,/test/63xVNC_align/samples/stitched-2530559394974793826.v3draw,/test/63xVNC_align/template/,0.1882689,0.38,11,mesothoracic;metathoracic;prothoracic,m";
 
 //argstr="/test/63xVNC_align/samples/1_pro/,JRC_SS42707_20180608_22_E1_.h5j,/test/63xVNC_align/samples/1_pro/JRC_SS42707_20180608_22_E1_.h5j,/test/63xVNC_align/template/,0.1882689,0.38,11,prothoracic,f";
 
@@ -477,7 +477,7 @@ smallerchangeratioZ=resz/1;
 resizefactor = 1.7892/0.4611220;
 
 selectWindow("nc82ori.tif");
-run("Size...", "width="+round(sampW*smallerchangeratio)+" height="+round(sampH*smallerchangeratio)+" depth="+round(slices*smallerchangeratioZ)+" constrain average interpolation=Bilinear");
+run("Size...", "width="+round(sampW*smallerchangeratio)+" height="+round(sampH*smallerchangeratio)+" depth="+round(slices*smallerchangeratioZ)+" constrain average interpolation=Bicubic");
 getDimensions(sampW, sampH, channels, slices, frames);
 run("Nrrd Writer", "compressed nrrd="+savedir+"PRE_PROCESSED_DW_01.nrrd");
 
