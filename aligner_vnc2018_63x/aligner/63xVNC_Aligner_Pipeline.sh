@@ -155,7 +155,7 @@ VNC2017_Male=$TempDir"/2017Male_VNC.nrrd"
 JRC2018_63xDW_CROPPED=$OUTPUT"/TempDW.nrrd"
 
 JRC2018_63x_UNISEX_CROPPED=$OUTPUT"/TempUnisex.nrrd"
-#JRC2018_63xDW_UNISEX_CROPPED=$OUTPUT"/TempUnisexDW.nrrd"
+JRC2018_63xDW_UNISEX_CROPPED=$OUTPUT"/TempUnisex_DW.nrrd"
 
 # "-------------------Global aligned files----------------------"
 GLOUTPUT=$OUTPUT/images
@@ -591,7 +591,7 @@ fi
 if [[ ! -e $TxtPath ]]; then
     JRC2018_63xDW_CROPPED=$scoreT
     registered_affine_unisex_xform=$OUTPUT"/Registration/affine/JRC2018_PRE_PROCESSED_01_9dof.list"
-    JRC2018_63x_UNISEX_CROPPED=$JRC2018_VNC_Unisex_63x
+    JRC2018_63xDW_UNISEX_CROPPED=${JRC2018_VNC_Unisex_40x}
 fi
 
 # For TEST ############################################
@@ -646,8 +646,8 @@ else
     START=`date '+%F %T'`
 
         cd "$OUTPUT"
-        $CMTKM -b "$CMTK" -a -X 26 -C 8 -G 80 -R 4 -A '--accuracy 0.8' -W '--accuracy 0.8'  -T $NSLOTS -s "$JRC2018_63x_UNISEX_CROPPED" images
-        #$CMTK/registration -i -v --dofs 6 --dofs 9 --accuracy 0.8 -o Registration/affine/TempUnisex_PRE_PROCESSED_01_9dof.list ${JRC2018_63x_UNISEX_CROPPED} images/PRE_PROCESSED_01.nrrd
+        #$CMTKM -b "$CMTK" -a -X 26 -C 8 -G 80 -R 4 -A '--accuracy 0.8' -W '--accuracy 0.8'  -T $NSLOTS -s "$JRC2018_63x_UNISEX_CROPPED" images
+        $CMTK/registration -i -v --dofs 6 --dofs 9 --accuracy 0.8 -o ${registered_affine_unisex_xform} ${JRC2018_63xDW_UNISEX_CROPPED} ${gloval_nc82_DW_nrrd}
 
         STOP=`date '+%F %T'`
        if [[ ! -e ${registered_affine_xform} ]]; then
@@ -687,7 +687,7 @@ else
     echo "cmtk_gender_warping stop: $STOP"
 
     START=`date '+%F %T'`
-    $CMTK/warp --threads $NSLOTS -v --registration-metric nmi --jacobian-weight 0 --fast -e 26 --grid-spacing 80 --energy-weight 1e-1 --refine 4 --coarsest 8 --ic-weight 0 --output-intermediate --accuracy 0.8 -o $registered_warp_unisex_xform --initial $registered_affine_unisex_xform ${JRC2018_63x_UNISEX_CROPPED} ${gloval_nc82_nrrd}
+    $CMTK/warp --threads $NSLOTS -v --registration-metric nmi --jacobian-weight 0 --fast -e 26 --grid-spacing 80 --energy-weight 1e-1 --refine 4 --coarsest 8 --ic-weight 0 --output-intermediate --accuracy 0.8 -o $registered_warp_unisex_xform --initial $registered_affine_unisex_xform ${JRC2018_63xDW_UNISEX_CROPPED} ${gloval_nc82_DW_nrrd}
 
     STOP=`date '+%F %T'`
 

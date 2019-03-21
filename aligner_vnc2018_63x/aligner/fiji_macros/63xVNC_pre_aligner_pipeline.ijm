@@ -420,6 +420,7 @@ if(rotatetemplate==1){
 	selectWindow(templateVNCunisex);
 	run("Nrrd Writer", "compressed nrrd="+savedir+"TempUnisex.nrrd");
 	
+	
 	selectWindow("nc82ori.tif");
 	if(tilenum==3 || tilenum==4)
 	run("Canvas Size...", "width="+sampW+100+" height="+sampH+100+" position=Center zero");
@@ -458,6 +459,14 @@ if(rotatetemplate==0){
 		
 	}
 	File.saveString(UtempCanvasWidth+"\n"+UtempCanvasHeight+"\n"+Utempslices+"\n"+maxrotation+"\n"+tempXranslation*-1+"\n"+tempYranslation*-1+"\n"+resizefactor, savedir+filename+"_U_samptranslation.txt");
+}
+
+if(rotatetemplate==1){
+	selectWindow(templateVNCunisex);
+	smallerchangeratio=resx/0.4611220;
+	smallerchangeratioZ=resz/1;
+	run("Size...", "width="+round(UtempCanvasWidth*smallerchangeratio)+" height="+round(UtempCanvasHeight*smallerchangeratio)+" depth="+round(Utempslices*smallerchangeratioZ)+" constrain average interpolation=Bicubic");
+	run("Nrrd Writer", "compressed nrrd="+savedir+"TempUnisex_DW.nrrd");
 }
 
 while(isOpen(templateVNCunisex)){
