@@ -462,7 +462,7 @@ if(rotatetemplate==0){
 }
 
 smallerchangeratio=resx/0.4150098;//+10 % more resolution
-smallerchangeratioZ=resz/0.9;//+10 % more resolution
+smallerchangeratioZ=resz/0.63;//+10 % more resolution
 
 print("smallerchangeratio; "+smallerchangeratio+"   smallerchangeratioZ; "+smallerchangeratioZ);
 
