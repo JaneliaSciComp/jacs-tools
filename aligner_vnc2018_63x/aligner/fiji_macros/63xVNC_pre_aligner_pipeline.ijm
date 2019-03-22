@@ -461,10 +461,13 @@ if(rotatetemplate==0){
 	File.saveString(UtempCanvasWidth+"\n"+UtempCanvasHeight+"\n"+Utempslices+"\n"+maxrotation+"\n"+tempXranslation*-1+"\n"+tempYranslation*-1+"\n"+resizefactor, savedir+filename+"_U_samptranslation.txt");
 }
 
+smallerchangeratio=resx/0.4150098;//+10 % more resolution
+smallerchangeratioZ=resz/0.9;//+10 % more resolution
+
+print("smallerchangeratio; "+smallerchangeratio+"   smallerchangeratioZ; "+smallerchangeratioZ);
+
 if(rotatetemplate==1){
 	selectWindow(templateVNCunisex);
-	smallerchangeratio=resx/0.4611220;
-	smallerchangeratioZ=resz/1;
 	run("Size...", "width="+round(UtempCanvasWidth*smallerchangeratio)+" height="+round(UtempCanvasHeight*smallerchangeratio)+" depth="+round(Utempslices*smallerchangeratioZ)+" constrain average interpolation=Bicubic");
 	run("Nrrd Writer", "compressed nrrd="+savedir+"TempUnisex_DW.nrrd");
 }
@@ -481,12 +484,13 @@ CLEAR_MEMORY();
 
 
 /// resize sample for smaller VNC ////////////////////////////
-smallerchangeratio=resx/0.4611220;
-smallerchangeratioZ=resz/1;
 resizefactor = 1.7892/0.4611220;
 
+getDimensions(sampnewW, sampnewH, newchannels, newslices, frames);
+print("sampnewW; "+sampnewW+"   sampnewH; "+sampnewH+"   newslices; "+newslices);
+
 selectWindow("nc82ori.tif");
-run("Size...", "width="+round(sampW*smallerchangeratio)+" height="+round(sampH*smallerchangeratio)+" depth="+round(slices*smallerchangeratioZ)+" constrain average interpolation=Bicubic");
+run("Size...", "width="+round(sampnewW*smallerchangeratio)+" height="+round(sampnewH*smallerchangeratio)+" depth="+round(newslices*smallerchangeratioZ)+" constrain average interpolation=Bicubic");
 getDimensions(sampW, sampH, channels, slices, frames);
 run("Nrrd Writer", "compressed nrrd="+savedir+"PRE_PROCESSED_DW_01.nrrd");
 

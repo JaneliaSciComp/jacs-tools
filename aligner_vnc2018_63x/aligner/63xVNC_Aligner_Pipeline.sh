@@ -773,10 +773,10 @@ if [[ ! -e $sig"_01.nrrd" ]]; then
 fi
 
 ########################################################################################################
-# JRC2018 unisex 20x reformat
+# JRC2018 unisex 40x reformat
 ########################################################################################################
 
-banner "JRC2018 unisex 20x reformat"
+banner "JRC2018 unisex 40x reformat"
 DEFFIELD="$UNISEX_RESIZE"
 if [[ $testmode == "0" ]]; then
   fn="REG_UNISEX_20x"
