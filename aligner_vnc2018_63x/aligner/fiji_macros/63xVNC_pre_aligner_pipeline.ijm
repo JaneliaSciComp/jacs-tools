@@ -406,7 +406,7 @@ if(sampW<2000 && sampH<2000){
 }
 
 tempYranslation=tempYranslation+52;
-TempRotationArray= newArray(UtempCanvasWidth, UtempCanvasHeight, Utempslices, rotatetemplate);
+TempRotationArray= newArray(UtempCanvasWidth, UtempCanvasHeight, Utempslices, rotatetemplate,NSLOTS);
 
 temptype="Unisex";
 if(rotatetemplate==1){
@@ -501,7 +501,7 @@ if(rotatetemplate==1){
 	getDimensions(tempCanvasWidth, tempCanvasHeight, tempchannels, tempslices, tempframes);
 	getVoxelSize(tempVxWidth, tempVxHeight, tempVxDepth, VxUnit);
 	
-	TempRotationArray= newArray(tempCanvasWidth, tempCanvasHeight, tempslices, rotatetemplate);
+	TempRotationArray= newArray(tempCanvasWidth, tempCanvasHeight, tempslices, rotatetemplate,NSLOTS);
 	print("tempCanvasWidth; "+tempCanvasWidth+"   tempCanvasHeight; "+tempCanvasHeight+"   tempslices; "+tempslices);
 	print("tempVxWidth; "+tempVxWidth+"  tempVxHeight; "+tempVxHeight+"  tempVxDepth; "+tempVxDepth);
 	
@@ -568,6 +568,9 @@ function TempRotation (tempXranslation,tempYranslation,sampleLongLengthW,sampleL
 	tempCanvasHeight=TempRotationArray[1];
 	tempslices=TempRotationArray[2];
 	rotatetemplate=TempRotationArray[3];
+	NSLOTS=TempRotationArray[4];
+	
+	NSLOTS=parseFloat(NSLOTS);//Chaneg string to number
 	
 	run("Canvas Size...", "width="+sampleLongLengthW+" height="+sampleLongLengthH+" position=Center zero");
 	
@@ -577,14 +580,20 @@ function TempRotation (tempXranslation,tempYranslation,sampleLongLengthW,sampleL
 		print("temp rotate W; "+sampleLongLengthW+"  H; "+sampleLongLengthH);
 		if(maxrotation!=0){
 			getVoxelSize(VxWidth, VxHeight, VxDepth, VxUnit);
-			run("Rotation Hideo", "rotate="+maxrotation*-1+" 3d in=InMacro");
+			sttempr=getTime();
+			run("Rotation Hideo", "rotate="+maxrotation*-1+" 3d in=InMacro interpolation=BICUBIC cpu="+NSLOTS+"");
+			edtempr=getTime();
+			print((edtempr-sttempr)/1000+"  sec for rotation bicubic");
 			run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=microns pixel_width="+VxWidth+" pixel_height="+VxHeight+" voxel_depth="+VxDepth+"");
 		}//	if(maxrotation>0){
 	}else{
 		
 		if(maxrotation!=0){
 			getVoxelSize(VxWidth, VxHeight, VxDepth, VxUnit);
-			run("Rotation Hideo", "rotate="+maxrotation*-1+" 3d in=InMacro");
+			sttempr=getTime();
+			run("Rotation Hideo", "rotate="+maxrotation*-1+" 3d in=InMacro interpolation=BICUBIC cpu="+NSLOTS+"");
+			edtempr=getTime();
+			print((edtempr-sttempr)/1000+"  sec for rotation bicubic");
 			run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=microns pixel_width="+VxWidth+" pixel_height="+VxHeight+" voxel_depth="+VxDepth+"");
 		}//	if(maxrotation>0){
 		run("Translate...", "x="+round(tempXranslation)+" y="+round(tempYranslation)+" interpolation=None stack");

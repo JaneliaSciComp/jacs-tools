@@ -195,7 +195,8 @@ function ThreeDrotation (ThreeDrotationArray,TotalXtranslation,TotalYtranslation
 	
 	
 	if(TotalRotationFrontal!=0){
-		run("Rotation Hideo", "rotate="+TotalRotationFrontal+" 3d in=InMacro");
+		run("Rotation Hideo", "rotate="+TotalRotationFrontal+" 3d in=InMacro interpolation=BICUBIC cpu=3");
+		
 		run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=microns pixel_width="+OriSampWidth+" pixel_height="+OriSampHeight+" voxel_depth="+OriSampDepth+"");
 		print("xy rotated; TotalRotationFrontal; "+TotalRotationFrontal);
 	}//	if(TotalRotationFrontal>0){
