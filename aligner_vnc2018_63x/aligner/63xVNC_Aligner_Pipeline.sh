@@ -865,7 +865,7 @@ if [[ $INPUT1_GENDER == "m" ]]; then
   fi
 
   if [[ $testmode = "0" ]]; then
-    writeProperties "$RAWOUT" "" "FemaleVNCSymmetric2017_20x" "20x" "0.4612588x0.4612588x0.7" "512x1024x220" "" "" "$main_aligned_file"
+    writeProperties "$RAWOUT" "" "FemaleVNCSymmetric2017_20x" "63x" "0.4612588x0.4612588x0.7" "512x1024x220" "" "" "$main_aligned_file"
   fi
 fi #if [[ $INPUT1_GENDER == "m" ]]; then
 
