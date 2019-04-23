@@ -108,3 +108,17 @@ Read or write H5J metadata on an existing H5J file.
 Convert the input file given by the first parameter into the file(s) specified by the second parameter.
 The third (optional) parameter is a 1 or 0 indicating whether or not the channels should be split.
 
+%apprun h5j_extract_channel
+export PATH="/usr/local/anaconda/bin:$PATH"
+source activate py3
+/opt/scripts/extract_channel.py "$@"
+%apphelp h5j_extract_channel
+Extract a single channel from an H5J file
+
+%apprun h5j_extract_channels
+export PATH="/usr/local/anaconda/bin:$PATH"
+source activate py3
+/opt/scripts/extract_channels.py "$@"
+%apphelp h5j_extract_channels
+Extract all channels from an H5J file
+
