@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Convert or copy
 #
@@ -94,7 +94,7 @@ else
             # Bzip it into its final position
             echo "~ PBzipping $INPUT_FILE to $OUTPUT_FILE.bz2 with $NSLOTS slots"
             pbzip2 -zc -p$NSLOTS "$INPUT_FILE" > "$OUTPUT_FILE.bz2"
-        elif [ "$bz2Output" = true ]; then
+        elif [ "$gzOutput" = true ]; then
             # Gzip it into its final position
             echo "~ Gzipping $INPUT_FILE to $OUTPUT_FILE.bz2 with $NSLOTS slots"
             gzip -c "$INPUT_FILE" > "$OUTPUT_FILE.gz"
@@ -151,7 +151,7 @@ else
         if [ "$bz2Output" = true ]; then
             echo "~ Compressing output file with pbzip2 with $NSLOTS slots"
             pbzip2 -p$NSLOTS $OUTPUT_FILE
-        elif [ "$bz2Output" = true ]; then
+        elif [ "$gzOutput" = true ]; then
             echo "~ Compressing output file with gzip"
             gzip $OUTPUT_FILE
         fi
