@@ -25,7 +25,7 @@ Fiji="/opt/Fiji/ImageJ-linux64"
 export TMPDIR=""
 
 NUMPARAMS=$#
-if [ $NUMPARAMS -lt 3 ]
+if [ $NUMPARAMS -lt 2 ]
 then
     echo " "
     echo " USAGE: sh $0 [input path] [output path] [split] <ref channels> <signal channels>"
@@ -36,7 +36,7 @@ fi
 
 INPUT_FILE=$1
 OUTPUT_FILE=$2
-SPLIT_CHANNELS=$3
+SPLIT_CHANNELS=${3:=0}
 REF_CHAN=$4
 SIGNAL_CHAN=$5
 WORKING_DIR=`mktemp -d -p /dev/shm`
@@ -51,52 +51,74 @@ trap cleanWorkingDir EXIT
 # This is needed to ensure that there are no collisions on the cluster. 
 # By default, Javacpp caches to ~/.javacpp/cache and the java.io.tmpdir is /tmp
 JAVA_OPTS="-Dorg.bytedeco.javacpp.cachedir=$WORKING_DIR -Djava.io.tmpdir=$WORKING_DIR"
-
-echo "Run Dir: $DIR"
-echo "Working Dir: $WORKING_DIR"
-echo "Input file: $INPUT_FILE"
-echo "Output file: $OUTPUT_FILE"
-echo "Split channels: $SPLIT_CHANNELS"
-echo "Ref channels: $REF_CHAN"
-echo "Signal channels: $SIGNAL_CHAN"
-echo "Java options: $JAVA_OPTS"
-
+OUTPUT_DIR=`dirname $OUTPUT_FILE`
 OUTPUT_FILE_EXT=${OUTPUT_FILE##*.}
 INPUT_FILE_EXT=${INPUT_FILE##*.}
 
+echo "----------------------------------------------------------------------"
+echo "  $INPUT_FILE_EXT -> $OUTPUT_FILE_EXT"
+echo "  Input file: $INPUT_FILE"
+echo "  Output file: $OUTPUT_FILE"
+if [[ "$SPLIT_CHANNELS" = "1" ]]; then
+    echo "  Split channels: $SPLIT_CHANNELS"
+fi
+echo "  Channels: ref=$REF_CHAN signal=$SIGNAL_CHAN"
+echo "----------------------------------------------------------------------"
+
+function encodeH5J {
+    local _in="$1"
+    local _out="$2"
+
+    echo "~ Converting $_in to $_out"
+    CMD="$Vaa3D -cmd image-loader -codecs $_in $_out"
+
+    if [[ ! -z $SIGNAL_CHAN ]]; then
+        CMD="$CMD $SIGNAL_CHAN:HEVC:crf=$SIGNAL_COMPRESSION:psy-rd=1.0"
+    fi
+
+    if [[ ! -z $REF_CHAN ]]; then
+        CMD="$CMD $REF_CHAN:HEVC:crf=$REF_COMPRESSION:psy-rd=1.0"
+    fi
+
+    echo "~ Executing: $CMD"
+    $CMD
+}
+
 if [[ "$INPUT_FILE_EXT" = "$OUTPUT_FILE_EXT" && "$SPLIT_CHANNELS" = "0" ]]; then
-    # The file is already in the format we're looking for (for example, lsm.bz2)
+    # The file is already in the format we're looking for (for example, lsm.bz2), so just copy it over
     echo "~ Rsyncing $INPUT_FILE to $OUTPUT_FILE"
     rsync -av "$INPUT_FILE" "$OUTPUT_FILE"
 else
-    # Decompress input file
+    # Decompress input file if necessary
     ensureUncompressedFile "$WORKING_DIR" "$INPUT_FILE" INPUT_FILE
-    echo "Uncompressed input file:" `ls -lh $INPUT_FILE`
+    echo "Uncompressed input file:"
+    ls -lh $INPUT_FILE
     INPUT_FILE_EXT=${INPUT_FILE##*.}
 
-    # Check if we need to compress output file
+    # Check if we need to compress output file, and strip off the compression extension for now
     bz2Output=false
+    gzOutput=false
     if [[ "$OUTPUT_FILE_EXT" = "bz2" ]]; then
         bz2Output=true
         OUTPUT_FILE=${OUTPUT_FILE%.*}
         OUTPUT_FILE_EXT=${OUTPUT_FILE##*.}
-    fi
-    gzOutput=false
-    if [[ "$OUTPUT_FILE_EXT" = "gz" ]]; then
+    elif [[ "$OUTPUT_FILE_EXT" = "gz" ]]; then
         gzOutput=true
         OUTPUT_FILE=${OUTPUT_FILE%.*}
         OUTPUT_FILE_EXT=${OUTPUT_FILE##*.}
     fi
 
     if [[ "$INPUT_FILE_EXT" = "$OUTPUT_FILE_EXT" && "$SPLIT_CHANNELS" = "0" ]]; then
-        # The file is in the format we're looking for (for example, lsm)
+
+        # The uncompressed file is already in the format we're looking for
+
         if [ "$bz2Output" = true ]; then
             # Bzip it into its final position
             echo "~ PBzipping $INPUT_FILE to $OUTPUT_FILE.bz2 with $NSLOTS slots"
             pbzip2 -zc -p$NSLOTS "$INPUT_FILE" > "$OUTPUT_FILE.bz2"
         elif [ "$gzOutput" = true ]; then
             # Gzip it into its final position
-            echo "~ Gzipping $INPUT_FILE to $OUTPUT_FILE.bz2 with $NSLOTS slots"
+            echo "~ Gzipping $INPUT_FILE to $OUTPUT_FILE.bz2"
             gzip -c "$INPUT_FILE" > "$OUTPUT_FILE.gz"
         else
             # Rsync it into its final position
@@ -104,57 +126,78 @@ else
             rsync -av "$INPUT_FILE" "$OUTPUT_FILE"
         fi
 
-    elif [[ "$OUTPUT_FILE_EXT" = "h5j" ]]; then
+    elif [[ "$INPUT_FILE_EXT" = "h5j" && "$SPLIT_CHANNELS" = "1" ]]; then
 
-        echo "~ Converting $INPUT_FILE to $OUTPUT_FILE"
-        CMD="$Vaa3D -cmd image-loader -codecs $INPUT_FILE $OUTPUT_FILE"
+        # Special case for splitting an H5J file
 
-        if [[ ! -z $SIGNAL_CHAN ]]; then
-            CMD="$CMD $SIGNAL_CHAN:HEVC:crf=$SIGNAL_COMPRESSION:psy-rd=1.0"
-        fi
+        echo "~ Splitting H5J channels in $INPUT_FILE"
+        export PATH="/usr/local/anaconda/bin:$PATH"
+        source activate py3
+        /opt/scripts/extract_channels.py -i $INPUT_FILE -o $WORKING_DIR
+        ls $WORKING_DIR
+        # Compress all temporary output files by recursively calling this script
+        shopt -s nullglob
+        for fin in $(find $WORKING_DIR -name "*.h5j"); do
+            inbase=`basename $fin`
+            inbase=${inbase%.h5j}
+            fout=$OUTPUT_DIR/${inbase}"."${OUTPUT_FILE_EXT}
+            /opt/scripts/convert.sh $fin $fout 0 $REF_CHAN $SIGNAL_CHAN
+        done
+        shopt -u nullglob
 
-        if [[ ! -z $REF_CHAN ]]; then
-            CMD="$CMD $REF_CHAN:HEVC:crf=$REF_COMPRESSION:psy-rd=1.0"
-        fi
+    elif [[ ("$INPUT_FILE_EXT" = "v3dpbd" || "$INPUT_FILE_EXT" = "v3draw") && "$OUTPUT_FILE_EXT" = "h5j" && "$SPLIT_CHANNELS" = "0" ]]; then
 
-        echo "~ Executing: $CMD"
-        $CMD
+        # When encoding a new H5J file, use vaa3d.
+        # Unlike the Fiji plugin, we can specify differential compression for the signal and reference channels.
+        encodeH5J $INPUT_FILE $OUTPUT_FILE
 
     else
-        # Must convert
-        if [[ "$OUTPUT_FILE_EXT" == "v3dpbd" || "$OUTPUT_FILE_EXT" == "mp4" ]]; then
+        # To create PBD or MP4 files, we must use Vaa3d, since Fiji does not support these as output formats.
+        if [[ "$OUTPUT_FILE_EXT" == "v3dpbd" || "$OUTPUT_FILE_EXT" == "mp4" || "$OUTPUT_FILE_EXT" = "h5j" ]]; then
+
+            # Use Fiji to convert to RAW first. This gives us the greatest input file compatibility (for example, with zipped TIFFs which are not supported by Vaa3d)
             TEMP_FILE=$WORKING_DIR/temp.v3draw
-            echo "~ Converting $INPUT_FILE to $TEMP_FILE using Fiji"
+            echo "~ Pre-converting $INPUT_FILE to $TEMP_FILE using Fiji"
             $Fiji $JAVA_OPTS --headless -macro /opt/fiji_macros/convert_stack.ijm "$INPUT_FILE,$TEMP_FILE,$SPLIT_CHANNELS"
 
+            # If channel splitting, there will be multiple files to encode
             if [[ "$SPLIT_CHANNELS" == "1" ]]; then
+
+                # Compress all temporary output files by recursively calling this script
                 shopt -s nullglob
-                # Compress all temporary v3draw files
-                for fin in $(find . -name "$WORKING_DIR/temp*.v3draw"); do
+                for fin in $(find . -name "$WORKING_DIR/*.v3draw"); do
                     inbase=${fin%.v3draw}
-                    ch=${inbase##*_}
-                    fout=${OUTPUT_FILE%%.*}"_"${ch}"."${OUTPUT_FILE//*.}
-                    echo "~ Converting $fin to $fout using Vaa3d"
-                    $_Vaa3D -cmd image-loader -convert $fin $fout && rm -f $fin
+                    fout=${inbase}"."${OUTPUT_FILE_EXT}
+                    ./$0 $fin $fout
                 done
                 shopt -u nullglob
 
             else
-                echo "~ Converting $TEMP_FILE to $OUTPUT_FILE using Vaa3d"
-                $Vaa3D -cmd image-loader -convert "$TEMP_FILE" "$OUTPUT_FILE" && rm -f $TEMP_FILE
+                if [[ "$OUTPUT_FILE_EXT" = "h5j" ]]; then
+                    encodeH5J $TEMP_FILE $OUTPUT_FILE
+                else
+                    echo "~ Converting $TEMP_FILE to $OUTPUT_FILE using Vaa3d"
+                    $Vaa3D -cmd image-loader -convert "$TEMP_FILE" "$OUTPUT_FILE" && rm -f $TEMP_FILE
+                fi
             fi
-        else 
+
+        else
+            # All other cases, such as creating RAW, TIFF, ZIP, or NRRD files, with or without splitting
             echo "~ Converting $INPUT_FILE to $OUTPUT_FILE using Fiji"
             $Fiji $JAVA_OPTS --headless -macro /opt/fiji_macros/convert_stack.ijm "$INPUT_FILE,$OUTPUT_FILE,$SPLIT_CHANNELS"
         fi
-        # Compress in place, if necessary
-        if [ "$bz2Output" = true ]; then
-            echo "~ Compressing output file with pbzip2 with $NSLOTS slots"
-            pbzip2 -p$NSLOTS $OUTPUT_FILE
-        elif [ "$gzOutput" = true ]; then
-            echo "~ Compressing output file with gzip"
-            gzip $OUTPUT_FILE
-        fi
+
+        shopt -s nullglob
+        for fin in $(find $OUTPUT_DIR -name "*.$OUTPUT_FILE_EXT"); do
+            # Compress in place, if necessary
+            if [ "$bz2Output" = true ]; then
+                echo "~ Compressing with pbzip2 with $NSLOTS slots: $fin"
+                pbzip2 -p$NSLOTS $fin
+            elif [ "$gzOutput" = true ]; then
+                echo "~ Compressing with gzip: $fin"
+                gzip $fin
+            fi
+        done
     fi
 
 fi

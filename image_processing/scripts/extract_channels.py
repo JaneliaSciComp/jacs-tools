@@ -31,7 +31,7 @@ outdir = args.output
 base = os.path.splitext(os.path.basename(path))
 outfs = list()
 for i in range(0, chnum):
-    basename = base[0] + '_ch' + str(i) + '.h5j'
+    basename = base[0] + '_c' + str(i) + '.h5j'
     newpath = os.path.join(outdir, basename)
     outfs.append(h5py.File(newpath, 'w'))
 for a in f.attrs.items():
