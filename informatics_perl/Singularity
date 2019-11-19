@@ -18,7 +18,7 @@ cd /opt # Install all software in /opt
 
 # Install EPEL, necessary for perl-Class-Accessor
 EPEL_FILE=epel-release-latest-7.noarch.rpm
-curl -s http://dl.fedoraproject.org/pub/epel/{$EPEL_FILE} -o '#1'
+curl -sL http://dl.fedoraproject.org/pub/epel/{$EPEL_FILE} -o '#1'
 rpm -ivh $EPEL_FILE && /bin/rm -f $EPEL_FILE
 
 # Install Perl dependencies for build+run

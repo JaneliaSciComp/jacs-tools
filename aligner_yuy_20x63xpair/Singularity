@@ -19,24 +19,24 @@ echo "Installing Vaa3d"
 yum install -y mesa-libGLU qt qt-x11 libXv numactl-libs
 # Install Vaa3d
 VAA3D_FILE=vaa3d-redhat-mark10.tgz
-curl -s http://workstation.int.janelia.org/files/tools/{$VAA3D_FILE} -o '#1'
+curl -sL http://workstation.int.janelia.org/files/tools/{$VAA3D_FILE} -o '#1'
 tar xvf $VAA3D_FILE && /bin/rm -f $VAA3D_FILE
 ln -s /opt/vaa3d-redhat-mark10 Vaa3D
 
 echo "Installing ANTS"
 ANTS_FILE=ants-yuy2013.tgz
-curl -s http://workstation.int.janelia.org/files/tools/{$ANTS_FILE} -o '#1'
+curl -sL http://workstation.int.janelia.org/files/tools/{$ANTS_FILE} -o '#1'
 tar xvf $ANTS_FILE && /bin/rm -f $ANTS_FILE
 
 echo "Installing FSL"
 FSL_FILE=fsl-flirt-yuy2017.tgz
-curl -s http://workstation.int.janelia.org/files/tools/{$FSL_FILE} -o '#1'
+curl -sL http://workstation.int.janelia.org/files/tools/{$FSL_FILE} -o '#1'
 tar xvf $FSL_FILE && /bin/rm -f $FSL_FILE
 
 echo "Installing dependencies"
 yum install -y bc
 EPEL_FILE=epel-release-latest-7.noarch.rpm
-curl -s http://dl.fedoraproject.org/pub/epel/{$EPEL_FILE} -o '#1'
+curl -sL http://dl.fedoraproject.org/pub/epel/{$EPEL_FILE} -o '#1'
 rpm -ivh $EPEL_FILE && /bin/rm -f $EPEL_FILE
 yum install -y python-pip jq
 pip install yq

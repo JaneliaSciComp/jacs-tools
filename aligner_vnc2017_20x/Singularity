@@ -19,7 +19,7 @@ echo "Installing Fiji"
 yum install -y libXtst-devel
 # Install Fiji
 FIJI_FILE=fiji-1.52c.tgz
-curl -s http://workstation.int.janelia.org/files/fiji/{$FIJI_FILE} -o '#1'
+curl -sL http://workstation.int.janelia.org/files/fiji/{$FIJI_FILE} -o '#1'
 tar xfz $FIJI_FILE && /bin/rm -f $FIJI_FILE
 rm -rf Fiji
 mv Fiji.app Fiji
@@ -34,7 +34,7 @@ echo "Installing Vaa3d"
 yum install -y mesa-libGLU qt qt-x11 libXv numactl-libs
 # Install Vaa3d
 VAA3D_FILE=vaa3d-redhat-mark10.tgz
-curl -s http://workstation.int.janelia.org/files/tools/{$VAA3D_FILE} -o '#1'
+curl -sL http://workstation.int.janelia.org/files/tools/{$VAA3D_FILE} -o '#1'
 tar xvf $VAA3D_FILE && /bin/rm -f $VAA3D_FILE
 ln -s vaa3d-redhat-mark10 Vaa3D
 
@@ -44,14 +44,14 @@ yum install -y fftw-libs-double
 # Install CMTK
 #CMTK_FILE=cmtk-2.2.6-sl7.tgz
 CMTK_FILE=cmtk-20171001-sl7avx.tgz
-curl -s http://workstation.int.janelia.org/files/tools/{$CMTK_FILE} -o '#1'
+curl -sL http://workstation.int.janelia.org/files/tools/{$CMTK_FILE} -o '#1'
 tar xvf $CMTK_FILE && /bin/rm -f $CMTK_FILE
 #ln -s cmtk-2.2.6 CMTK
 ln -s cmtk-scm-2017-10-01 CMTK
 
 echo "Installing dependencies"
 EPEL_FILE=epel-release-latest-7.noarch.rpm
-curl -s http://dl.fedoraproject.org/pub/epel/{$EPEL_FILE} -o '#1'
+curl -sL http://dl.fedoraproject.org/pub/epel/{$EPEL_FILE} -o '#1'
 rpm -ivh $EPEL_FILE && /bin/rm -f $EPEL_FILE
 yum install -y python-pip jq
 pip install numpy pynrrd yq

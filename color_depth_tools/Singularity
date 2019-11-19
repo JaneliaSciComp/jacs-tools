@@ -21,7 +21,7 @@ echo "Installing Fiji"
 yum install -y libXtst-devel libXrender
 # Install Fiji
 FIJI_FILE=fiji-1.52c.tgz
-curl -s http://workstation.int.janelia.org/files/fiji/{$FIJI_FILE} -o '#1'
+curl -sLL http://workstation.int.janelia.org/files/fiji/{$FIJI_FILE} -o '#1'
 tar xvfz $FIJI_FILE && /bin/rm -rf $FIJI_FILE
 mv Fiji.app Fiji
 

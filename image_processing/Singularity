@@ -22,7 +22,7 @@ yum install -y mesa-libGLU qt qt-x11 libXv numactl-libs
 # Install Vaa3d
 VAA3D_VERSION=mark13
 VAA3D_FILE=vaa3d-redhat-$VAA3D_VERSION.tgz
-curl -s http://workstation.int.janelia.org/files/tools/{$VAA3D_FILE} -o '#1'
+curl -sL http://workstation.int.janelia.org/files/tools/{$VAA3D_FILE} -o '#1'
 tar xvf $VAA3D_FILE && /bin/rm -f $VAA3D_FILE
 ln -s /opt/vaa3d-redhat-$VAA3D_VERSION /opt/Vaa3D
 
@@ -30,7 +30,7 @@ echo "Installing utilities"
 EPEL_FILE=epel-release-latest-7.noarch.rpm
 #EPEL_MIRROR=dl.fedoraproject.org
 EPEL_MIRROR=mirror.chpc.utah.edu
-curl -s http://${EPEL_MIRROR}/pub/epel/{$EPEL_FILE} -o '#1'
+curl -sL http://${EPEL_MIRROR}/pub/epel/{$EPEL_FILE} -o '#1'
 rpm -ivh $EPEL_FILE && /bin/rm -f $EPEL_FILE
 yum install -y pbzip2 rsync prelink
 
@@ -39,7 +39,7 @@ echo "Installing Fiji"
 yum install -y libXtst-devel libXrender
 # Install Fiji
 FIJI_FILE=fiji-1.52c.tgz
-curl -s http://workstation.int.janelia.org/files/fiji/{$FIJI_FILE} -o '#1'
+curl -sL http://workstation.int.janelia.org/files/fiji/{$FIJI_FILE} -o '#1'
 tar xvfz $FIJI_FILE && /bin/rm -rf $FIJI_FILE
 mv Fiji.app Fiji
 
