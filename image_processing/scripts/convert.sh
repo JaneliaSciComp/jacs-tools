@@ -34,6 +34,9 @@ then
     exit
 fi
 
+
+SIGNAL_COMPRESSION=7
+REF_COMPRESSION=21
 INPUT_FILE=$1
 OUTPUT_FILE=$2
 SPLIT_CHANNELS=${3:=0}
@@ -48,7 +51,7 @@ function cleanWorkingDir {
 }
 trap cleanWorkingDir EXIT
 
-# This is needed to ensure that there are no collisions on the cluster. 
+# This is needed to ensure that there are no collisions on the cluster.
 # By default, Javacpp caches to ~/.javacpp/cache and the java.io.tmpdir is /tmp
 JAVA_OPTS="-Dorg.bytedeco.javacpp.cachedir=$WORKING_DIR -Djava.io.tmpdir=$WORKING_DIR"
 OUTPUT_DIR=`dirname $OUTPUT_FILE`
@@ -74,10 +77,16 @@ function encodeH5J {
 
     if [[ ! -z $SIGNAL_CHAN ]]; then
         CMD="$CMD $SIGNAL_CHAN:HEVC:crf=$SIGNAL_COMPRESSION:psy-rd=1.0"
+        if [[ ! -z $NSLOTS ]]; then
+            CMD="${CMD}:pools=$NSLOTS"
+        fi
     fi
 
     if [[ ! -z $REF_CHAN ]]; then
         CMD="$CMD $REF_CHAN:HEVC:crf=$REF_COMPRESSION:psy-rd=1.0"
+        if [[ ! -z $NSLOTS ]]; then
+            CMD="${CMD}:pools=$NSLOTS"
+        fi
     fi
 
     echo "~ Executing: $CMD"

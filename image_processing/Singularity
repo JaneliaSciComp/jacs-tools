@@ -6,7 +6,7 @@ Recipe for a Singularity container running image processing and conversion using
 
 %labels
 AUTHOR Konrad Rokicki
-VERSION 1.0
+VERSION 1.1
 
 %files
 ./scripts /opt/scripts
