@@ -29,14 +29,21 @@ if [[ -e $OUT/stdout.log ]]; then
     echo "Test was already run"
 else
     bsub -K -e $OUT/stderr.log -o $OUT/stdout.log -n $NSLOTS $TOOLS_DIR/scripts/testAligner.sh \
-        "singularity run -B $B1 -B $B2 --app align_ol_unknown $CONTAINER" $NSLOTS $OUT $OUT/align.yml debug
+        "singularity run -B $B1 -B $B2 --app align_ol_unknown_bridging $CONTAINER" $NSLOTS $OUT $OUT/align.yml debug
 fi
 
 . $TOOLS_DIR/scripts/asserts.sh $OUT
+assertExists REG_JFRC2010_20x_HR.v3dpbd
+assertExists REG_JFRC2013_20x_HR.v3dpbd
 assertExists REG_JRC2018_FEMALE_20x_HR.v3dpbd
 assertExists REG_JRC2018_FEMALE_20x_HR_ConsolidatedLabel.v3dpbd
 assertExists REG_UNISEX_20x_HR.v3dpbd
 assertExists REG_UNISEX_20x_HR_ConsolidatedLabel.v3dpbd
+assertContains REG_JFRC2010_20x_HR.properties "alignment.image.size=1024x512x218"
+assertContains REG_JFRC2010_20x_HR.properties "alignment.resolution.voxels=0.62x0.62x1.00"
+assertContains REG_JFRC2010_20x_HR.properties "alignment.bridged.from=REG_JRC2018_FEMALE_20x_HR.v3dpbd"
+assertContains REG_JFRC2013_20x_HR.properties "alignment.image.size=1184x592x218"
+assertContains REG_JFRC2013_20x_HR.properties "alignment.resolution.voxels=0.4653716x0.4653716x0.76"
 assertContains REG_JRC2018_FEMALE_20x_HR.properties "alignment.image.size=1210x563x182"
 assertContains REG_JRC2018_FEMALE_20x_HR.properties "alignment.resolution.voxels=0.5189161x0.5189161x1.0"
 assertContains REG_UNISEX_20x_HR.properties "alignment.image.size=1210x566x174"

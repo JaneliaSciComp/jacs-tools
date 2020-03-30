@@ -31,15 +31,9 @@ else
 fi
 
 . $TOOLS_DIR/scripts/asserts.sh $OUT
-assertExists REG_JFRC2010_40x.v3dpbd
-assertExists REG_JFRC2013_40x.v3dpbd
 assertExists REG_JRC2018_FEMALE_40x.v3dpbd
 assertExists REG_UNISEX_40x.v3dpbd
 assertExists REG_UNISEX_ColorMIP_HR.v3dpbd
-assertContains REG_JFRC2010_40x.properties "alignment.image.size=1024x512x218"
-assertContains REG_JFRC2010_40x.properties "alignment.resolution.voxels=0.62x0.62x1.00"
-assertContains REG_JFRC2013_40x.properties "alignment.image.size=1184x592x218"
-assertContains REG_JFRC2013_40x.properties "alignment.resolution.voxels=0.4653716x0.4653716x0.76"
 assertContains REG_JRC2018_FEMALE_40x.properties "alignment.image.size=1427x664x413"
 assertContains REG_JRC2018_FEMALE_40x.properties "alignment.resolution.voxels=0.44x0.44x0.44"
 assertContains REG_UNISEX_40x.properties "alignment.image.size=1427x668x394"

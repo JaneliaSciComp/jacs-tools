@@ -6,7 +6,7 @@ Recipe for a singuality container for running 63x VNC aligner against the JRC201
 
 %labels
 AUTHOR Konrad Rokicki
-VERSION 1.0
+VERSION 1.1
 
 %files
 ./aligner /opt/aligner
@@ -69,6 +69,16 @@ yum install -y ffmpeg ffmpeg-devel
 echo "Fixing permissions"
 chown -R root:root /opt/*
 chmod -R g+r /opt/*
+
+%apprun align_bridging
+/opt/aligner/63xVNC_Aligner_Pipeline.sh $@ 0 bridging
+%apphelp align_bridging
+Uses the CMTK aligner to align a VNC to the JRC2018 template
+
+%apprun align_half_bridging
+/opt/aligner/63xVNC_Aligner_Pipeline.sh $@ 2 bridging
+%apphelp align_half_bridging
+Uses the CMTK aligner to align a VNC to the JRC2018 template with half-sized outputs
 
 %apprun align
 /opt/aligner/63xVNC_Aligner_Pipeline.sh $@ 0

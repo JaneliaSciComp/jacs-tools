@@ -8,6 +8,8 @@ if [[ $testmode != 1 ]]; then
   DIR=$(cd "$(dirname "$0")"; pwd)
   . $DIR/common.sh
   parseParameters "$@"
+  # Empty or "bridging" to enable bridging transformations to legacy templates
+  Bridging=$3
 
   # Available input variables:
   #  $TEMPLATE_DIR
@@ -38,7 +40,6 @@ PREPROCIMG=$MACRO_DIR"/VNC_preImageProcessing_Pipeline_02_02_2017.ijm"
 SCOREGENERATION=$MACRO_DIR"/Score_Generator_Cluster.ijm"
 TWELVEBITCONV=$MACRO_DIR"/12bit_Conversion.ijm"
 
-templateBr="JRC2018_VNC_FEMALE" #"VNC_FEMALE_symmetric", "VNC_MALE", "JRC2018_VNC_MALE"
 Path=$INPUT1_FILE
 objective=$INPUT1_OBJECTIVE
 OUTPUT=$WORK_DIR"/Output"
@@ -106,7 +107,6 @@ if [[ $testmode == "1" ]]; then
     POSTSCORE="/Users/otsunah/Documents/otsunah/VNC_preImageProcessing_Plugins_pipeline/For_Score/Score_For_VNC_pipeline.ijm"
 
     WORK_DIR="/Registration/JRC2018_VNC_align_test"
-    BaseDir="/Registration/JRC2018_VNC_align_test"
     OUTPUT=$WORK_DIR"/Output"
 Global_Aligned_Separator_Result=$OUTPUT"/ConsolidatedLabel.nrrd"
 Unaligned_Neuron_Separator_Result_V3DPBD="/Users/otsunah/Downloads/Workstation/BJD_124H07_AE_01/BJD_124H07_AE_01_20180629_62_C1_ConsolidatedLabel.v3dpbd"
@@ -375,7 +375,6 @@ if [[ $INPUT1_GENDER == "f" ]]; then
     genderT="FEMALE"
     oldVNC=$TempDir"/FemaleVNCSymmetric2017.nrrd"
     reformat_JRC2018_to_oldVNC=$TempDir"/Deformation_Fields/oldFemale_JRC2018_VNC_FEMALE"
-    TEMPNAME="JRC2018_VNC_Female"
     OLDSPACE="FemaleVNCSymmetric2017_20x"
     iniT=$JRC2018_VNC_Female
     OLDVOXELS="0.4612588x0.4612588x0.7"
@@ -384,7 +383,6 @@ elif [[ $INPUT1_GENDER == "m" ]]; then
     genderT="MALE"
     oldVNC=$TempDir"/MaleVNC2017.nrrd"
     reformat_JRC2018_to_oldVNC=$TempDir"/Deformation_Fields/oldMale_JRC2018_VNC_MALE"
-    TEMPNAME="JRC2018_VNC_Male"
     OLDSPACE="MaleVNC2016_20x"
     iniT=$JRC2018_VNC_Male
     OLDVOXELS="0.4611222x0.4611222x0.7"
@@ -405,9 +403,6 @@ echo "reformat_JRC2018_to_oldVNC; "$reformat_JRC2018_to_oldVNC
 
 # "-------------------Global aligned files----------------------"
 gloval_nc82_nrrd=$OUTPUT"/"$filename"_01.nrrd"
-gloval_signalNrrd1=$OUTPUT"/"$filename"_02.nrrd"
-gloval_signalNrrd2=$OUTPUT"/"$filename"_03.nrrd"
-gloval_signalNrrd3=$OUTPUT"/"$filename"_04.nrrd"
 
 # "-------------------Deformation fields----------------------"
 registered_initial_xform=$OUTPUT"/initial.xform"
@@ -576,63 +571,65 @@ fi
 writeProperties "$RAWOUT" "$FLIP_NEURON" "JRC2018_VNC_Unisex" "$objective" "0.461122x0.461122x0.70" "573x1119x219" "" "" "$main_aligned_file"
 
 
-########################################################################################################
-# oldVNC_$genderT reformat
-########################################################################################################
+if [[ $Bridging == "bridging" ]]; then
 
-banner "oldVNC $genderT reformat"
-#"--inverse takes 1.5h / channel for reformatting"
-DEFFIELD="$reformat_JRC2018_to_oldVNC $registered_warp_xform"
-sig=$OUTPUT"/REG_oldVNC_$genderT"
-TEMP="$oldVNC"
-gsig=$OUTPUT"/"$filename
-reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
-
-scoreGen $sig"_01.nrrd" "$oldVNC" "oldVNC"
-
-registered_otsuna_qual=$OUTPUT"/Hideo_OBJPearsonCoeff.txt"
-if [[ -e $registered_otsuna_qual ]]; then
-    echo "Already exists: $registered_otsuna_qual"
-else
-    echo "+--------------------------------------------------------------------------------------------------------+"
-    echo "| Running Otsuna scoring step to old VNC"
-    echo "| $FIJI -macro $POSTSCORE $sig"_01.nrrd,PostScore,$OUTPUT/,$Tfile,$POSTSCOREMASK,$INPUT1_GENDER,$NSLOTS
-    echo "+--------------------------------------------------------------------------------------------------------+"
-    START=`date '+%F %T'`
-    $FIJI -macro $POSTSCORE $sig"_01.nrrd,PostScore,$OUTPUT/,$Tfile,$POSTSCOREMASK,$INPUT1_GENDER,$NSLOTS"
-    STOP=`date '+%F %T'`
-    if [[ ! -e $registered_otsuna_qual ]]; then
-        echo -e "Error: Otsuna ObjPearsonCoeff score failed"
-        exit -1
-    fi
-    echo "Otsuna_scoring start: $START"
-    echo "Otsuna_scoring stop: $STOP"
-fi
-
-oldscore=`cat $registered_otsuna_qual`
-
-writeProperties "$RAWOUT" "" "$OLDSPACE" "20x" "$OLDVOXELS" "512x1100x220" "$oldVNC" "$oldscore" "$main_aligned_file"
-
-if [[ $INPUT1_GENDER =~ "m" ]]; then
     ########################################################################################################
-    # oldVNC_"FEMALE" reformat
+    # oldVNC_$genderT reformat
     ########################################################################################################
 
-    banner "oldVNC FEMALE reformat"
-    DEFFIELD=$TempDir"/Deformation_Fields/oldFemale_JRC2018_VNC_MALE $registered_warp_xform"
-    sig=$OUTPUT"/REG_oldVNC_FEMALE"
-    TEMP=$TempDir"/FemaleVNCSymmetric2017.nrrd"
+    banner "oldVNC $genderT reformat"
+    #"--inverse takes 1.5h / channel for reformatting"
+    DEFFIELD="$reformat_JRC2018_to_oldVNC $registered_warp_xform"
+    sig=$OUTPUT"/REG_oldVNC_$genderT"
+    TEMP="$oldVNC"
     gsig=$OUTPUT"/"$filename
     reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
 
-    writeProperties "$RAWOUT" "" "FemaleVNCSymmetric2017_20x" "20x" "0.4612588x0.4612588x0.7" "512x1024x220" "$score2010" "" "$main_aligned_file"
+    scoreGen $sig"_01.nrrd" "$oldVNC" "oldVNC"
+
+    registered_otsuna_qual=$OUTPUT"/Hideo_OBJPearsonCoeff.txt"
+    if [[ -e $registered_otsuna_qual ]]; then
+        echo "Already exists: $registered_otsuna_qual"
+    else
+        echo "+--------------------------------------------------------------------------------------------------------+"
+        echo "| Running Otsuna scoring step to old VNC"
+        echo "| $FIJI -macro $POSTSCORE $sig"_01.nrrd,PostScore,$OUTPUT/,$Tfile,$POSTSCOREMASK,$INPUT1_GENDER,$NSLOTS
+        echo "+--------------------------------------------------------------------------------------------------------+"
+        START=`date '+%F %T'`
+        $FIJI -macro $POSTSCORE $sig"_01.nrrd,PostScore,$OUTPUT/,$Tfile,$POSTSCOREMASK,$INPUT1_GENDER,$NSLOTS"
+        STOP=`date '+%F %T'`
+        if [[ ! -e $registered_otsuna_qual ]]; then
+            echo -e "Error: Otsuna ObjPearsonCoeff score failed"
+            exit -1
+        fi
+        echo "Otsuna_scoring start: $START"
+        echo "Otsuna_scoring stop: $STOP"
+    fi
+
+    oldscore=`cat $registered_otsuna_qual`
+
+    writeProperties "$RAWOUT" "" "$OLDSPACE" "20x" "$OLDVOXELS" "512x1100x220" "$oldVNC" "$oldscore" "$main_aligned_file"
+
+    if [[ $INPUT1_GENDER =~ "m" ]]; then
+        ########################################################################################################
+        # oldVNC_"FEMALE" reformat
+        ########################################################################################################
+
+        banner "oldVNC FEMALE reformat"
+        DEFFIELD=$TempDir"/Deformation_Fields/oldFemale_JRC2018_VNC_MALE $registered_warp_xform"
+        sig=$OUTPUT"/REG_oldVNC_FEMALE"
+        TEMP=$TempDir"/FemaleVNCSymmetric2017.nrrd"
+        gsig=$OUTPUT"/"$filename
+        reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
+
+        writeProperties "$RAWOUT" "" "FemaleVNCSymmetric2017_20x" "20x" "0.4612588x0.4612588x0.7" "512x1024x220" "$score2010" "" "$main_aligned_file"
+    fi
+
+    # -------------------------------------------------------------------------------------------
+
+    echo "Converting all v3draw files to v3dpbd format"
+    compressAllRaw "$Vaa3D" "$OUTPUT"
 fi
-
-# -------------------------------------------------------------------------------------------
-
-echo "Converting all v3draw files to v3dpbd format"
-compressAllRaw "$Vaa3D" "$OUTPUT"
-
 
 # -------------------------------------------------------------------------------------------
 

@@ -28,18 +28,24 @@ if [[ -e $OUT/stdout.log ]]; then
 else
     set -x
     bsub -K -e $OUT/stderr.log -o $OUT/stdout.log -n $NSLOTS $TOOLS_DIR/scripts/testAligner.sh \
-        "singularity run -B $B1 -B $B2 --app align $CONTAINER" $NSLOTS $OUT $OUT/align.yml debug
+        "singularity run -B $B1 -B $B2 --app align_bridging $CONTAINER" $NSLOTS $OUT $OUT/align.yml debug
     set +x
 fi
 
 . $TOOLS_DIR/scripts/asserts.sh $OUT
+assertExists REG_JFRC2010_20x.v3dpbd
+assertExists REG_JFRC2013_63x.v3dpbd
 assertExists REG_JRC2018_FEMALE_63x.v3dpbd
 assertExists REG_UNISEX_63x.v3dpbd
 assertExists REG_UNISEX_ColorMIP_HR.v3dpbd
+assertContains REG_JFRC2010_20x.properties "alignment.image.size=1024x512x218"
+assertContains REG_JFRC2010_20x.properties "alignment.resolution.voxels=0.62x0.62x1.00"
+assertContains REG_JFRC2013_63x.properties "alignment.image.size=1450x725x436"
+assertContains REG_JFRC2013_63x.properties "alignment.resolution.voxels=0.38x0.38x0.38"
 assertContains REG_JRC2018_FEMALE_63x.properties "alignment.image.size=3333x1550x478"
 assertContains REG_JRC2018_FEMALE_63x.properties "alignment.resolution.voxels=0.1882680x0.1882680x0.38"
 assertContains REG_UNISEX_63x.properties "alignment.image.size=1652x773x456"
-assertContains REG_UNISEX_63x.properties "alignment.resolution.voxels=0.38x0.38x0.38"
+assertContains REG_UNISEX_63x.properties "alignment.resolution.voxels=0.3798409x0.3799458x0.3794261"
 assertContains REG_UNISEX_ColorMIP_HR.properties "alignment.image.size=1210x566x174"
 assertContains REG_UNISEX_ColorMIP_HR.properties "alignment.resolution.voxels=0.5189161x0.5189161x1.0"
 

@@ -27,7 +27,7 @@ if [[ -e $OUT/stdout.log ]]; then
 else
     set -x
     bsub -K -e $OUT/stderr.log -o $OUT/stdout.log -n $NSLOTS $TOOLS_DIR/scripts/testAligner.sh \
-        "singularity run -B $B1 -B $B2 --app align_half $CONTAINER" $NSLOTS $OUT $OUT/align.yml debug
+        "singularity run -B $B1 -B $B2 --app align_half_bridging $CONTAINER" $NSLOTS $OUT $OUT/align.yml debug
     set +x
 fi
 
@@ -36,10 +36,14 @@ fi
 assertExists REG_JRC2018_MALE_63x.v3dpbd
 assertExists REG_UNISEX_20x.v3dpbd
 assertExists REG_UNISEX_63x.v3dpbd
+assertExists REG_VNC2017F.v3dpbd
+assertExists REG_VNC2017M.v3dpbd
 # Check for properties files
 assertExists REG_JRC2018_MALE_63x.properties
 assertExists REG_UNISEX_20x.properties
 assertExists REG_UNISEX_63x.properties
+assertExists REG_VNC2017F.properties
+assertExists REG_VNC2017M.properties
 # Check for verification movie
 assertExists REG_JRC2018_MALE_63x_01.mp4
 assertContains REG_JRC2018_MALE_63x.properties "alignment.verify.filename=REG_JRC2018_MALE_63x_01.mp4"

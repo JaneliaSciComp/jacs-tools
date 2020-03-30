@@ -6,7 +6,7 @@ Recipe for a singuality container for running 63x brain aligner against the JRC2
 
 %labels
 AUTHOR Konrad Rokicki
-VERSION 1.0
+VERSION 1.1
 
 %files
 ./aligner /opt/aligner
@@ -63,6 +63,16 @@ pip install yq
 echo "Fixing permissions"
 chown -R root:root /opt/*
 chmod -R g+r /opt/*
+
+%apprun align_bridging
+/opt/aligner/63xBrain_Aligner_Pipeline.sh $@ 0 bridging
+%apphelp align_bridging
+Uses the CMTK aligner to align a brain to the JRC2018 template, and bridging alignments to legacy templates.
+
+%apprun align_half_bridging
+/opt/aligner/63xBrain_Aligner_Pipeline.sh $@ 2 bridging
+%apphelp align_half_bridging
+Uses the CMTK aligner to align a brain to the JRC2018 template with half-sized outputs, and bridging alignments to legacy templates.
 
 %apprun align
 /opt/aligner/63xBrain_Aligner_Pipeline.sh $@ 0

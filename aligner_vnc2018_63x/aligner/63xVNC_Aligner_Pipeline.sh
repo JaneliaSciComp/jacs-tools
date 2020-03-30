@@ -29,6 +29,8 @@ if [[ $testmode == "0" ]]; then
   parseParameters "$@"
   # refomat scale; 0; full only, 2; HFonly
   REFSCALE=$3
+  # Empty or "bridging" to enable bridging transformations to legacy templates
+  Bridging=$4
 
   # Remove all special characters and convert to lower case
   TILES=$(echo $INPUT1_TILES | tr -dc '[:alnum:],' | tr '[:upper:]' '[:lower:]' | tr ',' ';')
@@ -813,63 +815,65 @@ if [[ $testmode = "1" ]]; then
 #  rm $JRC2018_63x_UNISEX_CROPPED
 fi
 
-########################################################################################################
-# oldVNC_$genderT reformat
-########################################################################################################
+if [[ $Bridging == "bridging" ]]; then
 
-banner "$OLDSPACE reformat"
-#"--inverse takes 1.5h / channel for reformatting"
-DEFFIELD="$reformat_JRC2018_to_oldVNC"
-if [[ $testmode == "0" ]]; then
-  fn="REG_$OLDSPACE"
-else
-  fn="REG_${OLDSPACE}_${inputfilename%.*}"
+    ########################################################################################################
+    # oldVNC_$genderT reformat
+    ########################################################################################################
+
+    banner "$OLDSPACE reformat"
+    #"--inverse takes 1.5h / channel for reformatting"
+    DEFFIELD="$reformat_JRC2018_to_oldVNC"
+    if [[ $testmode == "0" ]]; then
+      fn="REG_$OLDSPACE"
+    else
+      fn="REG_${OLDSPACE}_${inputfilename%.*}"
+    fi
+
+    if [[ $testmode == "0" ]]; then
+        gsig="REG_JRC2018_${genderT}_${TRESOLUTION}"
+    else
+        gsig="REG_JRC2018_${genderT}_${TRESOLUTION}_${inputfilename%.*}"
+    fi
+
+    sig=$OUTPUT"/"$fn
+    TEMP="$OLDTEMPPATH"
+
+    if [[ ! -e $sig"_01.nrrd" ]]; then
+      reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
+
+
+      if [[ $testmode = "0" ]]; then
+        writeProperties "$RAWOUT" "" "$OLDSPACEWS" "$objective" "$OLDVOXELS" "$OLDSIZE" "" "" "$main_aligned_file"
+      fi
+    fi
+
+    if [[ $INPUT1_GENDER == "m" ]]; then
+      ########################################################################################################
+      # oldVNC_FEMALE reformat
+      ########################################################################################################
+
+      banner "oldVNC_FEMALE reformat for MALE"
+      DEFFIELD="$oldFemale_JRC2018_VNC_MALE"
+      if [[ $testmode == "0" ]]; then
+        fn="REG_VNC2017F"
+      else
+        fn="REG_VNC2017F_${inputfilename%.*}"
+      fi
+
+      sig=$OUTPUT"/"$fn
+      TEMP="$VNC2017_Female"
+
+      if [[ ! -e $sig"_01.nrrd" ]]; then
+        reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
+      fi
+
+      if [[ $testmode = "0" ]]; then
+        writeProperties "$RAWOUT" "" "FemaleVNCSymmetric2017_20x" "63x" "0.4612588x0.4612588x0.7" "512x1024x220" "" "" "$main_aligned_file"
+      fi
+    fi #if [[ $INPUT1_GENDER == "m" ]]; then
+
 fi
-
-if [[ $testmode == "0" ]]; then
-    gsig="REG_JRC2018_${genderT}_${TRESOLUTION}"
-else
-    gsig="REG_JRC2018_${genderT}_${TRESOLUTION}_${inputfilename%.*}"
-fi
-
-sig=$OUTPUT"/"$fn
-TEMP="$OLDTEMPPATH"
-
-if [[ ! -e $sig"_01.nrrd" ]]; then
-  reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
-
-
-  if [[ $testmode = "0" ]]; then
-    writeProperties "$RAWOUT" "" "$OLDSPACEWS" "$objective" "$OLDVOXELS" "$OLDSIZE" "" "" "$main_aligned_file"
-  fi
-fi
-
-if [[ $INPUT1_GENDER == "m" ]]; then
-  ########################################################################################################
-  # oldVNC_FEMALE reformat
-  ########################################################################################################
-
-  banner "oldVNC_FEMALE reformat for MALE"
-  DEFFIELD="$oldFemale_JRC2018_VNC_MALE"
-  if [[ $testmode == "0" ]]; then
-    fn="REG_VNC2017F"
-  else
-    fn="REG_VNC2017F_${inputfilename%.*}"
-  fi
-
-  sig=$OUTPUT"/"$fn
-  TEMP="$VNC2017_Female"
-
-  if [[ ! -e $sig"_01.nrrd" ]]; then
-    reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
-  fi
-
-  if [[ $testmode = "0" ]]; then
-    writeProperties "$RAWOUT" "" "FemaleVNCSymmetric2017_20x" "63x" "0.4612588x0.4612588x0.7" "512x1024x220" "" "" "$main_aligned_file"
-  fi
-fi #if [[ $INPUT1_GENDER == "m" ]]; then
-
-
 
 # -------------------------------------------------------------------------------------------
 if [[ $testmode == "0" ]]; then

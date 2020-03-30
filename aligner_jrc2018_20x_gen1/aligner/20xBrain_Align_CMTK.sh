@@ -8,6 +8,8 @@ DIR=$(cd "$(dirname "$0")"; pwd)
 parseParameters "$@"
 # Possible values: "Intact", "Both_OL_missing (40x)", "Unknown"
 BrainShape=$3
+# Empty or "bridging" to enable bridging transformations to legacy templates
+Bridging=$4
 
 # Available input variables:
 #  $TEMPLATE_DIR
@@ -586,49 +588,51 @@ if [[ $TRESOLUTION != "20x_gen1" ]]; then
 fi
 
 
+if [[ $Bridging == "bridging" ]]; then
 
-########################################################################################################
-# JFRC2010 alignment
-########################################################################################################
+    ########################################################################################################
+    # JFRC2010 alignment
+    ########################################################################################################
 
-banner "JFRC2010 alignment"
-#"--inverse takes 1.5h / channel for reformatting"
-DEFFIELD="$reformat_JRC2018_to_JFRC2010 $registered_warp_xform"
-sig=$OUTPUT"/REG_JFRC2010_"$TRESOLUTION
-TEMP="$JFRC2010"
-gsig=$OUTPUT"/"$filename
-reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
+    banner "JFRC2010 alignment"
+    #"--inverse takes 1.5h / channel for reformatting"
+    DEFFIELD="$reformat_JRC2018_to_JFRC2010 $registered_warp_xform"
+    sig=$OUTPUT"/REG_JFRC2010_"$TRESOLUTION
+    TEMP="$JFRC2010"
+    gsig=$OUTPUT"/"$filename
+    reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
 
-SCORETEMP=$JFRC2010
-if [[ "$OL" == "Both_OL_missing (40x)" ]]; then
-    SCORETEMP=$JFRC2010NOOL
-elif [[ "$OL" == "Both_OL_missing" ]]; then
-    SCORETEMP=$JFRC2010NOOL
+    SCORETEMP=$JFRC2010
+    if [[ "$OL" == "Both_OL_missing (40x)" ]]; then
+        SCORETEMP=$JFRC2010NOOL
+    elif [[ "$OL" == "Both_OL_missing" ]]; then
+        SCORETEMP=$JFRC2010NOOL
+    fi
+    scoreGen $sig"_01.nrrd" "$SCORETEMP" "score2010"
+
+    writeProperties "$RAWOUT" "" "$UNIFIED_SPACE" "20x" "0.62x0.62x1.00" "1024x512x218" "$score2010" "$main_aligned_file"
+
+
+    ########################################################################################################
+    # JFRC2013/JFRC2014 aligmment
+    ########################################################################################################
+
+    banner "JFRC2013/JFRC2014 aligmment"
+    DEFFIELD="$reformat_JRC2018_to_JFRC20DPX $registered_warp_xform"
+    sig=$OUTPUT"/REG_"$TEMPNAME"_"$TRESOLUTION
+    TEMP="$JFRC20DPX"
+    gsig=$OUTPUT"/"$filename
+    reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
+
+    if [[ $INPUT1_GENDER =~ "m" ]]; then
+        ALIGNMENT_SPACE="JFRC2014_20x"
+    else
+        ALIGNMENT_SPACE="JFRC2013_20x"
+    fi
+
+    writeProperties "$RAWOUT" "" "$ALIGNMENT_SPACE" "20x" "0.4653716x0.4653716x0.76" "1184x592x218" "" "$main_aligned_file"
+
 fi
-scoreGen $sig"_01.nrrd" "$SCORETEMP" "score2010"
-
-writeProperties "$RAWOUT" "" "$UNIFIED_SPACE" "20x" "0.62x0.62x1.00" "1024x512x218" "$score2010" "$main_aligned_file"
-
-
-########################################################################################################
-# JFRC2013/JFRC2014 aligmment
-########################################################################################################
-
-banner "JFRC2013/JFRC2014 aligmment"
-DEFFIELD="$reformat_JRC2018_to_JFRC20DPX $registered_warp_xform"
-sig=$OUTPUT"/REG_"$TEMPNAME"_"$TRESOLUTION
-TEMP="$JFRC20DPX"
-gsig=$OUTPUT"/"$filename
-reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
-
-if [[ $INPUT1_GENDER =~ "m" ]]; then
-    ALIGNMENT_SPACE="JFRC2014_20x"
-else
-    ALIGNMENT_SPACE="JFRC2013_20x"
-fi
-
-writeProperties "$RAWOUT" "" "$ALIGNMENT_SPACE" "20x" "0.4653716x0.4653716x0.76" "1184x592x218" "" "$main_aligned_file"
-
 
 ########################################################################################################
 # JFRC2018 Unisex High-resolution (for color depth search)

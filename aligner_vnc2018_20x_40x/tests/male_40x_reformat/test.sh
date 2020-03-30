@@ -33,11 +33,19 @@ fi
 . $TOOLS_DIR/scripts/asserts.sh $OUT
 assertExists REG_JRC2018_VNC_MALE.properties
 assertExists REG_JRC2018_VNC_MALE.v3dpbd
+assertExists REG_oldVNC_FEMALE.properties
+assertExists REG_oldVNC_FEMALE.v3dpbd
+assertExists REG_oldVNC_MALE.properties
+assertExists REG_oldVNC_MALE.v3dpbd
 assertExists REG_UNISEX_VNC_ConsolidatedLabel.v3dpbd
 assertExists REG_UNISEX_VNC.properties
 assertExists REG_UNISEX_VNC.v3dpbd
 assertContains REG_JRC2018_VNC_MALE.properties "alignment.image.size=572x1164x229"
 assertContains REG_JRC2018_VNC_MALE.properties "alignment.resolution.voxels=0.461122x0.461122x0.70"
+assertContains REG_oldVNC_FEMALE.properties "alignment.image.size=512x1024x220"
+assertContains REG_oldVNC_FEMALE.properties "alignment.resolution.voxels=0.4612588x0.4612588x0.7"
+assertContains REG_oldVNC_MALE.properties "alignment.image.size=512x1100x220"
+assertContains REG_oldVNC_MALE.properties "alignment.resolution.voxels=0.4611222x0.4611222x0.7"
 assertContains REG_UNISEX_VNC.properties "alignment.image.size=573x1119x219"
 assertContains REG_UNISEX_VNC.properties "alignment.resolution.voxels=0.461122x0.461122x0.70"
 

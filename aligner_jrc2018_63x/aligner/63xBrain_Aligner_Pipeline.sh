@@ -8,6 +8,8 @@ DIR=$(cd "$(dirname "$0")"; pwd)
 parseParameters "$@"
 # refomat scale; 0; full only, 2; HFonly
 REFSCALE=$3
+# Empty or "bridging" to enable bridging transformations to legacy templates
+Bridging=$4
 
 # Available input variables:
 #  $TEMPLATE_DIR
@@ -682,39 +684,43 @@ if [[ $testmode = "0" ]]; then
 fi
 
 
-########################################################################################################
-# oldBRAIN_$genderT reformat
-########################################################################################################
+if [[ $Bridging == "bridging" ]]; then
 
-banner "$OLDSPACE $genderT reformat"
-#"--inverse takes 1.5h / channel for reformatting"
-DEFFIELD="$reformat_JRC2018_to_oldBRAIN"
-fn="REG_$OLDSPACE"
-sig=$OUTPUT"/REG_$OLDSPACE"
-TEMP="$OLDTEMPPATH"
+    ########################################################################################################
+    # oldBRAIN_$genderT reformat
+    ########################################################################################################
 
-reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
+    banner "$OLDSPACE $genderT reformat"
+    #"--inverse takes 1.5h / channel for reformatting"
+    DEFFIELD="$reformat_JRC2018_to_oldBRAIN"
+    fn="REG_$OLDSPACE"
+    sig=$OUTPUT"/REG_$OLDSPACE"
+    TEMP="$OLDTEMPPATH"
 
-scoreGen $sig"_01.nrrd" "$OLDTEMPPATH" "scoreOLD"
+    reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
 
-if [[ $testmode = "0" ]]; then
-    writeProperties "$RAWOUT" "" "$OLDSPACE" "$objective" "$OLDVOXELS" "$OLDSIZE" "$scoreOLD" "" "$main_aligned_file"
-fi
+    scoreGen $sig"_01.nrrd" "$OLDTEMPPATH" "scoreOLD"
 
-########################################################################################################
-# JFRC2010 reformat
-########################################################################################################
+    if [[ $testmode = "0" ]]; then
+        writeProperties "$RAWOUT" "" "$OLDSPACE" "$objective" "$OLDVOXELS" "$OLDSIZE" "$scoreOLD" "" "$main_aligned_file"
+    fi
 
-banner "JFRC2010 $genderT reformat"
-DEFFIELD="$reformat_JRC2018_to_JFRC2010"
-fn="REG_JFRC2010_20x"
-sig=$OUTPUT"/"$fn
-TEMP="$JFRC2010"
+    ########################################################################################################
+    # JFRC2010 reformat
+    ########################################################################################################
 
-reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
+    banner "JFRC2010 $genderT reformat"
+    DEFFIELD="$reformat_JRC2018_to_JFRC2010"
+    fn="REG_JFRC2010_20x"
+    sig=$OUTPUT"/"$fn
+    TEMP="$JFRC2010"
 
-if [[ $testmode = "0" ]]; then
-    writeProperties "$RAWOUT" "" "JFRC2010_20x" "20x" "0.62x0.62x1.00" "1024x512x218" "" "" "$main_aligned_file"
+    reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
+
+    if [[ $testmode = "0" ]]; then
+        writeProperties "$RAWOUT" "" "JFRC2010_20x" "20x" "0.62x0.62x1.00" "1024x512x218" "" "" "$main_aligned_file"
+    fi
+
 fi
 
 # -------------------------------------------------------------------------------------------
