@@ -625,11 +625,11 @@ if [[ $Bridging == "bridging" ]]; then
         writeProperties "$RAWOUT" "" "FemaleVNCSymmetric2017_20x" "20x" "0.4612588x0.4612588x0.7" "512x1024x220" "$score2010" "" "$main_aligned_file"
     fi
 
-    # -------------------------------------------------------------------------------------------
-
-    echo "Converting all v3draw files to v3dpbd format"
-    compressAllRaw "$Vaa3D" "$OUTPUT"
 fi
+
+# -------------------------------------------------------------------------------------------
+echo "Converting all v3draw files to v3dpbd format"
+compressAllRaw "$Vaa3D" "$OUTPUT"
 
 # -------------------------------------------------------------------------------------------
 
