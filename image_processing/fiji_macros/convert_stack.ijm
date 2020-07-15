@@ -39,7 +39,7 @@ if (splitChannels=="1") {
     for(c=0; c<titles.length; c++) {
         selectWindow(titles[c]);
         run("Grays");
-        saveCurrentWindow(format, outDir+"/"+outputBasename+"_c"+c+"."+format);  
+        saveCurrentWindow(format, outDir+"/"+outputBasename+"-CH"+(c+1)+"."+format);
     }
 }
 else {

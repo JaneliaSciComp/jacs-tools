@@ -46,8 +46,8 @@ assertNotEmpty test.v3dpbd
 
 # Test channel splitting
 convert $INPUT test.v3draw 1
-assertNotEmpty test_c0.v3draw
-assertNotEmpty test_c1.v3draw
+assertNotEmpty test-CH1.v3draw
+assertNotEmpty test-CH2.v3draw
 
 # Test H5J encoding
 convert $INPUT test.h5j 0 2 1
@@ -59,18 +59,18 @@ assertNotEmpty test.tiff.gz
 
 # Test conversion to gzipped, split raw
 convert $INPUT test.v3draw.gz 1
-assertNotEmpty test_c0.v3draw.gz
-assertNotEmpty test_c1.v3draw.gz
+assertNotEmpty test-CH1.v3draw.gz
+assertNotEmpty test-CH2.v3draw.gz
 
 # Test conversion to NRRD (must split)
 convert $INPUT test.nrrd 1
-assertNotEmpty test_c0.nrrd
-assertNotEmpty test_c1.nrrd
+assertNotEmpty test-CH1.nrrd
+assertNotEmpty test-CH2.nrrd
 
 # Test splitting H5J file
 convert $OUT/test.h5j test.h5j 1 2 1
-assertNotEmpty test_c0.h5j
-assertNotEmpty test_c1.h5j
+assertNotEmpty test-CH1.h5j
+assertNotEmpty test-CH2.h5j
 
 # Test converting from PBD back to ZIP
 convert $OUT/test.v3dpbd test.zip 0

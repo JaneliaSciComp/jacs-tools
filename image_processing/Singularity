@@ -6,7 +6,7 @@ Recipe for a Singularity container running image processing and conversion using
 
 %labels
 AUTHOR Konrad Rokicki
-VERSION 1.1
+VERSION 1.2
 
 %files
 ./scripts /opt/scripts
@@ -65,7 +65,7 @@ chmod -R g+r /opt/*
 echo "Install Python dependencies"
 # install anaconda
 if [ ! -d /usr/local/anaconda ]; then
-     curl https://repo.continuum.io/miniconda/Miniconda3-4.3.14-Linux-x86_64.sh -o ~/anaconda.sh && \
+     curl -sL https://repo.continuum.io/miniconda/Miniconda3-4.3.14-Linux-x86_64.sh -o ~/anaconda.sh && \
      bash ~/anaconda.sh -b -p /usr/local/anaconda && \
      rm ~/anaconda.sh
 fi
