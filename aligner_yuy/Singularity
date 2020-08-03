@@ -6,7 +6,7 @@ Recipe for a Singularity container running Yang Yu's ANTS-based brain aligners.
 
 %labels
 AUTHOR Konrad Rokicki
-VERSION 1.0
+VERSION 1.1
 
 %files
 ./aligner /opt/aligner
