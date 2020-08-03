@@ -52,10 +52,12 @@ do
             VERSION=`grep VERSION $ALIGNER/Singularity | sed "s/VERSION //" | head -n 1`
             FILENAME=${ALIGNER}-${VERSION}.img
             sudo rm -f /tmp/$FILENAME && true
+            sudo rm -rf /tmp/$ALIGNER && true
             echo "---------------------------------------------------------------------------------"
             echo " Building image for $ALIGNER"
             echo "---------------------------------------------------------------------------------"
-            pushd $ALIGNER
+            cp -R $ALIGNER /tmp/$ALIGNER
+            pushd /tmp/$ALIGNER
             if [[ -e ./setup.sh ]]; then
                 echo "Running setup.sh"
                 bash ./setup.sh
@@ -66,6 +68,7 @@ do
                 bash ./cleanup.sh
             fi
             popd
+            sudo rm -rf /tmp/$ALIGNER
             FINAL=$BUILD_DIR/$FILENAME
             cp /tmp/$FILENAME $FINAL
             sudo rm -f /tmp/$FILENAME
