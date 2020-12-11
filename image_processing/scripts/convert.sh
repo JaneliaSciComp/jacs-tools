@@ -51,6 +51,8 @@ function cleanWorkingDir {
 }
 trap cleanWorkingDir EXIT
 
+SYNC_CMD="rsync -rlptD"
+
 # This is needed to ensure that there are no collisions on the cluster.
 # By default, Javacpp caches to ~/.javacpp/cache and the java.io.tmpdir is /tmp
 JAVA_OPTS="-Dorg.bytedeco.javacpp.cachedir=$WORKING_DIR -Djava.io.tmpdir=$WORKING_DIR"
@@ -96,7 +98,7 @@ function encodeH5J {
 if [[ "$INPUT_FILE_EXT" = "$OUTPUT_FILE_EXT" && "$SPLIT_CHANNELS" = "0" ]]; then
     # The file is already in the format we're looking for (for example, lsm.bz2), so just copy it over
     echo "~ Rsyncing $INPUT_FILE to $OUTPUT_FILE"
-    rsync -av "$INPUT_FILE" "$OUTPUT_FILE"
+    $SYNC_CMD "$INPUT_FILE" "$OUTPUT_FILE"
 else
     # Decompress input file if necessary
     ensureUncompressedFile "$WORKING_DIR" "$INPUT_FILE" INPUT_FILE
@@ -132,7 +134,7 @@ else
         else
             # Rsync it into its final position
             echo "~ Rsyncing $INPUT_FILE to $OUTPUT_FILE"
-            rsync -av "$INPUT_FILE" "$OUTPUT_FILE"
+            $SYNC_CMD "$INPUT_FILE" "$OUTPUT_FILE"
         fi
 
     elif [[ "$INPUT_FILE_EXT" = "h5j" && "$SPLIT_CHANNELS" = "1" ]]; then
