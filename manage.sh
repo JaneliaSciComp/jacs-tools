@@ -62,7 +62,7 @@ do
                 echo "Running setup.sh"
                 bash ./setup.sh
             fi
-            sudo singularity build /tmp/$FILENAME Singularity
+            sudo -E singularity build /tmp/$FILENAME Singularity
             if [[ -e ./cleanup.sh ]]; then
                 echo "Running cleanup.sh"
                 bash ./cleanup.sh
