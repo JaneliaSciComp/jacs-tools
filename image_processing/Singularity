@@ -1,12 +1,12 @@
 Bootstrap: docker
 From: scientificlinux/sl:7
 
-% help
+%help
 Recipe for a Singularity container running image processing and conversion using Fiji and Vaa3d
 
 %labels
 AUTHOR Konrad Rokicki
-VERSION 1.2
+VERSION 1.3
 
 %files
 ./scripts /opt/scripts
@@ -22,7 +22,7 @@ yum install -y mesa-libGLU qt qt-x11 libXv numactl-libs
 # Install Vaa3d
 VAA3D_VERSION=mark13
 VAA3D_FILE=vaa3d-redhat-$VAA3D_VERSION.tgz
-curl -sL http://workstation.int.janelia.org/files/tools/{$VAA3D_FILE} -o '#1'
+curl -sLO https://github.com/JaneliaSciComp/tools-archive/releases/download/1.0.0/{$VAA3D_FILE}
 tar xvf $VAA3D_FILE && /bin/rm -f $VAA3D_FILE
 ln -s /opt/vaa3d-redhat-$VAA3D_VERSION /opt/Vaa3D
 
@@ -39,7 +39,7 @@ echo "Installing Fiji"
 yum install -y libXtst-devel libXrender
 # Install Fiji
 FIJI_FILE=fiji-1.52c.tgz
-curl -sL http://workstation.int.janelia.org/files/fiji/{$FIJI_FILE} -o '#1'
+curl -sLO https://github.com/JaneliaSciComp/tools-archive/releases/download/1.0.0/{$FIJI_FILE}
 tar xvfz $FIJI_FILE && /bin/rm -rf $FIJI_FILE
 mv Fiji.app Fiji
 
