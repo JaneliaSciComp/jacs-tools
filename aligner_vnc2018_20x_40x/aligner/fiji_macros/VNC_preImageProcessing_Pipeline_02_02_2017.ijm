@@ -1051,19 +1051,19 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 					updateResults();
 				}
 				
-				if(nResults>1){
+		//		if(nResults>1){
 					
 		//					setBatchMode(false);
 		//			updateDisplay();
 		//			sss
 					
-					print("not single sample, skipped, setSize; "+setSize);
+		//			print("not single sample, skipped, setSize; "+setSize);
 					
-					logsum=getInfo("log");
-					File.saveString(logsum, filepath);
+		//			logsum=getInfo("log");
+		//			File.saveString(logsum, filepath);
 					
-					donotOperate=1;
-				}
+		//			donotOperate=1;
+		//		}
 				
 				startslice=0; endsliceDeside=0;
 				postskelton=0;
