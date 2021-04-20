@@ -26,7 +26,7 @@ inputfile="MB131B-20121018_31_F1.zip";
 //argstr="/test/VNC_pipeline/,JRC_SS45843_20180126_21_A4_VNC.h5j,/Users/otsunah/Dropbox (HHMI)/VNC_project/,/Users/otsunah/Downloads/Workstation/JRC_SS45843/JRC_SS45843_20180126_21_A4_VNC.h5j,ssr,0.59,0.59,f,??,11"//for test
 //argstr="/test/VNC_pipeline/,BJD_103D01_AE_01_20170510_63_A5_VNC.v3draw,/Users/otsunah/Dropbox (HHMI)/VNC_project/,/Users/otsunah/Downloads/Workstation/BJD_103D01_AE_01/BJD_103D01_AE_01_20170510_63_A5_VNC.v3draw,sssr,0.45,0.45,f,/test/VNC_Test/ConsolidatedLabel.v3dpbd,4"//for test
 
-argstr="/Users/otsunah/test/VNC_Test/PreAligned/,"+inputfile+",/Users/otsunah/test/VNC_pipeline/Template/,/Users/otsunah/test/VNC_Test/Sample/"+inputfile+",sr,0.5189163,0.5189163,f,/test/VNC_Test/Sample/ConsolidatedLabel.v3dpbd,8,true"//for test
+//argstr="/Users/otsunah/test/VNC_Test/PreAligned/,"+inputfile+",/Users/otsunah/test/VNC_pipeline/Template/,/Users/otsunah/test/VNC_Test/Sample/"+inputfile+",sr,0.5189163,0.5189163,f,/test/VNC_Test/Sample/ConsolidatedLabel.v3dpbd,8,true"//for test
 
 if(argstr!=0)
 args = split(argstr,",");
