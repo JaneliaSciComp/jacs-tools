@@ -5,7 +5,7 @@
 run("Misc...", "divide=Infinity save");
 MIPsave=1;
 handleCH=2;//number of handling channels for 01, 02 ZIP file
-ShapeAnalysis=1;//perform shape analysis and kick strange sample
+ShapeAnalysis=true;//perform shape analysis and kick strange sample
 
 Batch=1;
 FrontBackAnalysis=0;
@@ -18,6 +18,7 @@ AdvanceDepth=true;
 // Arguments
 
 argstr=0;
+inputfile="MB131B-20121018_31_F1.zip";
 
 //argstr="D:"+File.separator+",I1_ZB49_T1,D:"+File.separator+"Dropbox (HHMI)"+File.separator+"VNC_project"+File.separator+"VNC_Lateral_F.tif,C:"+File.separator+"I2_ZB50_T1.v3draw,sr,0.2965237,0.2965237,f"//for test
 
@@ -25,7 +26,7 @@ argstr=0;
 //argstr="/test/VNC_pipeline/,JRC_SS45843_20180126_21_A4_VNC.h5j,/Users/otsunah/Dropbox (HHMI)/VNC_project/,/Users/otsunah/Downloads/Workstation/JRC_SS45843/JRC_SS45843_20180126_21_A4_VNC.h5j,ssr,0.59,0.59,f,??,11"//for test
 //argstr="/test/VNC_pipeline/,BJD_103D01_AE_01_20170510_63_A5_VNC.v3draw,/Users/otsunah/Dropbox (HHMI)/VNC_project/,/Users/otsunah/Downloads/Workstation/BJD_103D01_AE_01/BJD_103D01_AE_01_20170510_63_A5_VNC.v3draw,sssr,0.45,0.45,f,/test/VNC_Test/ConsolidatedLabel.v3dpbd,4"//for test
 
-//argstr="/test/VNC_Test/PreAligned/,BJD_103D01_AE_01_20170510_63_A5_VNC.v3draw,/Users/otsunah/Dropbox (HHMI)/VNC_project/,/Users/otsunah/Downloads/Workstation/BJD_103D01_AE_01/BJD_103D01_AE_01_20170510_63_A5_VNC.v3draw,sr,0.44,0.44,f,/test/VNC_Test/Sample/ConsolidatedLabel.v3dpbd,8"//for test
+argstr="/Users/otsunah/test/VNC_Test/PreAligned/,"+inputfile+",/Users/otsunah/test/VNC_pipeline/Template/,/Users/otsunah/test/VNC_Test/Sample/"+inputfile+",sr,0.5189163,0.5189163,f,/test/VNC_Test/Sample/ConsolidatedLabel.v3dpbd,8,true"//for test
 
 if(argstr!=0)
 args = split(argstr,",");
@@ -42,6 +43,8 @@ Yresolution = toLowerCase(args[6]);
 temptype=args[7];//"f" or "m"
 PathConsolidatedLabel=args[8];// full file path for ConsolidatedLabel.v3dpbd
 numCPU=args[9];
+ShapeAnalysis=args[10];//true or false
+
 numCPU=round(numCPU);
 numCPU=numCPU-1;
 
@@ -604,7 +607,7 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 						//		updateDisplay();
 						//		"do"
 						//		exit();
-						//	}
+							//	}
 							
 							if(ARshape>1.8){
 								if(maxsizeData<maxsizeOri){
@@ -751,7 +754,7 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 			//		"do"
 			//			exit();
 			
-			startlower=1; trynum=0; step1=0;  DUP_AVEPst=0; DUP_AVEP=0;
+			startlower=1; trynum=0; step1=0;  DUP_AVEPst=0; DUP_AVEP=0; maxsize=40000;
 			while(numberResults==0 && donotOperate==0){
 				//		print(lower+"  No; "+trynum+"   Images; "+nImages);
 				
@@ -878,7 +881,7 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 				trynum=trynum+1;
 
 			}//while(nResults==0  && donotOperate==0){
-			print(" 714; nImages; "+nImages);
+			print(" 714; nImages; "+nImages+"   maxsize; "+maxsize);
 			
 			if(isOpen(AIP)){
 				selectImage(AIP);
@@ -1004,7 +1007,7 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 				run("Make Binary");
 				
 				if(nResults>1)
-				setSize=SizeM/2;
+				setSize=maxsize/2;
 				else
 				setSize=10000;
 				
@@ -1019,7 +1022,20 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 				run("Analyze Particles...", "size="+setSize+"-Infinity show=Nothing display exclude clear");//exclude object on the edge
 				updateResults();
 				
-				
+				if(nResults>1){
+					
+					for(testnumresult=0; testnumresult<nResults; testnumresult++){
+						testsize=getResult("Area", testnumresult);
+						
+						if(testsize>maxsize){
+							maxsize=testsize;
+							setSize=round(testsize/2);
+						}
+					}
+					run("Analyze Particles...", "size="+setSize+"-Infinity show=Nothing display exclude clear");//exclude object on the edge
+					updateResults();
+				}				
+					
 			//		setBatchMode(false);
 			//			updateDisplay();
 			//			"do"
@@ -1036,8 +1052,11 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 				}
 				
 				if(nResults>1){
-					//		setBatchMode(false);
-					//		updateDisplay();
+					
+							setBatchMode(false);
+					updateDisplay();
+					sss
+					
 					print("not single sample, skipped, setSize; "+setSize);
 					
 					logsum=getInfo("log");
@@ -1392,7 +1411,7 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 					close();
 				}else{
 					
-					print("PreAlignerError: no shape mask at line 1368, segmentation error");
+					print("PreAlignerError: no shape mask at line 1397, segmentation error");
 					logsum=getInfo("log");
 					File.saveString(logsum, filepath);
 					run("Quit");
@@ -1564,7 +1583,7 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 				
 				
 				///// Shape analysis, for kicking broken / not well aligned sample ///////////////////
-				if(ShapeAnalysis==1){
+				if(ShapeAnalysis){
 					//		print(nSlices+"  1264");
 					run("Z Project...", "projection=[Max Intensity]");
 					resetMinAndMax();
@@ -1734,7 +1753,7 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 					run("Paste");
 					run("Make Binary");
 					
-				}//if(ShapeAnalysis==1){
+				}//if(ShapeAnalysis){
 				////// scan left/right both side to detect 3 x2 leg //////////////				
 				
 				print("donotOperate #1470; "+donotOperate);
