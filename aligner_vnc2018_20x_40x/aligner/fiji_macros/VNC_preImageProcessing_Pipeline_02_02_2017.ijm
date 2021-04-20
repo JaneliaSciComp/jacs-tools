@@ -1053,9 +1053,9 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 				
 				if(nResults>1){
 					
-							setBatchMode(false);
-					updateDisplay();
-					sss
+		//					setBatchMode(false);
+		//			updateDisplay();
+		//			sss
 					
 					print("not single sample, skipped, setSize; "+setSize);
 					
