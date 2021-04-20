@@ -1029,7 +1029,7 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 						
 						if(testsize>maxsize){
 							maxsize=testsize;
-							setSize=round(testsize/2);
+							setSize=round(testsize-testsize*0.1);
 						}
 					}
 					run("Analyze Particles...", "size="+setSize+"-Infinity show=Nothing display exclude clear");//exclude object on the edge
