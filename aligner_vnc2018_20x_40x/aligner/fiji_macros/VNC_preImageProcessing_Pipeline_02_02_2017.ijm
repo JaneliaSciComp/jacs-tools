@@ -14,6 +14,7 @@ PrintSkip=0;
 AdvanceDepth=true;
 //StackWidth=600;
 //StackHeight=1024;
+ShapeProblem=0;
 
 // Arguments
 
@@ -1603,7 +1604,6 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 					
 					MarkProblem=1;// create a white Mark on right top
 					
-					ShapeProblem=0;
 					selectImage(origiMIPID);
 					print("");
 					
