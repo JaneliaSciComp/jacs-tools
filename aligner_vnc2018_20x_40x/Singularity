@@ -1,12 +1,12 @@
 Bootstrap: docker
 From: scientificlinux/sl:7
 
-% help
+%help
 Recipe for a singuality container for running 20x/40x brain aligner against the JRC2018 template
 
 %labels
 AUTHOR Konrad Rokicki
-VERSION 1.1
+VERSION 1.2
 
 %files
 ./aligner /opt/aligner
