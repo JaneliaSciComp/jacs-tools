@@ -70,7 +70,7 @@ print("Y resolution: "+Yresolution);
 print("Gender: "+temptype);
 print("ConsolidatedLabel path; "+PathConsolidatedLabel);
 print("CPU number: "+numCPU);
-
+print("ShapeAnalysis: "+ShapeAnalysis);
 
 print("Plugin Dir; "+getDirectory("plugins"));
 
