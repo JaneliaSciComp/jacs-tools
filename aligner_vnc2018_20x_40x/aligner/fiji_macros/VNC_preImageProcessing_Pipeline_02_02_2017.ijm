@@ -1584,7 +1584,10 @@ function God(savedir, noext,origi,Batch,myDir0,chanspec,Xresolution,Yresolution,
 				
 				
 				///// Shape analysis, for kicking broken / not well aligned sample ///////////////////
-				if(ShapeAnalysis){
+				if(ShapeAnalysis=="true"){
+                    print("Running shape analysis");
+					logsum=getInfo("log");
+					File.saveString(logsum, filepath);
 					//		print(nSlices+"  1264");
 					run("Z Project...", "projection=[Max Intensity]");
 					resetMinAndMax();
