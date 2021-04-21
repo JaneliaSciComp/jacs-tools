@@ -7,6 +7,7 @@ testmode=0
 if [[ $testmode != 1 ]]; then
   DIR=$(cd "$(dirname "$0")"; pwd)
   . $DIR/common.sh
+  SKIP_PREALIGNER="false"
   parseParameters "$@"
   # Empty or "bridging" to enable bridging transformations to legacy templates
   Bridging=$3
@@ -14,6 +15,7 @@ if [[ $testmode != 1 ]]; then
   # Available input variables:
   #  $TEMPLATE_DIR
   #  $WORK_DIR
+  #  $SKIP_PREALIGNER
   #  $INPUT1_FILE
   #  $INPUT1_REF
   #  $INPUT1_NEURONS
@@ -48,6 +50,7 @@ TempDir=`realpath $TEMPLATE_DIR/vnc2018_20x_40x_templates`
 
 DEBUG_DIR=$FINALOUTPUT"/debug"
 mkdir -p $DEBUG_DIR
+echo "DEBUG_DIR: $DEBUG_DIR"
 
 # "-------------------Template----------------------"
 JRC2018_VNC_Unisex=$TempDir"/JRC2018_VNC_UNISEX_447_G15.nrrd"
@@ -415,13 +418,18 @@ LOGFILE="${OUTPUT}/VNC_pre_aligner_log.txt"
 if [[ -e $LOGFILE ]]; then
     echo "Already exists: $LOGFILE"
 else
+    SHAPE_ANALYSIS="true"
+    if [[ $SKIP_PREALIGNER == "true" ]]; then
+        echo "SKIP_PREALIGNER is $SKIP_PREALIGNER, skipping shape analysis"
+        SHAPE_ANALYSIS="false"
+    fi
     echo "+---------------------------------------------------------------------------------------+"
     echo "| Running Otsuna preprocessing step                                                     |"
-    echo "| $FIJI -macro $PREPROCIMG \"$OUTPUT/,filename,$TempDir,$Path,ssr,$RESX,$RESY,$INPUT1_GENDER,$Unaligned_Neuron_Separator_Result_V3DPBD,$NSLOTS\" |"
+    echo "| $FIJI -macro $PREPROCIMG \"$OUTPUT/,$filename,$TempDir,$Path,ssr,$RESX,$RESY,$INPUT1_GENDER,$Unaligned_Neuron_Separator_Result_V3DPBD,$NSLOTS,$SHAPE_ANALYSIS\" >$DEBUG_DIR/preproc.log 2>&1 |"
     echo "+---------------------------------------------------------------------------------------+"
     START=`date '+%F %T'`
     # Expect to take far less than 1 hour
-    $FIJI -macro $PREPROCIMG "$OUTPUT/,$filename,$TempDir/,$Path,ssr,$RESX,$RESY,$INPUT1_GENDER,$Unaligned_Neuron_Separator_Result_V3DPBD,$NSLOTS" >$DEBUG_DIR/preproc.log 2>&1
+    $FIJI -macro $PREPROCIMG "$OUTPUT/,$filename,$TempDir/,$Path,ssr,$RESX,$RESY,$INPUT1_GENDER,$Unaligned_Neuron_Separator_Result_V3DPBD,$NSLOTS,$SHAPE_ANALYSIS" >$DEBUG_DIR/preproc.log 2>&1
     STOP=`date '+%F %T'`
     echo "Otsuna preprocessing start: $START"
     echo "Otsuna preprocessing stop: $STOP"

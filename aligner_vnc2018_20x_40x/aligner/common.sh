@@ -32,6 +32,7 @@ parseParameters()
     parseParameter CONFIG_FILE ".config_file"
     parseParameter TEMPLATE_DIR ".template_dir"
     parseParameter TOOL_DIR ".tool_dir"
+    parseParameter SKIP_PREALIGNER ".skip_prealigner"
 
     parseParameter INPUT1_FILE ".inputs[0].filepath"
     parseParameter INPUT1_AREA ".inputs[0].area"
