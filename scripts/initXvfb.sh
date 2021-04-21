@@ -48,7 +48,7 @@ while [ "$COUNTER" -lt "$RETRIES" ]; do
 
     # Save the PID so that we can kill it when we're done
     MYPID=$!
-    export DISPLAY="localhost:${PORT}.0"
+    export DISPLAY=":${PORT}.0"
     
     # Wait some time and check to make sure Xvfb is actually running, and retry if not. 
     sleep 3
