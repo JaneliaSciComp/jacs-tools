@@ -21,7 +21,7 @@ testArg=0;
 starttime=getTime();
 run("Misc...", "divide=Infinity save");
 
-testname="GMR_33D11_AE_01_20110921_20_D3_.h5j";
+testname="_SS01062-20210210_31_A5-f_63x.v3draw";
 
 //for VMware Mac
 //testArg = "/Volumes/otsuna/Masayoshi_63x/Failed_Pipeline/,JRC_SS24921_20161101_32_F1up.v3dpbd,/Volumes/otsuna/Masayoshi_63x/Failed_Pipeline/JRC_SS24921_20161101_32_F1up.v3dpbd,/Volumes/otsuna/Masayoshi_63x/Template/";
@@ -33,7 +33,7 @@ testname="GMR_33D11_AE_01_20110921_20_D3_.h5j";
 //testArg = "H:/Registration2/Gab_failAlign/JRC_SS38164_20170712_31_D5/,JRC_SS38164_20170712_31_D5.h5j,H:/Registration2/Gab_failAlign/JRC_SS38164_20170712_31_D5.h5j,H:/Registration2/63x_align/Template/,0.188,0.38,12,63x"; // Gal
 
 
-//testArg = "H:/Registration2/63x_align/Hemi_Brain/,GMR_14G10_AE_01_20130712_1_E2.v3dpbd,H:/Registration2/63x_align/Hemi_Brain/GMR_14G10_AE_01_20130712_1_E2.v3dpbd,H:/Registration2/63x_align/Template/,0.188,0.38,15,63x";
+testArg = "G:/63x_test/,"+testname+",G:/63x_test/"+testname+",G:/Template/,0.188,0.38,15,63x,f";
 
 //testArg = "/test/63x_align/,Pre_PROCESSED,/test/63x_align/stitched-2547130846393925730.v3draw,/test/63x_align/Template/,0.188,0.38,11,63x,f";
 
@@ -1854,16 +1854,29 @@ if(FromDir==1){
 		//		exit();
 		SliceNumberAdjustment(nSlices,TempSlice);
 		
-		run("Nrrd Writer", "compressed nrrd="+myDir+"Temp1.nrrd");
+		tempW=getWidth;
+		tempH=getHeight;
 		rename("Temp.nrrd");
 		
 		run("Z Project...", "projection=[Max Intensity]");
 		TempMIP=getImageID();
 		rename("TempMIP.tif");
 		
-		tempW=getWidth;
-		tempH=getHeight;
+		selectWindow("Temp.nrrd");
+		run("Nrrd Writer", "compressed nrrd="+myDir+"Temp1.nrrd");
 		
+		getVoxelSize(tempVxWidth, tempVxHeight, tempVxDepth, tempVxUnit);
+		
+		resizedX=parseFloat(tempVxWidth)/0.5;
+		resizewidth=round(getWidth()*resizedX);
+		resizeheight=round(getHeight()*resizedX);
+		run("Size...", "width="+resizewidth+" height="+resizeheight+" depth="+nSlices+" constrain average interpolation=Bicubic");
+		
+		
+		run("Nrrd Writer", "compressed nrrd="+myDir+"Temp_small.nrrd");
+	
+		
+		selectWindow("TempMIP.tif");
 		print("tempW; "+tempW+"   tempH"+tempH);
 		
 		run("Enhance Contrast", "saturated=0.3");
@@ -1912,6 +1925,13 @@ if(FromDir==1){
 	}//if(tempRotate==1){
 	
 	trufilename="PRE_PROCESSED";
+	
+	resizedX=parseFloat(ResX)/0.5;
+	resizewidth=round(getWidth()*resizedX);
+	resizeheight=round(getHeight()*resizedX);
+	run("Size...", "width="+resizewidth+" height="+resizeheight+" depth="+nSlices+" constrain average interpolation=Bicubic");
+	
+	
 	run("Nrrd Writer", "compressed nrrd="+myDirimages+trufilename+"_01.nrrd");
 	close();
 	

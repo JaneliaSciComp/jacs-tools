@@ -62,9 +62,8 @@ echo "testmode; "$testmode
 if [[ $testmode == "1" ]]; then
   echo "Test mode ON"
 
-  TempDir="/nrs/scicompsoft/otsuna/Masayoshi_63x/Template"
-  Unaligned_Neuron_Separator_Result_V3DPBD="/Users/otsunah/Downloads/Workstation/BJD_124H07_AE_01/BJD_124H07_AE_01_20180629_62_C1_ConsolidatedLabel.v3dpbd"
-
+  env="LSF"
+  
   OUTPUT=$1
   inputfilename=$2
 
@@ -78,14 +77,16 @@ if [[ $testmode == "1" ]]; then
   objective="63x"
   Path=$OUTPUT"/$inputfilename"
 
-  FIJI=/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx
-  TempDir="/Volumes/otsuna/Masayoshi_63x/Template"
-  CMTK=/Applications/Fiji.app/bin/cmtk
-  PREPROCIMG="/Volumes/otsuna/Masayoshi_63x/63x_tile_aligner_Pipeline.ijm"
-  NRRDCOMP="/Volumes/otsuna/Masayoshi_63x/nrrd_compression.ijm"
-  SCOREGENERATION="/Volumes/otsuna/Masayoshi_63x/Score_Generator_Cluster63x.ijm"
-  NSLOTS=11
+  if [[ $env == "LSF" ]]; then
+  MACRO_DIR="/nrs/scicompsoft/otsuna/63x_Brain/aligner_jrc2018_63x/aligner/fiji_macros/"
+  FIJI="/groups/scicompsoft/home/otsunah/Desktop/Fiji.app/ImageJ-linux64"
+  TempDir="/nrs/scicompsoft/otsuna/Masayoshi_63x/Template"
+	CMTK=/nrs/scicompsoft/otsuna/CMTK_new2019
+  PREPROCIMG="/nrs/scicompsoft/otsuna/63x_Brain/aligner_jrc2018_63x/aligner/fiji_macros/63x_tile_aligner_Pipeline_TempRotate.ijm"
+  NSLOTS=5
+  fi
 
+  if [[ $env == "VMware" ]]; then
   # for VMware windows
   FIJI=/Applications/Fiji.app/Contents/MacOS/ImageJ-macosx
   TempDir="/Volumes/Registration2/63x_align/Template"
@@ -95,7 +96,9 @@ if [[ $testmode == "1" ]]; then
   SCOREGENERATION="/Users/hideVMware/Dropbox/Hideo_Daily_Coding/Score_Generator_Cluster63x.ijm"
   reformat_JRC2018U_to_JFRC2010="/Volumes/Registration2/63x_align/Template/Deformation_Fields/JFRC2010_JRC2018_UNISEX"
   reformat_JRC2018U_to_JFRC2013="/Volumes/Registration2/63x_align/Template/Deformation_Fields/JFRC2013_JRC2018_UNISEX"
+  fi
 
+  if [[ $env == "MBP" ]]; then
   #for MacBookPro
   TempDir="/test/63x_align/Template"
   CMTK="/Applications/FijizOLD.app/bin/cmtk"
@@ -104,20 +107,24 @@ if [[ $testmode == "1" ]]; then
   FIJI="/Applications/FijizOLD.app/Contents/MacOS/ImageJ-macosx"
   NRRDCOMP="/test/63x_align/nrrd_compression.ijm "
   SCOREGENERATION="/test/63x_align/Score_Generator_Cluster63x.ijm"
+  fi
 
-  REGCROP="/test/63x_align/TempCrop_after_affine.ijm"
-  ROTATEAFTERWARP="/test/63x_align/Rotation_AfterReg.ijm"
-  TWENTYHRGENERATION="/test/63x_align/TwentyHRgeneration.ijm"
-  NRRDCOMP="/test/63x_align/nrrd_compression.ijm"
+  CMTKM=$CMTK/munger
+  SCOREGENERATION=$MACRO_DIR"Score_Generator_Cluster63x.ijm"
+  TWELVEBITCONV=$MACRO_DIR"12bit_Conversion.ijm"
+  REGCROP=$MACRO_DIR"TempCrop_after_affine.ijm"
+  ROTATEAFTERWARP=$MACRO_DIR"Rotation_AfterReg.ijm"
+  TWENTYHRGENERATION=$MACRO_DIR"TwentyHRgeneration.ijm"
+  NRRDCOMP=$MACRO_DIR"nrrd_compression.ijm"
   FINALOUTPUT=$OUTPUT"/FinalOutputs"
 
-  INPUT1_GENDER="m"
+  INPUT1_GENDER="f"
   
-  NRRDCONV=/Users/otsunah/Documents/otsunah/jacs-tools/aligner_vnc2017_20x/aligner/scripts/VNC_preImageProcessing_Plugins_pipeline/nrrd2v3draw_MCFO.ijm
+  NRRDCONV=$MACRO_DIR"nrrd2v3draw_MCFO.ijm"
 
   INPUT1_FILE=$inputfilename;
 
-  INPUT1_CHANNELS=4
+  INPUT1_CHANNELS=2
   INPUT1_RESX=$RESX
   INPUT1_RESY=$RESX
   INPUT1_RESZ=$RESZ
@@ -137,6 +144,7 @@ JRC2018UNISEX38um=$TempDir/JRC2018_UNISEX_38um_iso.nrrd
 JRC2018UNISEX20xHR=$TempDir/JRC2018_UNISEX_20x_HR.nrrd
 
 JRC2018_63x_CROPPED=$OUTPUT"/Temp1.nrrd"
+JRC2018_63x_CROPPED_SMALL=$OUTPUT"/Temp_small.nrrd"
 
 # "-------------------Global aligned files----------------------"
 GLOUTPUT=$OUTPUT/images
@@ -147,7 +155,7 @@ gloval_signalNrrd3="$GLOUTPUT/"$glfilename"_04.nrrd"
 
 # "-------------------Deformation fields----------------------"
 registered_initial_xform=$OUTPUT"/initial.xform"
-registered_affine_xform=$OUTPUT"/Registration/affine/Temp1_PRE_PROCESSED_01_9dof.list"
+registered_affine_xform=$OUTPUT"/Registration/affine/Temp_PRE_PROCESSED_01_9dof.list"
 registered_warp_xform=$OUTPUT"/warp.xform"
 
 #
@@ -271,7 +279,7 @@ function reformatAll() {
           echo "| Rotation after registration"
           echo "| $FIJI -macro $ROTATEAFTERWARP \"$OUTPUT/,$_fn,$OUTPUT_NRRD,$TxtPath,$REFSCALE\""
           echo "+----------------------------------------------------------------------+"
-          $FIJI -macro $ROTATEAFTERWARP "$OUTPUT/,$_fn,$OUTPUT_NRRD,$TxtPath,$REFSCALE"
+          $FIJI --headless -macro $ROTATEAFTERWARP "$OUTPUT/,$_fn,$OUTPUT_NRRD,$TxtPath,$REFSCALE"
         fi
 
         echo "+----------------------------------------------------------------------+"
@@ -445,7 +453,7 @@ if [[ $INPUT1_GENDER == "f" ]]; then
     genderT="FEMALE"
     reformat_JRC2018_to_oldBRAIN=$TempDir"/Deformation_Fields/JFRC2013_JRC2018_FEMALE"
     reformat_JRC2018_to_JFRC2010=$TempDir"/Deformation_Fields/JFRC2010_JRC2018_FEMALE"
-    reformat_JRC2018_to_Uni="/Deformation_Fields/JRC2018_Unisex_JRC2018_FEMALE"
+    reformat_JRC2018_to_Uni=$TempDir"/Deformation_Fields/JRC2018_Unisex_JRC2018_FEMALE"
     TEMPNAME="JRC2018_Female"
     OLDTEMPPATH=$JFRC2013
     OLDSPACE="JFRC2013_63x"
@@ -471,7 +479,7 @@ elif [[ $INPUT1_GENDER == "m" ]]; then
     genderT="MALE"
     reformat_JRC2018_to_oldBRAIN=$TempDir"/Deformation_Fields/JFRC2014_JRC2018_MALE"
     reformat_JRC2018_to_JFRC2010=$TempDir"/Deformation_Fields/JFRC2010_JRC2018_MALE"
-    reformat_JRC2018_to_Uni="/Deformation_Fields/JRC2018_Unisex_JRC2018_MALE"
+    reformat_JRC2018_to_Uni=$TempDir"/Deformation_Fields/JRC2018_Unisex_JRC2018_MALE"
     TEMPNAME="JRC2018_Male"
     OLDTEMPPATH=$JFRC2014
     OLDSPACE="JFRC2014_63x"
@@ -527,8 +535,14 @@ else
     echo "+---------------------------------------------------------------------------------------+"
     START=`date '+%F %T'`
     # Expect to take far less than 1 hour
-    # TODO: doesnt take neurons?
-    $FIJI -macro $PREPROCIMG "$OUTPUT/,$glfilename,$Path,$TempDir/,$RESX,$RESZ,$NSLOTS,$objective,$INPUT1_GENDER"  >$DEBUG_DIR/preproc.log 2>&1
+# TODO: doesnt take neurons?
+
+    if [[ $testmode == "0" ]]; then
+      $FIJI -macro $PREPROCIMG "$OUTPUT/,$glfilename,$Path,$TempDir/,$RESX,$RESZ,$NSLOTS,$objective,$INPUT1_GENDER"  >$DEBUG_DIR/preproc.log 2>&1
+    fi
+    if [[ $testmode == "1" ]]; then
+      $FIJI -macro $PREPROCIMG "$OUTPUT/,$glfilename,$Path,$TempDir/,$RESX,$RESZ,$NSLOTS,$objective,$INPUT1_GENDER"
+    fi
 
     STOP=`date '+%F %T'`
     echo "Otsuna preprocessing start: $START"
@@ -559,12 +573,12 @@ else
     echo "+---------------------------------------------------------------------------------------+"
     echo "| Running CMTK registration"
     echo "| OUTPUT; $OUTPUT"
-    echo "| $CMTKM -b $CMTK -a -X 26 -C 8 -G 80 -R 4 -A '--accuracy 0.8' -W '--accuracy 0.8' -T $NSLOTS -s \"$JRC2018_63x_CROPPED\" images"
+    echo "| $CMTKM -b $CMTK -a -X 26 -C 8 -G 80 -R 4 -A '--accuracy 0.8' -W '--accuracy 0.8' -T $NSLOTS -s \"$JRC2018_63x_CROPPED_SMALL\" images"
     echo "+---------------------------------------------------------------------------------------+"
     START=`date '+%F %T'`
 
     cd "$OUTPUT"
-    $CMTKM -b "$CMTK" -a -X 26 -C 8 -G 80 -R 4 -A '--accuracy 0.8' -W '--accuracy 0.8'  -T $NSLOTS -s "$JRC2018_63x_CROPPED" images
+    $CMTKM -b "$CMTK" -a -X 26 -C 8 -G 80 -R 4 -A '--accuracy 0.8' -W '--accuracy 0.8'  -T $NSLOTS -s "$JRC2018_63x_CROPPED_SMALL" images
 
     STOP=`date '+%F %T'`
     if [[ ! -e $registered_affine_xform ]]; then
@@ -583,7 +597,7 @@ echo "------------------------------------------------------------"
 sig=$OUTPUT"/Affine_${inputfilename%.*}_01.nrrd"
 DEFFIELD=$registered_affine_xform
 TSTRING="JRC2018 63X"
-TEMP="$JRC2018_63x_CROPPED"
+TEMP="$JRC2018_63x_CROPPED_SMALL"
 gsig="$GLOUTPUT/"$glfilename"_01.nrrd"
 
 $CMTK/reformatx -o "$sig" --floating $gsig $TEMP $DEFFIELD
@@ -620,8 +634,13 @@ echo "+----------------------------------------------------------------------+"
 echo "| 12-bit conversion"
 echo "| $FIJI -macro $TWELVEBITCONV \"${OUTPUT}/,${glfilename}_01.nrrd,${gloval_nc82_nrrd}\""
 echo "+----------------------------------------------------------------------+"
-$FIJI --headless -macro $TWELVEBITCONV "${OUTPUT}/,${glfilename}_01.nrrd,${gloval_nc82_nrrd}" > $DEBUG_DIR/conv12bit.log 2>&1
 
+if [[ $testmode = "0" ]]; then
+  $FIJI --headless -macro $TWELVEBITCONV "${OUTPUT}/,${glfilename}_01.nrrd,${gloval_nc82_nrrd}" > $DEBUG_DIR/conv12bit.log 2>&1
+fi
+if [[ $testmode = "1" ]]; then
+  $FIJI --headless -macro $TWELVEBITCONV "${OUTPUT}/,${glfilename}_01.nrrd,${gloval_nc82_nrrd}"
+fi
 fi # skip
 
 ########################################################################################################

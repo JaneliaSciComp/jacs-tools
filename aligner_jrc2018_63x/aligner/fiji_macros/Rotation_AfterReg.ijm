@@ -265,7 +265,7 @@ function ThreeDrotation (ThreeDrotationArray,TotalXtranslation,TotalYtranslation
 	
 	
 	if(TotalRotationFrontal!=0){
-		run("Rotation Hideo", "rotate="+TotalRotationFrontal+" 3d in=InMacro");
+		run("Rotation Hideo headless", "rotate="+TotalRotationFrontal+" 3d in=InMacro");
 		run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=microns pixel_width="+OriSampWidth+" pixel_height="+OriSampHeight+" voxel_depth="+OriSampDepth+"");
 		print("xy rotated; TotalRotationFrontal; "+TotalRotationFrontal);
 	}//	if(TotalRotationFrontal>0){
@@ -285,7 +285,7 @@ function ThreeDrotation (ThreeDrotationArray,TotalXtranslation,TotalYtranslation
 		
 		if(maxrotation3!=0){
 			getVoxelSize(LVxWidth, LVxHeight, LVxDepth, LVxUnit);
-			run("Rotation Hideo", "rotate="+maxrotation3+" 3d in=InMacro");
+			run("Rotation Hideo headless", "rotate="+maxrotation3+" 3d in=InMacro");
 			run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=microns pixel_width="+LVxWidth+" pixel_height="+LVxHeight+" voxel_depth="+LVxDepth+"");
 		}
 		run("Translate...", "x="+round(maxX3*FrontalChangeRatio300px)+" y="+round(maxY3*FrontalChangeRatio300px)+" interpolation=None stack");
@@ -308,7 +308,7 @@ function ThreeDrotation (ThreeDrotationArray,TotalXtranslation,TotalYtranslation
 		if(maxrotationL!=0){
 			getVoxelSize(LVxWidth, LVxHeight, LVxDepth, LVxUnit);
 			//	run("Canvas Size...", "width="+resliceLongLength+" height="+round(CanvasHeight*1.2)+" position=Center zero");
-			run("Rotation Hideo", "rotate="+maxrotationL+" 3d in=InMacro");
+			run("Rotation Hideo headless", "rotate="+maxrotationL+" 3d in=InMacro");
 			run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=microns pixel_width="+LVxWidth+" pixel_height="+LVxHeight+" voxel_depth="+LVxDepth+"");
 		}
 		print("maxrotationL; "+maxrotationL+"   Reslice Depth; "+LVxDepth+"   round(maxXL*zoomratiolateral300); "+round(maxXL*zoomratiolateral300)+"   maxXL; "+maxXL);
