@@ -1,7 +1,7 @@
 Bootstrap: docker
 From: scientificlinux/sl:7
 
-% help
+%help
 Recipe for a singuality container for running 63x brain aligner against the JRC2018 template
 
 %labels
