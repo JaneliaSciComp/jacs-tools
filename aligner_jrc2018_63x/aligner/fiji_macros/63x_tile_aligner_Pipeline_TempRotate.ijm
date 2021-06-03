@@ -33,7 +33,7 @@ testname="_SS01062-20210210_31_A5-f_63x.v3draw";
 //testArg = "H:/Registration2/Gab_failAlign/JRC_SS38164_20170712_31_D5/,JRC_SS38164_20170712_31_D5.h5j,H:/Registration2/Gab_failAlign/JRC_SS38164_20170712_31_D5.h5j,H:/Registration2/63x_align/Template/,0.188,0.38,12,63x"; // Gal
 
 
-testArg = "G:/63x_test/,"+testname+",G:/63x_test/"+testname+",G:/Template/,0.188,0.38,15,63x,f";
+//testArg = "G:/63x_test/,"+testname+",G:/63x_test/"+testname+",G:/Template/,0.188,0.38,15,63x,f";
 
 //testArg = "/test/63x_align/,Pre_PROCESSED,/test/63x_align/stitched-2547130846393925730.v3draw,/test/63x_align/Template/,0.188,0.38,11,63x,f";
 
