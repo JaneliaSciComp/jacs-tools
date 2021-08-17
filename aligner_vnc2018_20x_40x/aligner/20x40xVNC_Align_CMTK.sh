@@ -547,7 +547,7 @@ elif [[ $INPUT1_GENDER == "m" ]]; then
     image_size="572x1164x229"
 fi
 
-writeProperties "$RAWOUT" "" "JRC2018_VNC_${genderT}" "$objective" "0.461122x0.461122x0.70" "$image_size" "$score2018" "" ""
+writeProperties "$RAWOUT" "" "JRC2018_VNC_${genderT}_40x_DS" "40x_DS" "0.461122x0.461122x0.70" "$image_size" "$score2018" "" ""
 
 
 ########################################################################################################
@@ -576,7 +576,7 @@ if [[ -e $Global_Aligned_Separator_Result ]]; then
     rm $RAWOUT_NEURON
 fi
 
-writeProperties "$RAWOUT" "$FLIP_NEURON" "JRC2018_VNC_Unisex" "$objective" "0.461122x0.461122x0.70" "573x1119x219" "" "" "$main_aligned_file"
+writeProperties "$RAWOUT" "$FLIP_NEURON" "JRC2018_VNC_Unisex_40x_DS" "40x_DS" "0.461122x0.461122x0.70" "573x1119x219" "" "" "$main_aligned_file"
 
 
 if [[ $Bridging == "bridging" ]]; then

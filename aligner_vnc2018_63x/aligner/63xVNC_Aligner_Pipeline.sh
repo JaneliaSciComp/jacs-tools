@@ -522,7 +522,7 @@ if [[ $INPUT1_GENDER == "f" ]]; then
 
 
     scoreT=${JRC2018_VNC_Female_40x}
-    JRC2018RESO="0.4611220x0.4611220x0.7"
+    JRC2018RESO="0.4611220x0.4611220x0.70"
     JRC2018SIZE="573x1164x205"
 
 
@@ -539,7 +539,7 @@ elif [[ $INPUT1_GENDER == "m" ]]; then
     iniT=${JRC2018_VNC_Male_63x}
 
     scoreT=${JRC2018_VNC_Male_40x}
-    JRC2018RESO="0.4611220x0.4611220x0.7"
+    JRC2018RESO="0.4611220x0.4611220x0.70"
     JRC2018SIZE="572x1164x229"
 
     OLDVOXELS="0.4611222x0.4611222x0.7"
@@ -740,7 +740,7 @@ if [[ ! -e $sig"_01.nrrd" ]]; then
   scoreGen $sig"_01.nrrd" $scoreT "score2018" "verify2018"
 
   if [[ $testmode = "0" ]]; then
-    writeProperties "$RAWOUT" "" "JRC2018_${genderT}_VNC_${TRESOLUTION}" "$objective" "$JRC2018RESO" "$JRC2018SIZE" "$score2018" "" "" "$verify2018"
+    writeProperties "$RAWOUT" "" "JRC2018_VNC_${genderT}_${TRESOLUTION}" "$TRESOLUTION" "$JRC2018RESO" "$JRC2018SIZE" "$score2018" "" "" "$verify2018"
   fi
 fi #if [[ ! -e $sig ]]; then
 
@@ -770,7 +770,7 @@ if [[ ! -e $sig"_01.nrrd" ]]; then
     reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT" "" "$fn"
 
   if [[ $testmode = "0" ]]; then
-    writeProperties "$RAWOUT" "" "JRC2018_Unisex_VNC_${TRESOLUTION}" "$objective" "0.1882689x0.1882689x0.38" "1401x2740x402" "" "" "$main_aligned_file"
+    writeProperties "$RAWOUT" "" "JRC2018_VNC_Unisex_${TRESOLUTION}" "$TRESOLUTION" "0.1882689x0.1882689x0.38" "1401x2740x402" "" "" "$main_aligned_file"
   fi
 fi
 
@@ -803,7 +803,7 @@ if [[ ! -e $sig"_01.nrrd" ]]; then
   fi
 
   if [[ $testmode = "0" ]]; then
-    writeProperties "$RAWOUT" "" "JRC2018_Unisex_VNC_20x" "20x" "0.4611220x0.4611220x0.70" "573x1119x219" "$score2018U" "" "$main_aligned_file" "$verify2018U"
+    writeProperties "$RAWOUT" "" "JRC2018_Unisex_VNC_40x_DS" "40x_DS" "0.461122x0.461122x0.70" "573x1119x219" "$score2018U" "" "$main_aligned_file" "$verify2018U"
   fi
 fi
 

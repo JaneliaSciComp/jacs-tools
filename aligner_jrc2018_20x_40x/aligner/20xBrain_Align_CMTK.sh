@@ -646,7 +646,7 @@ if [[ $TRESOLUTION != "20x_HR" ]]; then
     gsig=$OUTPUT"/"$filename
     reformatAll "$gsig" "$TEMP" "$DEFFIELD" "$sig" "RAWOUT"
 
-    writeProperties "$RAWOUT" "" "JRC2018_Unisex_20x_HR" "20x" "0.5189161x0.5189161x1.0" "1210x566x174" "" "$main_aligned_file"
+    writeProperties "$RAWOUT" "" "JRC2018_Unisex_20x_HR" "20x_HR" "0.5189161x0.5189161x1.0" "1210x566x174" "" "$main_aligned_file"
 
 fi
 
