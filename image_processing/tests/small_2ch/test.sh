@@ -81,7 +81,7 @@ EOL
 fi
 
 chmod +x $OUT/submit.sh
-bsub -K -e $OUT/stderr.log -o $OUT/stdout.log -n $NSLOTS $OUT/submit.sh
+bsub -K $LSF_OPTS -e $OUT/stderr.log -o $OUT/stdout.log -n $NSLOTS $OUT/submit.sh
 
 cat $OUT/std*
 

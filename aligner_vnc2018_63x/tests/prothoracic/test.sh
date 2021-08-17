@@ -26,7 +26,7 @@ if [[ -e $OUT/stdout.log ]]; then
     echo "Test was already run"
 else
     set -x
-    bsub -K -e $OUT/stderr.log -o $OUT/stdout.log -n $NSLOTS $TOOLS_DIR/scripts/testAligner.sh \
+    bsub -K $LSF_OPTS -e $OUT/stderr.log -o $OUT/stdout.log -n $NSLOTS $TOOLS_DIR/scripts/testAligner.sh \
         "singularity run -B $B1 -B $B2 --app align_half $CONTAINER" $NSLOTS $OUT $OUT/align.yml debug
     set +x
 fi
@@ -45,4 +45,3 @@ assertExists REG_JRC2018_MALE_63x_01.mp4
 assertContains REG_JRC2018_MALE_63x.properties "alignment.verify.filename=REG_JRC2018_MALE_63x_01.mp4"
 # Check for specific properties
 assertContains REG_JRC2018_MALE_63x.properties "alignment.resolution.voxels=0.4611220x0.4611220x0.7"
-

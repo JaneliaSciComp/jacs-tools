@@ -28,7 +28,7 @@ EOL
 if [[ -e $OUT/stdout.log ]]; then
     echo "Test was already run"
 else
-    bsub -K -e $OUT/stderr.log -o $OUT/stdout.log -n $NSLOTS $TOOLS_DIR/scripts/testAligner.sh \
+    bsub -K $LSF_OPTS -e $OUT/stderr.log -o $OUT/stdout.log -n $NSLOTS $TOOLS_DIR/scripts/testAligner.sh \
         "singularity run -B $B1 -B $B2 --app align_ol_unknown_bridging $CONTAINER" $NSLOTS $OUT $OUT/align.yml debug
 fi
 

@@ -158,6 +158,7 @@ do
 
     elif [[ "$COMMAND" == "test" || "$COMMAND" == "cleantest" ]]; then
 
+        export LSF_OPTS="-P scicompsoft"
         echo "Will test these images: $@"
 
         for ALIGNER in "$@"
