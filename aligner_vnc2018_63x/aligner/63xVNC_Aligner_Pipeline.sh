@@ -803,7 +803,7 @@ if [[ ! -e $sig"_01.nrrd" ]]; then
   fi
 
   if [[ $testmode = "0" ]]; then
-    writeProperties "$RAWOUT" "" "JRC2018_Unisex_VNC_40x_DS" "40x_DS" "0.461122x0.461122x0.70" "573x1119x219" "$score2018U" "" "$main_aligned_file" "$verify2018U"
+    writeProperties "$RAWOUT" "" "JRC2018_VNC_Unisex_40x_DS" "40x_DS" "0.461122x0.461122x0.70" "573x1119x219" "$score2018U" "" "$main_aligned_file" "$verify2018U"
   fi
 fi
 
