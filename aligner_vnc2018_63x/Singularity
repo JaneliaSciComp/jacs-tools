@@ -14,12 +14,20 @@ VERSION 1.3
 %post
 cd /opt # Install all software in /opt
 
+echo "Installing dependencies"
+EPEL_FILE=epel-release-latest-7.noarch.rpm
+EPEL_MIRROR=mirror.chpc.utah.edu
+curl -sL http://${EPEL_MIRROR}/pub/epel/{$EPEL_FILE} -o '#1'
+rpm -ivh $EPEL_FILE && /bin/rm -f $EPEL_FILE
+yum install -y python-pip jq bc
+pip install PyYAML==5.4.1 yq==2.12.2
+
 echo "Installing Vaa3d"
 # Prereqs for Vaa3d
 yum install -y mesa-libGLU qt qt-x11 libXv numactl-libs
 # Install Vaa3d
 VAA3D_FILE=vaa3d-redhat-mark13.tgz
-curl -sL http://workstation.int.janelia.org/files/tools/{$VAA3D_FILE} -o '#1'
+curl -sL https://github.com/JaneliaSciComp/tools-archive/releases/download/1.0.0/{$VAA3D_FILE} -o '#1'
 tar xvf $VAA3D_FILE && /bin/rm -f $VAA3D_FILE
 ln -s /opt/vaa3d-redhat-mark13 Vaa3D
 
@@ -28,7 +36,7 @@ echo "Installing Fiji"
 yum install -y libXtst-devel libXrender
 # Install Fiji
 FIJI_FILE=fiji-1.52c.tgz
-curl -sL http://workstation.int.janelia.org/files/fiji/{$FIJI_FILE} -o '#1'
+curl -sL https://github.com/JaneliaSciComp/tools-archive/releases/download/1.0.0/{$FIJI_FILE} -o '#1'
 tar xvfz $FIJI_FILE && /bin/rm -rf $FIJI_FILE
 rm -rf Fiji
 mv Fiji.app Fiji
@@ -47,18 +55,9 @@ echo "Installing CMTK"
 yum install -y fftw-libs-double
 # Install CMTK
 CMTK_FILE=cmtk-20190116-sl7avx2.tgz
-curl -sL http://workstation.int.janelia.org/files/tools/{$CMTK_FILE} -o '#1'
+curl -sL https://github.com/JaneliaSciComp/tools-archive/releases/download/1.0.0/{$CMTK_FILE} -o '#1'
 tar xvf $CMTK_FILE && /bin/rm -f $CMTK_FILE
 ln -s cmtk-20190116-sl7avx2 CMTK
-
-echo "Installing dependencies"
-EPEL_FILE=epel-release-latest-7.noarch.rpm
-#EPEL_MIRROR=dl.fedoraproject.org
-EPEL_MIRROR=mirror.chpc.utah.edu
-curl -sL http://${EPEL_MIRROR}/pub/epel/{$EPEL_FILE} -o '#1'
-rpm -ivh $EPEL_FILE && /bin/rm -f $EPEL_FILE
-yum install -y python-pip jq bc
-pip install yq
 
 echo "Install ffmpeg"
 # From https://www.vultr.com/docs/how-to-install-ffmpeg-on-centos
