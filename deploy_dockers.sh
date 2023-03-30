@@ -10,11 +10,11 @@ echo "Deploying to $JACS_SINGULARITY_DIR"
 #singularity build -F /tmp/out.sif docker://janeliascicomp/vaa3d:redhat-mark13
 #cp /tmp/out.sif $JACS_SINGULARITY_DIR/vaa3d-redhat-mark13.img
 
-#singularity build -F /tmp/out.sif docker-daemon://janeliascicomp/flylight_tools:1.2.3
-#cp /tmp/out.sif $JACS_SINGULARITY_DIR/flylight_tools-1.2.3.img
+singularity build -F /tmp/out.sif docker-daemon://janeliascicomp/flylight_tools:1.2.3
+cp /tmp/out.sif $JACS_SINGULARITY_DIR/flylight_tools-1.3.0.img
 
-singularity build -F /tmp/out.sif docker://registry.int.janelia.org/jacs/jacs-storage:1.19.2
-cp /tmp/out.sif $JACS_SINGULARITY_DIR/jacs-storage-1.19.2.img
+#singularity build -F /tmp/out.sif docker://registry.int.janelia.org/jacs/jacs-storage:1.19.2
+#cp /tmp/out.sif $JACS_SINGULARITY_DIR/jacs-storage-1.19.2.img
 
 #singularity build -F /tmp/out.sif docker://registry.int.janelia.org/jacs-scripts/flylight_perl:1.0.4
 #cp /tmp/out.sif $JACS_SINGULARITY_DIR/flylight_perl-1.0.4.img
