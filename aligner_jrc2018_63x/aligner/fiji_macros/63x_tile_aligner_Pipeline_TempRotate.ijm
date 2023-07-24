@@ -400,18 +400,19 @@ if(FromDir==1){
 	if(RotateSample==1){// rotation sample with 100px image size, XY is 0.19 micron
 		selectImage(nc82Ori);
 		
-		run("Gamma ", "gamma=1.6 in=InMacro cpu="+NSLOTS+"");
-		gammaup=getTitle();
+		run("Gamma samewindow noswing", "gamma=1.6 3d cpu="+NSLOTS+"");
+		//	run("Gamma ", "gamma=1.6 3d cpu="+NSLOTS+"");
+		//	gammaup=getTitle();
 		
-		selectWindow(nc82OriST);
-		close();
+		//	selectWindow(nc82OriST);
+		//	close();
 		
-		wait(100);
-		call("java.lang.System.gc");
+		//	wait(100);
+		//	call("java.lang.System.gc");
 		
-		selectWindow(gammaup);
-		rename(nc82OriST);
-		nc82Ori=getImageID();
+		//	selectWindow(gammaup);
+		//	rename(nc82OriST);
+		//nc82Ori=getImageID();
 		
 		//		setBatchMode(false);
 		//								updateDisplay();
@@ -458,7 +459,7 @@ if(FromDir==1){
 		ApplyLUT();//1725
 		run("Grays");
 		
-		rotationp=55; rotationN=10; overLap=70; 
+		rotationp=55; rotationN=55; overLap=60; 
 		
 		//	setBatchMode(false);
 		//	updateDisplay();
@@ -508,7 +509,8 @@ if(FromDir==1){
 			if(getWidth!=sampleLongLengthW)
 			run("Canvas Size...", "width="+sampleLongLengthW+" height="+sampleLongLengthH+" position=Center zero");
 			
-			run("Rotation Hideo", "rotate="+rotationOriginal+" 3d in=InMacro");
+			run("Rotation Hideo headless", "rotate="+rotationOriginal+" 3d in=InMacro interpolation=BICUBIC cpu=10");
+			
 			run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=microns pixel_width="+OriSampWidth+" pixel_height="+OriSampHeight+" voxel_depth="+OriSampDepth+"");
 		}//	if(rotationOriginal>0){
 		
@@ -597,7 +599,9 @@ if(FromDir==1){
 	if(maxrotation!=0){
 		if(getWidth!=sampleLongLengthW)
 		run("Canvas Size...", "width="+sampleLongLengthW+" height="+sampleLongLengthH+" position=Center zero");
-		run("Rotation Hideo", "rotate="+maxrotation+" 3d in=InMacro");
+		run("Rotation Hideo headless", "rotate="+maxrotation+" 3d in=InMacro interpolation=BICUBIC cpu=10");
+		
+		
 		//	setVoxelSize(OriSampWidth, OriSampHeight, OriSampDepth, OriSampUnit);
 		run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=microns pixel_width="+OriSampWidth+" pixel_height="+OriSampHeight+" voxel_depth="+OriSampDepth+"");
 		
@@ -1232,7 +1236,7 @@ if(FromDir==1){
 				
 				selectImage(SampHstack);
 				getVoxelSize(LVxWidth, LVxHeight, LVxDepth, LVxUnit);
-				run("Rotation Hideo", "rotate="+maxrotationH+" 3d in=InMacro");
+				run("Rotation Hideo headless", "rotate="+maxrotationH+" 3d in=InMacro interpolation=BICUBIC cpu=10");
 				//		run("Translate...", "x="+round(maxXH*HoriChangeRatio300px)+" y="+round(maxYH*HoriChangeRatio300px)+" interpolation=None stack");//+round(maxYH*shiftY)+
 				
 				//		print("Horizontally translated; x; "+round(maxXH*HoriChangeRatio300px)+"   y; "+round(maxYH*HoriChangeRatio300px));
@@ -1271,7 +1275,7 @@ if(FromDir==1){
 				
 				selectImage(SampHstack);
 				getVoxelSize(LVxWidth, LVxHeight, LVxDepth, LVxUnit);
-				run("Rotation Hideo", "rotate="+maxrotationH300+" 3d in=InMacro");
+				run("Rotation Hideo headless", "rotate="+maxrotationH300+" 3d in=InMacro interpolation=BICUBIC cpu=10");
 				run("Translate...", "x="+round(maxXH300*(shiftX/3))+" y="+round(maxYH300*(shiftY/3))+" interpolation=None stack");
 				run("Canvas Size...", "width="+Hwidth+" height="+Hheight+" position=Center zero");
 				run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=microns pixel_width="+LVxWidth+" pixel_height="+LVxHeight+" voxel_depth="+LVxDepth+"");
@@ -1409,7 +1413,7 @@ if(FromDir==1){
 				selectWindow("FinalGamma.tif");
 				
 				if(maxrotation2nd!=0){
-					run("Rotation Hideo", "rotate="+maxrotation2nd+" 3d in=InMacro");
+					run("Rotation Hideo headless", "rotate="+maxrotation2nd+" 3d in=InMacro interpolation=BICUBIC cpu=10");
 					run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=microns pixel_width="+OriSampWidth+" pixel_height="+OriSampHeight+" voxel_depth="+OriSampDepth+"");
 				}
 				
@@ -1686,6 +1690,10 @@ if(FromDir==1){
 			run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=microns pixel_width="+TempVxWidth+" pixel_height="+TempVxHeight+" voxel_depth="+TempVxDepth+"");
 			//run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=microns pixel_width="+OriSampWidth+" pixel_height="+OriSampHeight+" voxel_depth="+OriSampDepth+"");
 			
+		//	updateDisplay();
+		//				"do"
+		//				exit();
+			
 			endT=getTime();
 			gapT=endT-startT;
 			gapT2=endT-startT2;
@@ -1737,7 +1745,7 @@ if(FromDir==1){
 			
 			
 			//		setBatchMode(false);
-			///		updateDisplay();
+			//		updateDisplay();
 			//		"do"
 			//		exit();
 			
@@ -1874,7 +1882,7 @@ if(FromDir==1){
 		
 		
 		run("Nrrd Writer", "compressed nrrd="+myDir+"Temp_small.nrrd");
-	
+		
 		
 		selectWindow("TempMIP.tif");
 		print("tempW; "+tempW+"   tempH"+tempH);
@@ -2006,7 +2014,7 @@ if(FromDir==1){
 						run("Canvas Size...", "width="+sampleLongLengthW+" height="+sampleLongLengthH+" position=Center zero");
 						
 						if((rotationOriginal+maxrotation)!=0)
-						run("Rotation Hideo", "rotate="+rotationOriginal+maxrotation+" 3d in=InMacro");
+						run("Rotation Hideo headless", "rotate="+rotationOriginal+maxrotation+" 3d in=InMacro interpolation=BICUBIC cpu=10");
 						
 						run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=microns pixel_width="+LVxWidth+" pixel_height="+LVxHeight+" voxel_depth="+LVxDepth+"");
 						run("Translate...", "x="+TotalXtranslation+" y="+TotalYtranslation+" interpolation=None stack");
@@ -2033,7 +2041,7 @@ if(FromDir==1){
 							if(maxrotationL!=0){
 								
 								run("Canvas Size...", "width="+resliceLongLength+" height="+resliceLongLength+" position=Center zero");
-								run("Rotation Hideo", "rotate="+maxrotationL+" 3d in=InMacro");
+								run("Rotation Hideo headless", "rotate="+maxrotationL+" 3d in=InMacro interpolation=BICUBIC cpu=10");
 								run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=microns pixel_width="+LVxWidth+" pixel_height="+LVxHeight+" voxel_depth="+LVxDepth+"");
 							}
 							
@@ -2060,7 +2068,7 @@ if(FromDir==1){
 						
 						if(ThrdTrans==1){
 							if(maxrotation3!=0)
-							run("Rotation Hideo", "rotate="+maxrotation3+" 3d in=InMacro");
+							run("Rotation Hideo headless", "rotate="+maxrotation3+" 3d in=InMacro interpolation=BICUBIC cpu=10");
 							
 							run("Translate...", "x="+round(maxX3*FrontalChangeRatio300px)+" y="+round(maxY3*FrontalChangeRatio300px)+" interpolation=None stack");
 							
@@ -2089,7 +2097,7 @@ if(FromDir==1){
 								neuronHori=getImageID();
 								Cheight=getHeight();
 								getVoxelSize(LVxWidth, LVxHeight, LVxDepth, LVxUnit);//reslice
-								run("Rotation Hideo", "rotate="+maxrotationH+" 3d in=InMacro");
+								run("Rotation Hideo headless", "rotate="+maxrotationH+" 3d in=InMacro interpolation=BICUBIC cpu=10");
 								//		run("Translate...", "x="+round(maxXH*HoriChangeRatio300px)+" y="+round(maxYH*HoriChangeRatio300px)+" interpolation=None stack");//+round(maxYH*shiftY)+
 								
 								run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=microns pixel_width="+LVxWidth+" pixel_height="+LVxHeight+" voxel_depth="+LVxDepth+"");
@@ -2100,7 +2108,7 @@ if(FromDir==1){
 							neuronFinal=getImageID();
 							
 							if(maxrotation2nd!=0){
-								run("Rotation Hideo", "rotate="+maxrotation2nd+" 3d in=InMacro");
+								run("Rotation Hideo headless", "rotate="+maxrotation2nd+" 3d in=InMacro interpolation=BICUBIC cpu=10");
 								run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=microns pixel_width="+OriSampWidth+" pixel_height="+OriSampHeight+" voxel_depth="+OriSampDepth+"");
 								
 							}
@@ -2232,7 +2240,7 @@ function ThreeDrotation (ThreeDrotationArray,TotalXtranslation,TotalYtranslation
 	if(tempRotate==0){
 		
 		if(TotalRotationFrontal!=0){
-			run("Rotation Hideo", "rotate="+TotalRotationFrontal+" 3d in=InMacro");
+			run("Rotation Hideo headless", "rotate="+TotalRotationFrontal+" 3d in=InMacro interpolation=BICUBIC cpu=10");
 			run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=microns pixel_width="+OriSampWidth+" pixel_height="+OriSampHeight+" voxel_depth="+OriSampDepth+"");
 		}//	if(TotalRotationFrontal>0){
 		
@@ -2269,7 +2277,7 @@ function ThreeDrotation (ThreeDrotationArray,TotalXtranslation,TotalYtranslation
 			getVoxelSize(LVxWidth, LVxHeight, LVxDepth, LVxUnit);
 			if(maxrotationL!=0){
 				run("Canvas Size...", "width="+round(LateralW*1.3)+" height="+round(CanvasHeight*1.2)+" position=Center zero");
-				run("Rotation Hideo", "rotate="+maxrotationL+" 3d in=InMacro");
+				run("Rotation Hideo headless", "rotate="+maxrotationL+" 3d in=InMacro interpolation=BICUBIC cpu=10");
 				run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=microns pixel_width="+LVxWidth+" pixel_height="+LVxHeight+" voxel_depth="+LVxDepth+"");
 			}
 			print("Reslice Depth; "+LVxDepth+"   round(maxXL*zoomratiolateral300); "+round(maxXL*zoomratiolateral300)+"  maxXL; "+maxXL);
@@ -2305,7 +2313,8 @@ function ThreeDrotation (ThreeDrotationArray,TotalXtranslation,TotalYtranslation
 			
 			if(maxrotation3!=0){
 				getVoxelSize(LVxWidth, LVxHeight, LVxDepth, LVxUnit);
-				run("Rotation Hideo", "rotate="+maxrotation3+" 3d in=InMacro");
+				run("Rotation Hideo headless", "rotate="+maxrotation3+" 3d in=InMacro interpolation=BICUBIC cpu=10");
+				
 				run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=microns pixel_width="+LVxWidth+" pixel_height="+LVxHeight+" voxel_depth="+LVxDepth+"");
 			}
 			run("Translate...", "x="+round(maxX3*FrontalChangeRatio300px)+" y="+round(maxY3*FrontalChangeRatio300px)+" interpolation=None stack");
@@ -2319,7 +2328,8 @@ function ThreeDrotation (ThreeDrotationArray,TotalXtranslation,TotalYtranslation
 			
 			if(maxrotation3!=0){
 				getVoxelSize(LVxWidth, LVxHeight, LVxDepth, LVxUnit);
-				run("Rotation Hideo", "rotate="+maxrotation3+" 3d in=InMacro");
+				run("Rotation Hideo headless", "rotate="+maxrotation3+" 3d in=InMacro interpolation=BICUBIC cpu=10");
+				
 				run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=microns pixel_width="+LVxWidth+" pixel_height="+LVxHeight+" voxel_depth="+LVxDepth+"");
 			}
 			run("Translate...", "x="+round(maxX3*FrontalChangeRatio300px)+" y="+round(maxY3*FrontalChangeRatio300px)+" interpolation=None stack");
@@ -2341,7 +2351,8 @@ function ThreeDrotation (ThreeDrotationArray,TotalXtranslation,TotalYtranslation
 			getVoxelSize(LVxWidth, LVxHeight, LVxDepth, LVxUnit);
 			if(maxrotationL!=0){
 				run("Canvas Size...", "width="+round(LateralW*1.3)+" height="+round(CanvasHeight*1.2)+" position=Center zero");
-				run("Rotation Hideo", "rotate="+maxrotationL+" 3d in=InMacro");
+				run("Rotation Hideo headless", "rotate="+maxrotationL+" 3d in=InMacro interpolation=BICUBIC cpu=10");
+				
 				run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=microns pixel_width="+LVxWidth+" pixel_height="+LVxHeight+" voxel_depth="+LVxDepth+"");
 			}
 			print("Reslice Depth; "+LVxDepth+"   round(maxXL*zoomratiolateral300); "+round(maxXL*zoomratiolateral300)+"  maxXL; "+maxXL);
@@ -2375,7 +2386,8 @@ function ThreeDrotation (ThreeDrotationArray,TotalXtranslation,TotalYtranslation
 		print("Translated 2102; x; "+TotalXtranslation+"  y; "+TotalYtranslation);
 		
 		if(TotalRotationFrontal!=0){
-			run("Rotation Hideo", "rotate="+TotalRotationFrontal+" 3d in=InMacro");
+			run("Rotation Hideo headless", "rotate="+TotalRotationFrontal+" 3d in=InMacro interpolation=BICUBIC cpu=10");
+			
 			run("Properties...", "channels=1 slices="+nSlices+" frames=1 unit=microns pixel_width="+OriSampWidth+" pixel_height="+OriSampHeight+" voxel_depth="+OriSampDepth+"");
 		}//	if(TotalRotationFrontal>0){
 		
@@ -2604,25 +2616,18 @@ function SliceNumberAdjustment(nSlices,TempSlice){
 
 function ApplyLUT(){
 	run("Max value");
+	maxvalue = call("Max_value.getResult");
+	MAXV=parseInt(maxvalue);
+	
 	bitd=bitDepth();
 	
 	Maxvalue=65535;
 	if(bitd==8)
 	Maxvalue=255;
 	
-	totalLogMAX=getInfo("log");
 	
-	lengthofLog=lengthOf(totalLogMAX);
-	MINposi=lastIndexOf(totalLogMAX, "Minvalue;");
-	MINV=substring(totalLogMAX, MINposi+10, lengthofLog);
-	MINV=parseFloat(MINV);
-	
-	MAXposi=lastIndexOf(totalLogMAX, "Maxvalue;");
-	MAXV=substring(totalLogMAX, MAXposi+10, MINposi-2);
-	MAXV=parseFloat(MAXV);
-	
-	if(MAXV!=Maxvalue && MINV!=0){
-		setMinAndMax(MINV, MAXV);
+	if(MAXV!=Maxvalue){
+		setMinAndMax(0, MAXV);
 		if(nSlices>1)
 		run("Apply LUT", "stack");
 		else
@@ -2667,10 +2672,13 @@ function ImageCorrelationPlugin(CorrelationPlugin){
 	
 	print("  ImageCorrelation; sampimg; "+sampimg+"  tempimg; "+tempimg+"  rotationp; "+rotationp+"  rotationN; "+rotationN+"  overLap; "+overLap+"  Sdominant; "+Sdominant);
 	
-	if(Sdominant==1)
-	run("Image Correlation Atomic SD", "samp=Samp.tif temp=TempC.tif +="+rotationp+" -="+rotationN+" overlap="+overLap+" parallel="+NSLOTS+" rotation=1 show calculation=OBJPeasonCoeff");
-	else
-	run("Image Correlation Atomic EQ", "samp=Samp.tif temp=TempC.tif +="+rotationp+" -="+rotationN+" overlap="+overLap+" parallel="+NSLOTS+" rotation=1 show calculation=OBJPeasonCoeff");
+	if(Sdominant==1){
+		run("Image Correlation Atomic SD", "samp=Samp.tif temp=TempC.tif +="+rotationp+" -="+rotationN+" overlap="+overLap+" parallel="+NSLOTS+" rotation=1 show calculation=OBJPeasonCoeff");
+		resultstringST = call("Image_Correlation_Atomic_SD.getResult");
+	}else{
+		run("Image Correlation Atomic EQ", "samp=Samp.tif temp=TempC.tif +="+rotationp+" -="+rotationN+" overlap="+overLap+" parallel="+NSLOTS+" rotation=1 show calculation=OBJPeasonCoeff");
+		resultstringST = call("Image_Correlation_Atomic_EQ.getResult");
+	}
 	
 	selectWindow("DUP_Samp.tif");
 	run("Enhance Contrast", "saturated=0.35");
@@ -2691,28 +2699,19 @@ function ImageCorrelationPlugin(CorrelationPlugin){
 	
 	selectWindow("TempC.tif");
 	rename(tempimg);
+	print("resultstringST; "+resultstringST);
 	
-	totalLog=getInfo("log");
-	//updateResults();
-	//wait(5);
-	OBJindex = lastIndexOf(totalLog, "score;");
+	resultstring=split(resultstringST,",");
 	
-	xindex = lastIndexOf(totalLog,"shiftx");
-	yindex = lastIndexOf(totalLog,"shifty");
-	rotindex = lastIndexOf(totalLog,"rotation");
+	OBJScore=parseFloat(resultstring[3]);//Chaneg string to number
 	
+	MaxOBJ3Dscan=OBJScore;
 	
-	OBJScore=substring(totalLog,OBJindex+6, lengthOf(totalLog));//getResult("OBJ score", 0);
-	OBJScore=parseFloat(OBJScore);//Chaneg string to number
+	maxrotation=parseFloat(resultstring[2]);//Chaneg string to number
+	maxX=parseFloat(resultstring[0]);//Chaneg string to number
+	maxY=parseFloat(resultstring[1]);//Chaneg string to number
 	
-	maxrotation= substring(totalLog,rotindex+9, OBJindex-6);//getResult("rotation", 0);
-	maxrotation=parseFloat(maxrotation);//Chaneg string to number
-	
-	maxX= substring(totalLog,xindex+7, yindex-2);//getResult("shiftx", 0);
-	maxX=parseFloat(maxX);//Chaneg string to number
-	
-	maxY=substring(totalLog,yindex+7, rotindex-2);//getResult("shifty", 0);
-	maxY=parseFloat(maxY);//Chaneg string to number
+	print("Line 2710; maxrotation; "+maxrotation+"  maxX; "+maxX+"  maxY; "+maxY);
 	
 	if(Sdominant==1)
 	print("Sample Dominant");
@@ -2767,22 +2766,21 @@ function stack_scan(stackScanArray){
 		//	"do"
 		//	exit();
 		
-		if(SliMethod=="Lateral")
-		run("Image Correlation Atomic EQ", "samp=singleS.tif temp=temp50.tif +=20 -=20 overlap=80 parallel="+NSLOTS+" rotation=1 calculation=OBJPeasonCoeff");  //[Sample dominant]//[Equal weight (temp and sample)]");
-		else
-		run("Image Correlation Atomic SD", "samp=singleS.tif temp=temp50.tif +=20 -=20 overlap=90 parallel="+NSLOTS+" rotation=1 calculation=OBJPeasonCoeff");  //[Sample dominant]//[Equal weight (temp and sample)]");
-		
+		if(SliMethod=="Lateral"){
+			run("Image Correlation Atomic EQ", "samp=singleS.tif temp=temp50.tif +=20 -=20 overlap=80 parallel="+NSLOTS+" rotation=1 calculation=OBJPeasonCoeff");  //[Sample dominant]//[Equal weight (temp and sample)]");
+			resultstringST = call("Image_Correlation_Atomic_SD.getResult");
+		}else{
+			run("Image Correlation Atomic SD", "samp=singleS.tif temp=temp50.tif +=20 -=20 overlap=90 parallel="+NSLOTS+" rotation=1 calculation=OBJPeasonCoeff");  //[Sample dominant]//[Equal weight (temp and sample)]");
+			resultstringST = call("Image_Correlation_Atomic_EQ.getResult");
+		}
 		//		updateResults();
 		//		wait(5);
-		//		OBJScore=getResult("OBJ score", 0);
-		//		OBJScore=parseFloat(OBJScore);//Chaneg string to number
 		
+		resultstring=split(resultstringST,"  ");
 		
-		totalLog=getInfo("log");
-		lengthofLog=lengthOf(totalLog);
-		OBJPosi=lastIndexOf(totalLog, "score;");
-		OBJ=substring(totalLog, OBJPosi+6, lengthofLog);
-		OBJScore=parseFloat(OBJ);
+		OBJScore=substring(resultstring[4],6,lengthOf(resultstring[4]));
+		OBJScore=parseFloat(OBJScore);//Chaneg string to number
+		
 		//	List.set("Slice"+slicenn, OBJScore);
 		
 		
@@ -2793,17 +2791,15 @@ function stack_scan(stackScanArray){
 			maxobjScore=OBJScore;
 			maxObjSlice=slicenn;
 			
-			xindex = lastIndexOf(totalLog, "shiftx;");
-			yindex = lastIndexOf(totalLog, "shifty;");
-			rotindex = lastIndexOf(totalLog, "rotation;");
+			Rot=substring(resultstring[2],9,lengthOf(resultstring[2]));
+			maxRL=parseFloat(Rot);//Chaneg string to number
 			
-			maxXL = substring(totalLog, xindex+7, yindex-2);
-			maxYL = substring(totalLog, yindex+7, rotindex-2);
-			maxRL = substring(totalLog, rotindex+9, OBJPosi-6);
+			maxX=substring(resultstring[0],7,lengthOf(resultstring[0]));
+			maxXL=parseFloat(maxX);//Chaneg string to number
 			
-			//	maxXL=getResult("shiftx", 0);
-			//	maxYL=getResult("shifty", 0);
-			//	maxRL=getResult("rotation", 0);
+			maxY=substring(resultstring[1],7,lengthOf(resultstring[1]));
+			maxYL=parseFloat(maxY);//Chaneg string to number
+			
 		}
 		while(isOpen("singleS.tif")){
 			selectWindow("singleS.tif");
