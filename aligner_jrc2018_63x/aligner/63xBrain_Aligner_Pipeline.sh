@@ -538,10 +538,10 @@ else
 # TODO: doesnt take neurons?
 
     if [[ $testmode == "0" ]]; then
-      $FIJI -macro $PREPROCIMG "$OUTPUT/,$glfilename,$Path,$TempDir/,$RESX,$RESZ,$NSLOTS,$objective,$INPUT1_GENDER"  >$DEBUG_DIR/preproc.log 2>&1
+      $FIJI --headless -macro $PREPROCIMG "$OUTPUT/,$glfilename,$Path,$TempDir/,$RESX,$RESZ,$NSLOTS,$objective,$INPUT1_GENDER"  >$DEBUG_DIR/preproc.log 2>&1
     fi
     if [[ $testmode == "1" ]]; then
-      $FIJI -macro $PREPROCIMG "$OUTPUT/,$glfilename,$Path,$TempDir/,$RESX,$RESZ,$NSLOTS,$objective,$INPUT1_GENDER"
+      $FIJI --headless -macro $PREPROCIMG "$OUTPUT/,$glfilename,$Path,$TempDir/,$RESX,$RESZ,$NSLOTS,$objective,$INPUT1_GENDER"
     fi
 
     STOP=`date '+%F %T'`
