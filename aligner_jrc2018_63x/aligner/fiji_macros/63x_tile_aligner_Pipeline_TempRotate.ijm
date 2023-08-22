@@ -1700,7 +1700,7 @@ if(FromDir==1){
 			
 			print("Time before temp.nrrd writing; "+(gapT/60)/1000+" min   After file open"+(gapT2/60)/1000+" min");
 			
-			
+			run("A4095 normalizer", "subtraction=0 start=1 end="+nSlices+"");
 			run("Nrrd Writer", "compressed nrrd="+myDir+"Temp"+startRegNo+".nrrd");
 			rename("Temp.nrrd");
 			
@@ -1871,6 +1871,7 @@ if(FromDir==1){
 		rename("TempMIP.tif");
 		
 		selectWindow("Temp.nrrd");
+		run("A4095 normalizer", "subtraction=0 start=1 end="+nSlices+"");
 		run("Nrrd Writer", "compressed nrrd="+myDir+"Temp1.nrrd");
 		
 		getVoxelSize(tempVxWidth, tempVxHeight, tempVxDepth, tempVxUnit);
@@ -1880,7 +1881,7 @@ if(FromDir==1){
 		resizeheight=round(getHeight()*resizedX);
 		run("Size...", "width="+resizewidth+" height="+resizeheight+" depth="+nSlices+" constrain average interpolation=Bicubic");
 		
-		
+		run("A4095 normalizer", "subtraction=0 start=1 end="+nSlices+"");
 		run("Nrrd Writer", "compressed nrrd="+myDir+"Temp_small.nrrd");
 		
 		
@@ -1939,7 +1940,7 @@ if(FromDir==1){
 	resizeheight=round(getHeight()*resizedX);
 	run("Size...", "width="+resizewidth+" height="+resizeheight+" depth="+nSlices+" constrain average interpolation=Bicubic");
 	
-	
+	run("A4095 normalizer", "subtraction=0 start=1 end="+nSlices+"");
 	run("Nrrd Writer", "compressed nrrd="+myDirimages+trufilename+"_01.nrrd");
 	close();
 	

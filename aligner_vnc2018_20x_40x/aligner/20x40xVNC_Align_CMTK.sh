@@ -77,8 +77,8 @@ if [[ $testmode == "1" ]]; then
     echo "Test mode"
     TempDir=/Registration/JRC2018_VNC_align_test/Template
     DIR="/Registration/JRC2018_VNC_align_test"
-    CMTK=/Applications/FijizOLD.app/bin/cmtk
-    FIJI=/Applications/FijizOLD.app/Contents/MacOS/ImageJ-macosx
+    CMTK=/Applications/Fiji.app/bin/cmtk
+    FIJI=/Applications/Fiji_copy.app/Contents/MacOS/ImageJ-macosx
     NSLOTS=8
 
     INPUT1_GENDER="m"
