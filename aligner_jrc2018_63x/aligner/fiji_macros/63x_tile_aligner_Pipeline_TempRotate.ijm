@@ -40,7 +40,7 @@ testname="_SS01062-20210210_31_A5-f_63x.v3draw";
 
 //testArg = "N:/test_folder/,JRC_SS23221_20160803_31_E5.v3dpbd,N:/test_folder/JRC_SS23221_20160803_31_E5.v3dpbd,H:/Registration2/63x_align/Template/,0.188,0.38,15,63x";
 
-//testArg = "/test/63x_align/,JRC_SS42965_20171006_21_C5.v3dpbd,/test/63x_align/JRC_SS42965_20171006_21_C5.v3dpbd,/test/63x_align/Template/,0.188,0.38,12,63x";
+//testArg = "/Users/otsunah/test/63x_brain_aligner/,JRC_SS03661-20230216_19_C1-m_63x.v3draw,/Users/otsunah/test/63x_brain_aligner/JRC_SS03661-20230216_19_C1-m_63x.v3draw,/Users/otsunah/test/Template/,0.188,0.38,7,63x,m";
 
 print("LateralSingleComparizon; "+LateralSingleComparizon);
 print("LateralMedianComparizon; "+LateralMedianComparizon);
@@ -459,7 +459,7 @@ if(FromDir==1){
 		ApplyLUT();//1725
 		run("Grays");
 		
-		rotationp=55; rotationN=55; overLap=60; 
+		rotationp=55; rotationN=55; overLap=60; XoverLap=60; YoverLap=75;
 		
 		//	setBatchMode(false);
 		//	updateDisplay();
@@ -469,7 +469,7 @@ if(FromDir==1){
 		a=getTime();
 		
 		sampimg="Small_Sample100px.tif"; tempimg=Frontal100px; Sdominant=1;
-		CorrelationPlugin=newArray(sampimg, tempimg, rotationp, overLap,0,0,0,0,rotationN,Sdominant,NSLOTS);
+		CorrelationPlugin=newArray(sampimg, tempimg, rotationp, overLap,0,0,0,0,rotationN,Sdominant,NSLOTS,XoverLap,YoverLap);
 		ImageCorrelationPlugin(CorrelationPlugin);// frontal 100px projection
 		
 		rotationOriginal=CorrelationPlugin[4];
@@ -556,8 +556,8 @@ if(FromDir==1){
 	if(RotateSample==0)
 	a=getTime();
 	print("Image correlation start");
-	sampimg="Small_Sample.tif"; tempimg=""+FrontalMED300px+""; Sdominant=1;
-	CorrelationPlugin=newArray(sampimg, tempimg, rotationp, overLap,0,0,0,0,rotationN,Sdominant,NSLOTS);
+	sampimg="Small_Sample.tif"; tempimg=""+FrontalMED300px+""; Sdominant=1; XoverLap=overLap; YoverLap=overLap;
+	CorrelationPlugin=newArray(sampimg, tempimg, rotationp, overLap,0,0,0,0,rotationN,Sdominant,NSLOTS,XoverLap,YoverLap);
 	ImageCorrelationPlugin(CorrelationPlugin);// frontal 100px projection
 	
 	maxrotation=CorrelationPlugin[4];
@@ -779,9 +779,9 @@ if(FromDir==1){
 			call("java.lang.System.gc");
 			maxYL=0; maxXL=0; OBJScoreL=0; maxrotationL=0;
 			
-			rotationp=15; rotationN=15; overLap=90; sampimg="resliceGammaAVsmall.tif"; tempimg=Lateral100px;
+			rotationp=15; rotationN=15; overLap=90; XoverLap=90; YoverLap=90; sampimg="resliceGammaAVsmall.tif"; tempimg=Lateral100px;
 			Sdominant=0;
-			CorrelationPlugin=newArray(sampimg, tempimg, rotationp, overLap,0,0,0,0,rotationN,Sdominant,NSLOTS);
+			CorrelationPlugin=newArray(sampimg, tempimg, rotationp, overLap,0,0,0,0,rotationN,Sdominant,NSLOTS,XoverLap,YoverLap);
 			ImageCorrelationPlugin(CorrelationPlugin);// lateral median projection
 			
 			maxrotationL=CorrelationPlugin[4];
@@ -891,9 +891,9 @@ if(FromDir==1){
 			logsum=getInfo("log");
 			File.saveString(logsum, filepath);
 			
-			rotationp=20; rotationN=20; overLap=80; sampimg="DUP_sample_665.tif"; tempimg=Lateral300px;
+			rotationp=20; rotationN=20; overLap=80; XoverLap=80; YoverLap=80; sampimg="DUP_sample_665.tif"; tempimg=Lateral300px;
 			Sdominant=1;
-			CorrelationPlugin=newArray(sampimg, tempimg, rotationp, overLap,0,0,0,0,rotationN,Sdominant,NSLOTS);
+			CorrelationPlugin=newArray(sampimg, tempimg, rotationp, overLap,0,0,0,0,rotationN,Sdominant,NSLOTS,XoverLap,YoverLap);
 			ImageCorrelationPlugin(CorrelationPlugin);// single lateral slice 
 			
 			maxrotationL665=CorrelationPlugin[4];
@@ -1053,8 +1053,8 @@ if(FromDir==1){
 		//	exit();
 		
 		
-		rotationp=15; rotationN=15; overLap=95; sampimg="AIP3.tif"; tempimg=Frontal300pxSingle; Sdominant=1;
-		CorrelationPlugin=newArray(sampimg, tempimg, rotationp, overLap,0,0,0,0,rotationN,Sdominant,NSLOTS);
+		rotationp=15; rotationN=15; overLap=95; XoverLap=95; YoverLap=95; sampimg="AIP3.tif"; tempimg=Frontal300pxSingle; Sdominant=1;
+		CorrelationPlugin=newArray(sampimg, tempimg, rotationp, overLap,0,0,0,0,rotationN,Sdominant,NSLOTS,XoverLap,YoverLap);
 		ImageCorrelationPlugin(CorrelationPlugin);// frontal, limited slices projection
 		
 		maxrotation3=CorrelationPlugin[4];
@@ -1216,9 +1216,9 @@ if(FromDir==1){
 			//	exit();
 			
 			
-			rotationp=20; rotationN=20; overLap=90; sampimg="SingleHorizontal.tif"; tempimg=HoriSingle300px;
+			rotationp=20; rotationN=20; overLap=90; XoverLap=90; YoverLap=90; sampimg="SingleHorizontal.tif"; tempimg=HoriSingle300px;
 			Sdominant=1;
-			CorrelationPlugin=newArray(sampimg, tempimg, rotationp, overLap,0,0,0,0,rotationN,Sdominant,NSLOTS);
+			CorrelationPlugin=newArray(sampimg, tempimg, rotationp, overLap,0,0,0,0,rotationN,Sdominant,NSLOTS,XoverLap,YoverLap);
 			ImageCorrelationPlugin(CorrelationPlugin);// horizontal limited slice projection
 			
 			maxrotationH=CorrelationPlugin[4];
@@ -1262,9 +1262,9 @@ if(FromDir==1){
 				rename("SingleHorizontal.tif");
 				SingleHorizontal=getImageID();
 				
-				rotationp=3; rotationN=3; overLap=95; sampimg="SingleHorizontal.tif"; tempimg=HoriSingle300px;
+				rotationp=3; rotationN=3; overLap=95; XoverLap=95; YoverLap=95; sampimg="SingleHorizontal.tif"; tempimg=HoriSingle300px;
 				Sdominant=1;
-				CorrelationPlugin=newArray(sampimg, tempimg, rotationp, overLap,0,0,0,0,rotationN,Sdominant,NSLOTS);
+				CorrelationPlugin=newArray(sampimg, tempimg, rotationp, overLap,0,0,0,0,rotationN,Sdominant,NSLOTS,XoverLap,YoverLap);
 				ImageCorrelationPlugin(CorrelationPlugin);// horizontal limited slice projection
 				
 				maxrotationH300=CorrelationPlugin[4];
@@ -1340,9 +1340,9 @@ if(FromDir==1){
 					//				"do"
 					//				exit();
 					
-					rotationp=20; rotationN=20; overLap=90;
+					rotationp=20; rotationN=20; overLap=90; XoverLap=90; YoverLap=90;
 					sampimg="Small_Sample.tif"; tempimg=""+FrontalMED300px+""; Sdominant=0;
-					CorrelationPlugin=newArray(sampimg, tempimg, rotationp, overLap,0,0,0,0,rotationN,Sdominant,NSLOTS);
+					CorrelationPlugin=newArray(sampimg, tempimg, rotationp, overLap,0,0,0,0,rotationN,Sdominant,NSLOTS,XoverLap,YoverLap);
 					ImageCorrelationPlugin(CorrelationPlugin);// frontal 100px projection
 					
 					maxrotation2nd=CorrelationPlugin[4];
@@ -1389,8 +1389,8 @@ if(FromDir==1){
 					//	exit();
 					
 					
-					rotationp=15; rotationN=15; overLap=95; sampimg="AIP3.tif"; tempimg=Frontal300pxSingle; Sdominant=1;
-					CorrelationPlugin=newArray(sampimg, tempimg, rotationp, overLap,0,0,0,0,rotationN,Sdominant,NSLOTS);
+					rotationp=15; rotationN=15; overLap=95; XoverLap-95; YoverLap=95; sampimg="AIP3.tif"; tempimg=Frontal300pxSingle; Sdominant=1;
+					CorrelationPlugin=newArray(sampimg, tempimg, rotationp, overLap,0,0,0,0,rotationN,Sdominant,NSLOTS,XoverLap,YoverLap);
 					ImageCorrelationPlugin(CorrelationPlugin);// frontal, limited slices projection
 					
 					if(isOpen("AIP3.tif")){
@@ -2646,6 +2646,8 @@ function ImageCorrelationPlugin(CorrelationPlugin){
 	rotationN=CorrelationPlugin[8];
 	Sdominant=CorrelationPlugin[9];
 	NSLOTS=CorrelationPlugin[10];
+	XoverLap=CorrelationPlugin[11];
+	YoverLap=CorrelationPlugin[12];
 	
 	rotationp=round(rotationp);
 	rotationN=round(rotationN);
@@ -2671,10 +2673,10 @@ function ImageCorrelationPlugin(CorrelationPlugin){
 	
 	
 	
-	print("  ImageCorrelation; sampimg; "+sampimg+"  tempimg; "+tempimg+"  rotationp; "+rotationp+"  rotationN; "+rotationN+"  overLap; "+overLap+"  Sdominant; "+Sdominant);
+	print("  ImageCorrelation; sampimg; "+sampimg+"  tempimg; "+tempimg+"  rotationp; "+rotationp+"  rotationN; "+rotationN+"  overLap; "+overLap+"  Sdominant; "+Sdominant+"  XoverLap; "+XoverLap+"  YoverLap; "+YoverLap);
 	
 	if(Sdominant==1){
-		run("Image Correlation Atomic SD", "samp=Samp.tif temp=TempC.tif +="+rotationp+" -="+rotationN+" overlap="+overLap+" parallel="+NSLOTS+" rotation=1 show calculation=OBJPeasonCoeff");
+		run("Image Correlation Atomic SD", "samp=Samp.tif temp=TempC.tif +="+rotationp+" -="+rotationN+" x-overlap="+XoverLap+" y-overlap="+YoverLap+" parallel="+NSLOTS+" rotation=1 show calculation=OBJPeasonCoeff");
 		resultstringST = call("Image_Correlation_Atomic_SD.getResult");
 	}else{
 		run("Image Correlation Atomic EQ", "samp=Samp.tif temp=TempC.tif +="+rotationp+" -="+rotationN+" overlap="+overLap+" parallel="+NSLOTS+" rotation=1 show calculation=OBJPeasonCoeff");
@@ -2700,14 +2702,13 @@ function ImageCorrelationPlugin(CorrelationPlugin){
 	
 	selectWindow("TempC.tif");
 	rename(tempimg);
-	print("resultstringST; "+resultstringST);
+	print("resultstringST; "+resultstringST+"  Sdominant; "+Sdominant);
 	
 	resultstring=split(resultstringST,",");
 	
 	OBJScore=parseFloat(resultstring[3]);//Chaneg string to number
 	
-	MaxOBJ3Dscan=OBJScore;
-	
+	MaxOBJ3Dscan=OBJScore;	
 	maxrotation=parseFloat(resultstring[2]);//Chaneg string to number
 	maxX=parseFloat(resultstring[0]);//Chaneg string to number
 	maxY=parseFloat(resultstring[1]);//Chaneg string to number
