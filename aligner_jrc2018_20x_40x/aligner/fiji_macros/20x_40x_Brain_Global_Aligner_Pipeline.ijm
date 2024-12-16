@@ -52,7 +52,7 @@ reverseR=0;
 //<<<<<<< HEAD
 //testArg= "/test/20x_brain_alignment/,GMR_13D08_AE_01_13-fA01b_C080304_20080305233708703.zip,/test/20x_brain_alignment/pre_Align_Test_Vol/-Lop/GMR_13D08_AE_01_13-fA01b_C080304_20080305233708703.zip,/Users/otsunah/Documents/otsunah/20x_brain_aligner/,0.52,1,7,20x,JRC2018,Unknown,??"
 //=======
-//testArg= "/test/20x_brain_alignment/TwoChannel/,JRC_SS31881_20180615_24_B2_Brain.h5j,/Users/otsunah/Downloads/Workstation/JRC_SS31881/JRC_SS31881_20180615_24_B2_Brain.h5j,/Users/otsunah/Documents/otsunah/20x_brain_aligner/,0.52,1,7,20x,JRC2018,Unknown,??"
+//testArg= "/Users/otsunah/test/20x_brain_alignment/fail/,SS00369-20131203_32_I1-f_20x.v3draw,/Users/otsunah/test/20x_brain_alignment/fail/SS00369-20131203_32_I1-f_20x.v3draw,/Users/otsunah/test/Template/,0.52,1,7,20x,JRC2018,Unknown,??"
 
 //0.46
 //testArg= "/test/20x_brain_alignment/046sample/,sample046.zip ,/test/20x_brain_alignment/sample046.zip,/Users/otsunah/Documents/otsunah/20x_brain_aligner/,0.46,1,7,20x,JRC2018,Unknown,??"

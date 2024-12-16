@@ -2,7 +2,7 @@
 #
 # 20x 40x VNC aligner by Hideo Otsuna
 #
-testmode=0
+testmode=1
 
 if [[ $testmode != 1 ]]; then
   DIR=$(cd "$(dirname "$0")"; pwd)
@@ -52,6 +52,88 @@ DEBUG_DIR=$FINALOUTPUT"/debug"
 mkdir -p $DEBUG_DIR
 echo "DEBUG_DIR: $DEBUG_DIR"
 
+
+echo "$testmode; "$testmode
+# For TEST ############################################
+if [[ $testmode == "1" ]]; then
+
+     LSF="1"
+
+    if [[ $tLSF == "0" ]]; then
+        CMTK="/Applications/Fiji.app/bin/cmtk"
+        FIJI="/Applications/Fiji_plain.app/Contents/MacOS/ImageJ-macosx"
+        MACRO_DIR="/Users/otsunah/Documents/GitHub/jacs-tools/aligner_vnc2018_20x_40x/aligner/fiji_macros"
+        TempDir="/Users/otsunah/test/VNC_aligner_local_ver/Template"
+        SCOREGENERATION=$MACRO_DIR"/Score_Generator_Cluster.ijm"
+    fi
+
+    if [[ $tLSF == "1" ]]; then
+        CMTK="/nrs/scicompsoft/otsuna/CMTK_new2019"
+FIJI="/nrs/scicompsoft/otsuna/Macros/Fiji_plane_lynux.app/ImageJ-linux64"
+MACRO_DIR="/nrs/scicompsoft/otsuna/Macros/VNC_20x_40x_aigner_macros"
+TempDir="/nrs/scicompsoft/otsuna/VNC_Template"
+SCOREGENERATION=$MACRO_DIR"/Score_Generator_Cluster.ijm"
+fi
+
+
+    echo "Test mode"
+    InputFilePath=$1
+    NSLOTS=$2
+    OUTPUTORI=$3
+    Path=$InputFilePath
+
+    nc82decision=$4 #"Signal_amount","ch1","ch2","ch3"
+
+    RESX=$5
+    RESY=$6
+    RESZ=$7
+
+    Bridging="None"
+    end=${InputFilePath##*/}
+    num1=$((${#InputFilePath} - ${#end}))
+    
+    OUTPUTNAME=${InputFilePath#*/}
+    OUTPUTNAME=${OUTPUTNAME#*/}
+    OUTPUTNAME=${OUTPUTNAME#*/}
+    OUTPUTNAME=${OUTPUTNAME#*/}
+    OUTPUTNAME=${OUTPUTNAME#*/}
+    OUTPUTNAME=${OUTPUTNAME#*/}
+    OUTPUTNAME=${OUTPUTNAME#*/}
+    OUTPUTNAME=${OUTPUTNAME#*/}
+    OUTPUTNAME=${OUTPUTNAME#*/}
+    OUTPUTNAME=${OUTPUTNAME#*/}
+    OUTPUTNAME=${OUTPUTNAME#*/}
+    OUTPUTNAME=${OUTPUTNAME#*/}
+    OUTPUTNAME=${OUTPUTNAME#*/}
+    OUTPUTNAME=${OUTPUTNAME#*/}
+    
+    echo "OUTPUTNAME; "${OUTPUTNAME%.*}
+    
+    WORK_DIR=${OUTPUTORI}"/"${OUTPUTNAME%.*}
+    
+    if [[ ! -d ${OUTPUTORI} ]]; then
+    mkdir ${OUTPUTORI}
+    fi
+    
+    OUTPUT=${OUTPUTORI}"/"${OUTPUTNAME%.*}
+    FINALOUTPUT=$WORK_DIR"/FinalOutputs"
+    objective="40x"
+    
+    NRRDCONV=${MACRO_DIR}"/nrrd2v3draw_MCFO.ijm"
+    PREPROCIMG=${MACRO_DIR}"/VNC_preImageProcessing_Pipeline_07_29_2022.ijm"
+    #NRRDCOMP=$MACRO_DIR"/nrrd_compression.ijm"
+    
+    #OUTPUT=$WORK_DIR"/Output"
+    Global_Aligned_Separator_Result=$OUTPUT"/ConsolidatedLabel.nrrd"
+    Unaligned_Neuron_Separator_Result_V3DPBD="/Users/otsunah/Downloads/Workstation/BJD_124H07_AE_01/BJD_124H07_AE_01_20180629_62_C1_ConsolidatedLabel.v3dpbd"
+    echo "109 OUTPUT; " $OUTPUT "  FINALOUTPUT; " $FINALOUTPUT
+
+    INPUT1_GENDER=m
+    INPUT1_CHANNELS=2
+fi
+
+
+
 # "-------------------Template----------------------"
 JRC2018_VNC_Unisex=$TempDir"/JRC2018_VNC_UNISEX_447_G15.nrrd"
 JRC2018_VNC_Female=$TempDir"/JRC2018_VNC_FEMALE_447_G15.nrrd"
@@ -71,54 +153,7 @@ fi
 
 POSTSCORE=$MACRO_DIR"/Score_For_VNC_pipeline.ijm"
 
-echo "$testmode; "$testmode
-# For TEST ############################################
-if [[ $testmode == "1" ]]; then
-    echo "Test mode"
-    TempDir=/Registration/JRC2018_VNC_align_test/Template
-    DIR="/Registration/JRC2018_VNC_align_test"
-    CMTK=/Applications/Fiji.app/bin/cmtk
-    FIJI=/Applications/Fiji_copy.app/Contents/MacOS/ImageJ-macosx
-    NSLOTS=8
 
-    INPUT1_GENDER="m"
-    Path="/Users/otsunah/Downloads/Workstation/BJD_124H07_AE_01/BJD_124H07_AE_01_20180629_62_C1_stitched-2556301758204739682.v3dpbd"
-    objective="40x"
-    RESX=0.52
-    RESY=0.52
-
-
-    NRRDCONV=/Users/otsunah/Documents/otsunah/jacs-tools/aligner_vnc2017_20x/aligner/scripts/VNC_preImageProcessing_Plugins_pipeline/nrrd2v3draw_MCFO.ijm
-
-    INPUT1_CHANNELS=4
-    INPUT1_RESX=$RESX
-    INPUT1_RESY=$RESX
-    INPUT1_RESZ=1
-
-
-    # For Score ########################################
-    if [[ $INPUT1_GENDER =~ "m" ]]; then
-    # male fly vnc
-        Tfile=${TempDir}"/MaleVNC2017.nrrd"
-        POSTSCOREMASK="/Users/otsunah/Documents/otsunah/jacs-tools/aligner_vnc2017_20x/aligner/scripts/VNC_preImageProcessing_Plugins_pipeline/For_Score/Mask_Male_VNC.nrrd"
-    else
-    # female fly vnc
-        Tfile=${TempDir}"/FemaleVNCSymmetric2017.nrrd"
-        POSTSCOREMASK="/Users/otsunah/Documents/otsunah/jacs-tools/aligner_vnc2017_20x/aligner/scripts/VNC_preImageProcessing_Plugins_pipeline/For_Score/flyVNCtemplate20xA_CLAHE_MASK2nd.nrrd"
-    fi
-
-    POSTSCORE="/Users/otsunah/Documents/otsunah/VNC_preImageProcessing_Plugins_pipeline/For_Score/Score_For_VNC_pipeline.ijm"
-
-    WORK_DIR="/Registration/JRC2018_VNC_align_test"
-    OUTPUT=$WORK_DIR"/Output"
-Global_Aligned_Separator_Result=$OUTPUT"/ConsolidatedLabel.nrrd"
-Unaligned_Neuron_Separator_Result_V3DPBD="/Users/otsunah/Downloads/Workstation/BJD_124H07_AE_01/BJD_124H07_AE_01_20180629_62_C1_ConsolidatedLabel.v3dpbd"
-
-    PREPROCIMG="/Users/otsunah/Documents/otsunah/jacs-tools/aligner_vnc2017_20x/aligner/scripts/VNC_preImageProcessing_Plugins_pipeline/VNC_preImageProcessing_Pipeline_02_02_2017.ijm"
-    SCOREGENERATION="/Registration/JRC2018_align_test/Score_Generator_Cluster.ijm"
-
-    
-fi
 
 
 #
@@ -155,7 +190,13 @@ function nrrd2Raw() {
         echo "| $FIJI --headless -macro $NRRDCONV $_PARAMS >$LOGFILE"
         echo "+----------------------------------------------------------------------+"
         START=`date '+%F %T'`
-        $FIJI --headless -macro $NRRDCONV $_PARAMS >$LOGFILE 2>&1
+	       if [[ $testmode == "0" ]]; then
+	           $FIJI --headless -macro $NRRDCONV $_PARAMS >$LOGFILE 2>&1
+	       else
+	           $FIJI --headless -macro $NRRDCONV $_PARAMS
+	       fi
+	
+
         STOP=`date '+%F %T'`
         if [[ ! -e $OUTPUTRAW ]]; then
             echo -e "Error: NRRD -> raw conversion failed"
@@ -270,8 +311,13 @@ function scoreGen() {
         START=`date '+%F %T'`
         # Expect to take far less than 1 hour
         # Alignment Score generation:ZNCC, does not need Xvfb
-        $FIJI --headless -macro $SCOREGENERATION $OUTPUT/,$_outname,$NSLOTS,$_scoretemp >$DEBUG_DIR/scoregen.log 2>&1
-        STOP=`date '+%F %T'`
+	       if [[ $testmode == "0" ]]; then	
+	           $FIJI --headless -macro $SCOREGENERATION $OUTPUT/,$_outname,$NSLOTS,$_scoretemp >$DEBUG_DIR/scoregen.log 2>&1
+	       else
+	           $FIJI --headless -macro $SCOREGENERATION $OUTPUT/,$_outname,$NSLOTS,$_scoretemp
+	       fi
+	
+	STOP=`date '+%F %T'`
 
         echo "ZNCC JRC2018 score generation start: $START"
         echo "ZNCC JRC2018 score generation stop: $STOP"
@@ -349,9 +395,11 @@ function banner() {
 
 # Main Script
 
-expandRes $INPUT1_RESX RESX
-expandRes $INPUT1_RESY RESY
-expandRes $INPUT1_RESZ RESZ
+if [[ $testmode == "0" ]]; then
+    expandRes $INPUT1_RESX RESX
+    expandRes $INPUT1_RESY RESY
+    expandRes $INPUT1_RESZ RESZ
+fi
 
 if [[ ! -d $OUTPUT ]]; then
     mkdir $OUTPUT
@@ -425,20 +473,32 @@ else
     fi
     echo "+---------------------------------------------------------------------------------------+"
     echo "| Running Otsuna preprocessing step                                                     |"
-    echo "| $FIJI -macro $PREPROCIMG \"$OUTPUT/,$filename,$TempDir,$Path,ssr,$RESX,$RESY,$INPUT1_GENDER,$Unaligned_Neuron_Separator_Result_V3DPBD,$NSLOTS,$SHAPE_ANALYSIS\" >$DEBUG_DIR/preproc.log 2>&1 |"
+echo "| $FIJI -macro $PREPROCIMG \"$OUTPUT/,$filename,$TempDir,$Path,ssr,$RESX,$RESY,$RESZ,$INPUT1_GENDER,$Unaligned_Neuron_Separator_Result_V3DPBD,$NSLOTS,$SHAPE_ANALYSIS\" >$DEBUG_DIR/preproc.log 2>&1 |"
     echo "+---------------------------------------------------------------------------------------+"
     START=`date '+%F %T'`
     # Expect to take far less than 1 hour
-    $FIJI -macro $PREPROCIMG "$OUTPUT/,$filename,$TempDir/,$Path,ssr,$RESX,$RESY,$INPUT1_GENDER,$Unaligned_Neuron_Separator_Result_V3DPBD,$NSLOTS,$SHAPE_ANALYSIS" >$DEBUG_DIR/preproc.log 2>&1
-    STOP=`date '+%F %T'`
-    echo "Otsuna preprocessing start: $START"
-    echo "Otsuna preprocessing stop: $STOP"
-    # check for prealigner errors
-    cp $LOGFILE $DEBUG_DIR
-    PreAlignerError=`grep "PreAlignerError: " $LOGFILE | head -n1 | sed "s/PreAlignerError: //"`
-    if [[ ! -z "$PreAlignerError" ]]; then
-        writeErrorProperties "PreAlignerError" "JRC2018_VNC_${genderT}" "$objective" "Pre-aligner rejection: $PreAlignerError"
-        exit 0
+
+    if [[ $testmode == "0" ]]; then
+$FIJI -macro $PREPROCIMG "$OUTPUT/,$filename,$TempDir/,$Path,ssr,$RESX,$RESY,$RESZ,$INPUT1_GENDER,$Unaligned_Neuron_Separator_Result_V3DPBD,$NSLOTS,$SHAPE_ANALYSIS" >$DEBUG_DIR/preproc.log 2>&1
+
+
+        STOP=`date '+%F %T'`
+        echo "Otsuna preprocessing start: $START"
+        echo "Otsuna preprocessing stop: $STOP"
+        # check for prealigner errors
+        cp $LOGFILE $DEBUG_DIR
+        PreAlignerError=`grep "PreAlignerError: " $LOGFILE | head -n1 | sed "s/PreAlignerError: //"`
+        if [[ ! -z "$PreAlignerError" ]]; then
+            writeErrorProperties "PreAlignerError" "JRC2018_VNC_${genderT}" "$objective" "Pre-aligner rejection: $PreAlignerError"
+            exit 0
+        fi
+
+    else
+        START=`date '+%F %T'`
+$FIJI -macro $PREPROCIMG "$OUTPUT/,$filename,$TempDir/,$Path,sr,$RESX,$RESY,$RESZ,$INPUT1_GENDER,$Unaligned_Neuron_Separator_Result_V3DPBD,$NSLOTS,$SHAPE_ANALYSIS"
+        STOP=`date '+%F %T'`
+        echo "Otsuna preprocessing start: $START"
+        echo "Otsuna preprocessing stop: $STOP"
     fi
 fi
 
@@ -511,7 +571,13 @@ echo "+----------------------------------------------------------------------+"
 echo "| 12-bit conversion"
 echo "| $FIJI -macro $TWELVEBITCONV \"${OUTPUT}/,${filename}_01.nrrd,${gloval_nc82_nrrd}\""
 echo "+----------------------------------------------------------------------+"
-$FIJI --headless -macro $TWELVEBITCONV "${OUTPUT}/,${filename}_01.nrrd,${gloval_nc82_nrrd}" > $DEBUG_DIR/conv12bit.log 2>&1
+
+if [[ $testmode == "0" ]]; then
+    $FIJI --headless -macro $TWELVEBITCONV "${OUTPUT}/,${filename}_01.nrrd,${gloval_nc82_nrrd}" > $DEBUG_DIR/conv12bit.log 2>&1
+else
+    $FIJI --headless -macro $TWELVEBITCONV "${OUTPUT}/,${filename}_01.nrrd,${gloval_nc82_nrrd}"
+fi
+
 
 ########################################################################################################
 # JRC2018 gender-specific reformat

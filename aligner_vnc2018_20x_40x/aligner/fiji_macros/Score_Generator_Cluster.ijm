@@ -109,8 +109,8 @@ if(Allnrrd==true)
 nc82Nrrd = 1;
 
 
-h5jindex= lastIndexOf(h5jindex, ".h5j");
-v3dpbdindex = lastIndexOf(h5jindex, ".v3dpbd");
+h5jindex= lastIndexOf(path, ".h5j");
+v3dpbdindex = lastIndexOf(path, ".v3dpbd");
 
 
 open(path);
