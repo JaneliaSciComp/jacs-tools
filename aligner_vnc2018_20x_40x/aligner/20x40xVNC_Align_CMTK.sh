@@ -2,7 +2,7 @@
 #
 # 20x 40x VNC aligner by Hideo Otsuna
 #
-testmode=1
+testmode=0
 
 if [[ $testmode != 1 ]]; then
   DIR=$(cd "$(dirname "$0")"; pwd)
@@ -59,7 +59,7 @@ if [[ $testmode == "1" ]]; then
 
      LSF="1"
 
-    if [[ $tLSF == "0" ]]; then
+    if [[ $LSF == "0" ]]; then
         CMTK="/Applications/Fiji.app/bin/cmtk"
         FIJI="/Applications/Fiji_plain.app/Contents/MacOS/ImageJ-macosx"
         MACRO_DIR="/Users/otsunah/Documents/GitHub/jacs-tools/aligner_vnc2018_20x_40x/aligner/fiji_macros"
@@ -67,13 +67,13 @@ if [[ $testmode == "1" ]]; then
         SCOREGENERATION=$MACRO_DIR"/Score_Generator_Cluster.ijm"
     fi
 
-    if [[ $tLSF == "1" ]]; then
+    if [[ $LSF == "1" ]]; then
         CMTK="/nrs/scicompsoft/otsuna/CMTK_new2019"
-FIJI="/nrs/scicompsoft/otsuna/Macros/Fiji_plane_lynux.app/ImageJ-linux64"
-MACRO_DIR="/nrs/scicompsoft/otsuna/Macros/VNC_20x_40x_aigner_macros"
-TempDir="/nrs/scicompsoft/otsuna/VNC_Template"
-SCOREGENERATION=$MACRO_DIR"/Score_Generator_Cluster.ijm"
-fi
+        FIJI="/nrs/scicompsoft/otsuna/Macros/Fiji_plane_lynux.app/ImageJ-linux64"
+        MACRO_DIR="/nrs/scicompsoft/otsuna/Macros/VNC_20x_40x_aigner_macros"
+        TempDir="/nrs/scicompsoft/otsuna/VNC_Template"
+        SCOREGENERATION=$MACRO_DIR"/Score_Generator_Cluster.ijm"
+    fi
 
 
     echo "Test mode"
