@@ -10,7 +10,7 @@ echo "Deploying to $JACS_SINGULARITY_DIR"
 #singularity build -F /tmp/out.sif docker://janeliascicomp/vaa3d:redhat-mark13
 #cp /tmp/out.sif $JACS_SINGULARITY_DIR/vaa3d-redhat-mark13.img
 
-V=1.4.0
+V=1.5.0
 singularity build -F /tmp/out.sif docker-daemon://janeliascicomp/flylight_tools:$V
 cp /tmp/out.sif $JACS_SINGULARITY_DIR/flylight_tools-$V.img
 
